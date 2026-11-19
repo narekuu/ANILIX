@@ -1,0 +1,686 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#090711">
+<title>Favorit — ANILIX</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#090711;
+    --card:#15111f;
+    --glass:rgba(30,23,45,.66);
+    --line:rgba(190,150,255,.13);
+    --text:#f8f5ff;
+    --muted:#93899f;
+    --purple:#a875ff;
+    --purple2:#7543d6;
+    --light:#d4baff;
+    --pink:#ff70b7;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(
+            circle at 50% -12%,
+            #30204d 0%,
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 100% 30%,
+            rgba(117,67,214,.07),
+            transparent 30%
+        ),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:linear-gradient(
+        180deg,
+        rgba(255,255,255,.012),
+        transparent 25%
+    );
+}
+
+/* HEADER */
+
+.header{
+    height:62px;
+    width:calc(100% - 28px);
+    max-width:720px;
+    margin:15px auto 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 16px;
+    background:var(--glass);
+    border:1px solid var(--line);
+    border-radius:18px;
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    box-shadow:0 8px 35px #0004;
+}
+
+.header-title{
+    font-size:17px;
+    font-weight:800;
+    letter-spacing:-.5px;
+}
+
+.header-title span{
+    color:var(--purple);
+}
+
+/* MAIN */
+
+.main{
+    width:100%;
+    max-width:720px;
+    margin:0 auto;
+    padding:10px 15px 125px;
+}
+
+/* FAVORITE COUNT */
+
+.page-top{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    margin-bottom:16px;
+}
+
+.favorite-count{
+    flex-shrink:0;
+    padding:7px 11px;
+    border-radius:10px;
+    background:rgba(168,117,255,.10);
+    border:1px solid rgba(168,117,255,.19);
+    color:#d4baff;
+    font-size:11px;
+    font-weight:750;
+}
+
+/* FAVORITE PANEL */
+
+.favorite-panel{
+    position:relative;
+    padding:13px;
+    border-radius:17px;
+    background:linear-gradient(
+        145deg,
+        rgba(30,23,45,.68),
+        rgba(21,17,31,.48)
+    );
+    border:1px solid var(--line);
+    box-shadow:0 15px 40px rgba(0,0,0,.16);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+}
+
+/* GRID */
+
+.favorite-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:19px 10px;
+}
+
+/* CARD */
+
+.anime-card{
+    position:relative;
+    min-width:0;
+    cursor:pointer;
+    animation:cardIn .42s ease both;
+}
+
+.anime-card:active{
+    transform:scale(.965);
+}
+
+/* POSTER */
+
+.poster-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:2 / 3;
+    overflow:hidden;
+    border-radius:12px;
+    background:#111019;
+    border:1px solid rgba(190,150,255,.12);
+    box-shadow:0 8px 22px rgba(0,0,0,.3);
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+
+.anime-card:hover .poster-wrap{
+    transform:translateY(-3px);
+    border-color:rgba(168,117,255,.38);
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.38),
+        0 0 18px rgba(139,92,246,.08);
+}
+
+.poster{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    background:#111019;
+}
+
+/* FAVORITE BUTTON */
+
+.favorite-btn{
+    position:absolute;
+    top:7px;
+    right:7px;
+    width:29px;
+    height:29px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:9px;
+    border:1px solid rgba(255,255,255,.11);
+    background:rgba(7,6,12,.76);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    color:var(--pink);
+    cursor:pointer;
+    z-index:5;
+    transition:transform .18s ease,background .18s ease;
+}
+
+.favorite-btn:active{
+    transform:scale(.84);
+}
+
+.favorite-btn svg{
+    width:15px;
+    height:15px;
+    fill:currentColor;
+    filter:drop-shadow(0 0 5px rgba(255,112,183,.3));
+}
+
+/* TITLE */
+
+.anime-title{
+    margin-top:9px;
+    color:#f0edf8;
+    font-size:13px;
+    line-height:1.35;
+    font-weight:650;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+/* EMPTY */
+
+.empty{
+    display:none;
+    padding:70px 15px;
+    text-align:center;
+}
+
+.empty-icon{
+    width:64px;
+    height:64px;
+    margin:0 auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:19px;
+    background:rgba(168,117,255,.09);
+    border:1px solid rgba(168,117,255,.17);
+    color:var(--purple);
+}
+
+.empty-icon svg{
+    width:27px;
+    height:27px;
+    fill:currentColor;
+}
+
+.empty-title{
+    font-size:17px;
+    font-weight:800;
+}
+
+.empty-text{
+    margin-top:7px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+}
+
+/* BOTTOM NAV — HOME IDENTICAL */
+
+.bottom-nav{
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:100;
+    width:calc(100% - 32px);
+    max-width:520px;
+    height:72px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:6px 10px;
+    background:rgba(28,20,42,.62);
+    border:1px solid rgba(210,180,255,.2);
+    border-radius:25px;
+    backdrop-filter:blur(25px) saturate(160%);
+    -webkit-backdrop-filter:blur(25px) saturate(160%);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.nav-item{
+    flex:1;
+    height:58px;
+    max-width:95px;
+    background:none;
+    border:0;
+    color:#a69aaf;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:5px;
+    font-size:10px;
+    font-weight:600;
+    border-radius:18px;
+    transition:.25s;
+    text-decoration:none;
+}
+
+.nav-item svg{
+    width:23px;
+    height:23px;
+    transition:.25s;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.nav-item.active{
+    color:#fff;
+    background:rgba(168,117,255,.28);
+    box-shadow:
+        inset 0 0 0 1px rgba(190,150,255,.12),
+        0 3px 12px rgba(168,117,255,.12);
+}
+
+.nav-item.active svg{
+    color:#d7baff;
+    filter:drop-shadow(0 0 7px #a875ff99);
+}
+
+.nav-item:active{
+    transform:scale(.92);
+}
+
+/* ANIMATION */
+
+@keyframes cardIn{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* TABLET / DESKTOP */
+
+@media(min-width:600px){
+    .main{
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .favorite-panel{
+        padding:16px;
+    }
+
+    .favorite-grid{
+        gap:22px 14px;
+    }
+
+    .anime-title{
+        font-size:14px;
+    }
+}
+
+/* SMALL PHONE */
+
+@media(max-width:360px){
+    .main{
+        padding-left:11px;
+        padding-right:11px;
+    }
+
+    .favorite-panel{
+        padding:10px;
+    }
+
+    .favorite-grid{
+        gap:15px 7px;
+    }
+
+    .anime-title{
+        font-size:12px;
+    }
+
+    .poster-wrap{
+        border-radius:10px;
+    }
+
+    .favorite-btn{
+        width:27px;
+        height:27px;
+    }
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+    <div class="header-title">
+        <span>Favorit</span>
+    </div>
+</header>
+
+<main class="main">
+
+    <section class="page-top">
+        <div id="favoriteCount" class="favorite-count">
+            9 Anime
+        </div>
+    </section>
+
+    <section id="favoritePanel" class="favorite-panel">
+
+        <div id="favoriteGrid" class="favorite-grid"></div>
+
+        <div id="empty" class="empty">
+            <div class="empty-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="
+                    M20.84 4.61
+                    a5.5 5.5 0 0 0-7.78 0
+                    L12 5.67
+                    l-1.06-1.06
+                    a5.5 5.5 0 0 0-7.78 7.78
+                    l1.06 1.06
+                    L12 21.23
+                    l7.78-7.78
+                    1.06-1.06
+                    a5.5 5.5 0 0 0 0-7.78z">
+                    </path>
+                </svg>
+            </div>
+
+            <h2 class="empty-title">Belum ada favorit</h2>
+
+            <p class="empty-text">
+                Anime yang kamu favoritkan
+                akan muncul di sini.
+            </p>
+        </div>
+
+    </section>
+
+</main>
+
+<!-- BOTTOM NAVIGATION -->
+
+<nav class="bottom-nav">
+
+    <a href="/" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <path d="m3 10 9-7 9 7v10H3z"/>
+            <path d="M9 20v-7h6v7"/>
+        </svg>
+        Home
+    </a>
+
+    <a href="jadwal.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="17" rx="2"/>
+            <path d="M8 2v4M16 2v4M3 10h18"/>
+        </svg>
+        Jadwal
+    </a>
+
+    <a href="favorit.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>
+        </svg>
+        Favorit
+    </a>
+
+    <a href="riwayat.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path d="M3 3v5h5M12 7v5l3 2"/>
+        </svg>
+        Riwayat
+    </a>
+
+    <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21a8 8 0 0 1 16 0"/>
+        </svg>
+        Profile
+    </a>
+
+</nav>
+
+<script>
+
+/* DATA FAVORIT: kosong sampai pengguna menambahkan favorit asli */
+let favorites = [];
+
+/* ELEMENT */
+
+const grid = document.getElementById("favoriteGrid");
+const count = document.getElementById("favoriteCount");
+const empty = document.getElementById("empty");
+
+/* UPDATE COUNT */
+
+function updateCount(){
+    const total = favorites.length;
+    count.textContent = total + " Anime";
+}
+
+/* CREATE CARD */
+
+function createCard(anime,index){
+
+    const card = document.createElement("div");
+    card.className = "anime-card";
+    card.style.animationDelay = `${index * 55}ms`;
+
+    const posterWrap = document.createElement("div");
+    posterWrap.className = "poster-wrap";
+
+    posterWrap.addEventListener("click",()=>{
+        openDetail(anime.id);
+    });
+
+    const img = document.createElement("img");
+    img.className = "poster";
+    img.src = anime.poster;
+    img.alt = anime.title;
+    img.loading = "lazy";
+
+    img.onerror = function(){
+        this.onerror = null;
+        this.src = "data:image/svg+xml," +
+            encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 450">
+                    <rect width="300" height="450" fill="#111019"/>
+                    <text x="150" y="225" fill="#a875ff" font-size="20"
+                    text-anchor="middle" font-family="Arial">ANILIX</text>
+                </svg>
+            `);
+    };
+
+    const favoriteBtn = document.createElement("button");
+    favoriteBtn.className = "favorite-btn";
+    favoriteBtn.type = "button";
+    favoriteBtn.setAttribute("aria-label","Hapus dari favorit");
+
+    favoriteBtn.innerHTML = `
+        <svg viewBox="0 0 24 24">
+            <path d="
+            M20.84 4.61
+            a5.5 5.5 0 0 0-7.78 0
+            L12 5.67
+            l-1.06-1.06
+            a5.5 5.5 0 0 0-7.78 7.78
+            l1.06 1.06
+            L12 21.23
+            l7.78-7.78
+            1.06-1.06
+            a5.5 5.5 0 0 0 0-7.78z">
+            </path>
+        </svg>
+    `;
+
+    favoriteBtn.addEventListener("click",(event)=>{
+        event.stopPropagation();
+        removeFavorite(anime.id);
+    });
+
+    posterWrap.appendChild(img);
+    posterWrap.appendChild(favoriteBtn);
+
+    const title = document.createElement("div");
+    title.className = "anime-title";
+    title.textContent = anime.title;
+
+    title.addEventListener("click",()=>{
+        openDetail(anime.id);
+    });
+
+    card.appendChild(posterWrap);
+    card.appendChild(title);
+
+    return card;
+}
+
+/* OPEN DETAIL */
+
+function openDetail(id){
+    window.location.href =
+        "detail.html?id=" + encodeURIComponent(id);
+}
+
+/* REMOVE FAVORITE */
+
+async function removeFavorite(id){
+    const item=favorites.find(anime=>String(anime.id)===String(id));
+    if(!item) return;
+    try{
+        const response=await fetch(`/api/user/favorites/${encodeURIComponent(item.type||"anime")}/${encodeURIComponent(id)}`,{method:"DELETE",credentials:"include"});
+        if(!response.ok) throw new Error("Gagal menghapus favorit dari server.");
+        favorites=favorites.filter(anime=>String(anime.id)!==String(id));
+        renderFavorites();
+    }catch(error){ console.error(error); }
+}
+
+async function loadFavorites(){
+    try{
+        const response=await fetch("/api/user/favorites",{credentials:"include",cache:"no-store"});
+        if(response.status===401){ location.replace("login.html"); return; }
+        if(!response.ok) throw new Error("Gagal memuat favorit.");
+        const data=await response.json();
+        favorites=Array.isArray(data.favorites)?data.favorites:[];
+    }catch(error){ console.error("Favorites:",error); favorites=[]; }
+    renderFavorites();
+}
+
+/* RENDER */
+
+function renderFavorites(){
+
+    grid.innerHTML = "";
+    updateCount();
+
+    if(favorites.length === 0){
+        grid.style.display = "none";
+        empty.style.display = "block";
+        return;
+    }
+
+    grid.style.display = "grid";
+    empty.style.display = "none";
+
+    favorites.forEach((anime,index)=>{
+        grid.appendChild(createCard(anime,index));
+    });
+}
+
+/* ACTIVE NAV OTOMATIS — SAMA DENGAN HOME */
+
+const currentPage =
+    location.pathname.split("/").pop() || "index.html";
+
+document.querySelectorAll(".nav-item").forEach(link=>{
+    link.classList.toggle(
+        "active",
+        link.getAttribute("href") === currentPage
+    );
+});
+
+/* START */
+
+loadFavorites();
+
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

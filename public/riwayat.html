@@ -1,0 +1,1225 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#090711">
+<title>Riwayat Nonton — ANILIX</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --bg:#090711;
+    --glass:rgba(30,23,45,.66);
+    --border:rgba(190,150,255,.13);
+    --purple:#a875ff;
+    --purple2:#7543d6;
+    --light:#d4baff;
+    --muted:#93899f;
+    --white:#f8f5ff;
+    --red:#ff4968;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(ellipse at 50% -15%,#30204d 0%,transparent 45%),
+        var(--bg);
+    color:var(--white);
+    font-family:Inter,Arial,sans-serif;
+    padding-bottom:110px;
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+}
+
+button{font:inherit;cursor:pointer}
+
+/* HEADER */
+
+.header{
+    position:relative;
+    height:62px;
+    width:calc(100% - 28px);
+    max-width:720px;
+    margin:15px auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--glass);
+    border:1px solid var(--border);
+    border-radius:18px;
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    box-shadow:0 8px 35px #0004;
+}
+
+.header-title{
+    font-size:17px;
+    font-weight:800;
+    letter-spacing:-.5px;
+}
+
+.header-title span{color:var(--purple)}
+
+.header-actions{
+    position:absolute;
+    right:10px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.select-count{
+    display:none;
+    padding:7px 9px;
+    border-radius:9px;
+    background:rgba(168,117,255,.14);
+    border:1px solid rgba(168,117,255,.25);
+    color:var(--light);
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.select-count.show{display:block}
+
+.cancel-select{
+    display:none;
+    height:32px;
+    padding:0 9px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    font-size:9px;
+    font-weight:800;
+}
+
+.cancel-select.show{display:block}
+
+/* MAIN */
+
+.container{
+    width:100%;
+    max-width:720px;
+    margin:auto;
+    padding:8px 14px 100px;
+}
+
+.history-info{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:17px;
+    padding:0 2px;
+}
+
+.history-info-title{
+    font-size:14px;
+    font-weight:800;
+}
+
+.history-info-sub{
+    margin-top:4px;
+    font-size:10px;
+    color:var(--muted);
+}
+
+.history-total{
+    padding:6px 10px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:rgba(30,23,45,.55);
+    color:var(--light);
+    font-size:10px;
+    font-weight:700;
+}
+
+/* DELETE BAR */
+
+.delete-bar{
+    display:none;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    margin-bottom:14px;
+    padding:10px;
+    border-radius:14px;
+    background:rgba(28,20,42,.88);
+    border:1px solid rgba(190,150,255,.2);
+    box-shadow:0 8px 25px rgba(0,0,0,.2);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+}
+
+.delete-bar.show{display:flex}
+
+.delete-selected-count{
+    flex:1;
+    color:#d4baff;
+    font-size:11px;
+    font-weight:700;
+}
+
+.delete-btn{
+    height:38px;
+    padding:0 14px;
+    border:0;
+    border-radius:10px;
+    background:var(--red);
+    color:#fff;
+    font-size:10px;
+    font-weight:800;
+}
+
+.delete-btn:active{transform:scale(.95)}
+
+/* HISTORY LIST */
+
+.history-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.history-card{
+    position:relative;
+    width:100%;
+    padding:10px;
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    background:linear-gradient(
+        135deg,
+        rgba(30,23,45,.78),
+        rgba(21,17,31,.68)
+    );
+    border:1px solid var(--border);
+    border-radius:16px;
+    overflow:hidden;
+    user-select:none;
+    -webkit-user-select:none;
+    box-shadow:0 5px 18px rgba(0,0,0,.15);
+    transition:.18s;
+}
+
+.history-card.selected{
+    background:rgba(168,117,255,.09);
+    border-color:rgba(168,117,255,.35);
+}
+
+/* POSTER */
+
+.poster-button{
+    width:76px;
+    min-width:76px;
+    height:108px;
+    padding:0;
+    border:0;
+    border-radius:11px;
+    overflow:hidden;
+    background:#211633;
+    cursor:pointer;
+    position:relative;
+}
+
+.poster-button img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+    pointer-events:none;
+}
+
+/* CONTENT */
+
+.history-content{
+    flex:1;
+    min-width:0;
+    padding-top:3px;
+}
+
+.history-main{cursor:pointer}
+
+.anime-title{
+    font-size:13px;
+    font-weight:800;
+    line-height:1.4;
+    color:var(--white);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin-bottom:6px;
+}
+
+.episode-label{
+    color:#bd93ff;
+    font-size:10px;
+    font-weight:700;
+    margin-bottom:9px;
+}
+
+.time{
+    color:#b9adc9;
+    font-size:10px;
+    font-weight:600;
+    margin-bottom:8px;
+}
+
+.progress{
+    width:100%;
+    height:4px;
+    overflow:hidden;
+    border-radius:20px;
+    background:rgba(255,255,255,.09);
+}
+
+.progress-bar{
+    height:100%;
+    border-radius:20px;
+    background:linear-gradient(
+        90deg,
+        var(--purple2),
+        var(--purple),
+        var(--light)
+    );
+}
+
+/* EPISODE HISTORY */
+
+.episode-history{
+    display:none;
+    margin-top:14px;
+    padding-top:11px;
+    border-top:1px solid rgba(190,150,255,.12);
+}
+
+.episode-history.open{display:block}
+
+.episode-item{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:10px 9px;
+    margin:3px -9px;
+    border:1px solid transparent;
+    border-radius:10px;
+    cursor:pointer;
+    transition:background .18s,border-color .18s;
+    touch-action:pan-y;
+}
+
+.episode-item:active{opacity:.8}
+
+.episode-item.holding{
+    background:rgba(168,117,255,.13);
+    border-color:rgba(168,117,255,.3);
+}
+
+.episode-item.selected{
+    background:rgba(168,117,255,.15);
+    border-color:rgba(168,117,255,.45);
+}
+
+.episode-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.episode-name{
+    color:#e5dcf2;
+    font-size:11px;
+    font-weight:700;
+}
+
+.episode-time{
+    color:var(--muted);
+    font-size:10px;
+    white-space:nowrap;
+}
+
+.episode-progress{
+    width:100%;
+    height:3px;
+    overflow:hidden;
+    border-radius:20px;
+    background:rgba(255,255,255,.08);
+}
+
+.episode-progress-bar{
+    height:100%;
+    border-radius:20px;
+    background:linear-gradient(90deg,var(--purple2),var(--purple));
+}
+
+.episode-check{
+    display:none;
+    position:absolute;
+    right:9px;
+    top:9px;
+    width:17px;
+    height:17px;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:var(--purple);
+    color:white;
+    font-size:11px;
+    font-weight:900;
+}
+
+.episode-item.selected .episode-check{
+    display:flex;
+}
+
+.select-mode .episode-item{
+    padding-right:32px;
+}
+
+/* EMPTY */
+
+.empty{
+    min-height:55vh;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    padding:30px;
+}
+
+.empty-icon{
+    width:65px;
+    height:65px;
+    display:grid;
+    place-items:center;
+    margin-bottom:16px;
+    border-radius:20px;
+    background:rgba(168,117,255,.09);
+    border:1px solid var(--border);
+}
+
+.empty-icon svg{
+    width:29px;
+    height:29px;
+    fill:none;
+    stroke:#bba1df;
+    stroke-width:1.7;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.empty-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.empty-text{
+    max-width:280px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+}
+
+/* CONFIRM */
+
+.confirm-screen{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+}
+
+.confirm-screen.show{display:flex}
+
+.confirm-box{
+    width:100%;
+    max-width:360px;
+    padding:22px;
+    border-radius:20px;
+    background:linear-gradient(145deg,#211832,#15111f);
+    border:1px solid rgba(190,150,255,.2);
+    box-shadow:0 25px 80px rgba(0,0,0,.5);
+}
+
+.confirm-title{
+    font-size:17px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.confirm-text{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+.confirm-actions{display:flex;gap:9px}
+
+.confirm-actions button{
+    flex:1;
+    height:42px;
+    border-radius:11px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:800;
+}
+
+.confirm-cancel{
+    color:#fff;
+    background:rgba(255,255,255,.07);
+    border:1px solid var(--border);
+}
+
+.confirm-delete{
+    color:#fff;
+    background:var(--red);
+    border:0;
+}
+
+/* BOTTOM NAV — MATCH HOME & PROFILE */
+
+.bottom-nav{
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:100;
+    width:calc(100% - 32px);
+    max-width:520px;
+    height:72px;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:6px 10px;
+
+    background:rgba(28,20,42,.62);
+    border:1px solid rgba(210,180,255,.2);
+    border-radius:25px;
+
+    backdrop-filter:blur(25px) saturate(160%);
+    -webkit-backdrop-filter:blur(25px) saturate(160%);
+
+    box-shadow:
+        0 8px 32px rgba(0,0,0,.42),
+        inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.nav-item{
+    flex:1;
+    height:58px;
+    max-width:95px;
+    background:none;
+    border:0;
+    color:#a69aaf;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+
+    gap:5px;
+    font-size:10px;
+    font-weight:600;
+    border-radius:18px;
+    transition:.25s;
+    text-decoration:none;
+}
+
+.nav-item svg{
+    width:23px;
+    height:23px;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    transition:.25s;
+}
+
+.nav-item.active{
+    color:#fff;
+    background:rgba(168,117,255,.28);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(190,150,255,.12),
+        0 3px 12px rgba(168,117,255,.12);
+}
+
+.nav-item.active svg{
+    color:#d7baff;
+    filter:drop-shadow(0 0 7px #a875ff99);
+}
+
+.nav-item:active{
+    transform:scale(.92);
+}
+
+/* RESPONSIVE */
+
+@media(min-width:700px){
+    .container{
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .history-card{padding:12px}
+
+    .poster-button{
+        width:80px;
+        min-width:80px;
+        height:112px;
+    }
+
+    .anime-title{font-size:14px}
+}
+
+@media(max-width:430px){
+    .container{
+        padding-left:10px;
+        padding-right:10px;
+    }
+
+    .poster-button{
+        width:68px;
+        min-width:68px;
+        height:98px;
+    }
+
+    .history-card{gap:10px}
+    .anime-title{font-size:12px}
+    .header-title{font-size:16px}
+}
+
+@media(max-width:350px){
+    .poster-button{
+        width:59px;
+        min-width:59px;
+        height:86px;
+    }
+
+    .history-card{
+        padding:8px;
+        gap:8px;
+    }
+
+    .anime-title{font-size:11px}
+    .nav-item{font-size:9px}
+    .nav-item svg{
+        width:21px;
+        height:21px;
+    }
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="header-title">
+        Riwayat <span>Nonton</span>
+    </div>
+
+    <div class="header-actions">
+        <div class="select-count" id="selectCount">0 dipilih</div>
+        <button class="cancel-select" id="cancelSelect">BATAL</button>
+    </div>
+
+</header>
+
+<main class="container">
+
+    <div class="history-info">
+        <div>
+            <div class="history-info-title">Terakhir Ditonton</div>
+            <div class="history-info-sub">Lanjutkan anime yang belum selesai</div>
+        </div>
+
+        <div class="history-total" id="historyTotal">0 Anime</div>
+    </div>
+
+    <div class="delete-bar" id="deleteBar">
+        <div class="delete-selected-count" id="deleteSelectedCount">
+            0 episode dipilih
+        </div>
+
+        <button class="delete-btn" id="deleteSelected">
+            HAPUS TERPILIH
+        </button>
+    </div>
+
+    <div class="history-list" id="historyList"></div>
+
+    <div class="empty" id="emptyState">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M3 12a9 9 0 1 0 3-6.7"/>
+                <path d="M3 4v5h5"/>
+                <path d="M12 7v5l3 2"/>
+            </svg>
+        </div>
+
+        <div class="empty-title">Belum Ada Riwayat</div>
+
+        <div class="empty-text">
+            Anime yang kamu tonton akan muncul di sini.
+        </div>
+    </div>
+
+</main>
+
+<div class="confirm-screen" id="confirmScreen">
+    <div class="confirm-box">
+        <div class="confirm-title">Hapus Riwayat?</div>
+
+        <div class="confirm-text" id="confirmText">
+            Episode yang dipilih akan dihapus.
+        </div>
+
+        <div class="confirm-actions">
+            <button class="confirm-cancel" id="confirmCancel">BATAL</button>
+            <button class="confirm-delete" id="confirmDelete">HAPUS</button>
+        </div>
+    </div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+    <a href="/" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <path d="m3 10 9-7 9 7v10H3z"/>
+            <path d="M9 20v-7h6v7"/>
+        </svg>
+        Home
+    </a>
+
+    <a href="jadwal.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="17" rx="2"/>
+            <path d="M8 2v4M16 2v4M3 10h18"/>
+        </svg>
+        Jadwal
+    </a>
+
+    <a href="favorit.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>
+        </svg>
+        Favorit
+    </a>
+
+    <a href="riwayat.html" class="nav-item active">
+        <svg viewBox="0 0 24 24">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+            <path d="M3 3v5h5M12 7v5l3 2"/>
+        </svg>
+        Riwayat
+    </a>
+
+    <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21a8 8 0 0 1 16 0"/>
+        </svg>
+        Profile
+    </a>
+
+</nav>
+
+<script>
+
+/* DATA RIWAYAT: kosong sampai ada riwayat tontonan asli */
+let historyData = [];
+
+/* STATE */
+
+let selectMode = false;
+let selectedEpisodes = new Set();
+let pendingDeleteKeys = [];
+
+/* ELEMENTS */
+
+const historyList = document.getElementById("historyList");
+const emptyState = document.getElementById("emptyState");
+const historyTotal = document.getElementById("historyTotal");
+const selectCount = document.getElementById("selectCount");
+const cancelSelect = document.getElementById("cancelSelect");
+const deleteBar = document.getElementById("deleteBar");
+const deleteSelectedCount = document.getElementById("deleteSelectedCount");
+const deleteSelected = document.getElementById("deleteSelected");
+const confirmScreen = document.getElementById("confirmScreen");
+const confirmText = document.getElementById("confirmText");
+const confirmCancel = document.getElementById("confirmCancel");
+const confirmDelete = document.getElementById("confirmDelete");
+
+/* HELPERS */
+
+function formatTime(seconds){
+    seconds = Math.max(0,Math.floor(seconds || 0));
+
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    return String(minutes).padStart(2,"0") + ":" +
+           String(secs).padStart(2,"0");
+}
+
+function escapeHTML(text){
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+function episodeKey(itemId,episode){
+    return itemId + ":" + episode;
+}
+
+/* SELECT MODE */
+
+function enterSelectMode(key){
+    if(selectMode) return;
+
+    selectMode = true;
+    selectedEpisodes.clear();
+    selectedEpisodes.add(key);
+
+    document.body.classList.add("select-mode");
+
+    updateSelectUI();
+    renderHistory();
+}
+
+function exitSelectMode(){
+    selectMode = false;
+    selectedEpisodes.clear();
+
+    document.body.classList.remove("select-mode");
+
+    updateSelectUI();
+    renderHistory();
+}
+
+function toggleEpisode(key){
+    if(!selectMode) return;
+
+    if(selectedEpisodes.has(key)){
+        selectedEpisodes.delete(key);
+    }else{
+        selectedEpisodes.add(key);
+    }
+
+    if(selectedEpisodes.size === 0){
+        exitSelectMode();
+        return;
+    }
+
+    updateSelectUI();
+    renderHistory();
+}
+
+/* SELECT UI */
+
+function updateSelectUI(){
+    const total = selectedEpisodes.size;
+
+    selectCount.textContent = total + " dipilih";
+    deleteSelectedCount.textContent = total + " episode dipilih";
+
+    selectCount.classList.toggle("show",selectMode);
+    cancelSelect.classList.toggle("show",selectMode);
+
+    deleteBar.classList.toggle(
+        "show",
+        selectMode && total > 0
+    );
+}
+
+/* RENDER HISTORY */
+
+function renderHistory(){
+    historyList.innerHTML = "";
+
+    historyTotal.textContent = historyData.length + " Anime";
+
+    if(historyData.length === 0){
+        historyList.style.display = "none";
+        emptyState.style.display = "flex";
+        return;
+    }
+
+    historyList.style.display = "flex";
+    emptyState.style.display = "none";
+
+    historyData.forEach(item => {
+
+        const card = document.createElement("div");
+        card.className = "history-card";
+
+        const percent = item.duration > 0
+            ? Math.min(100,(item.current / item.duration) * 100)
+            : 0;
+
+        card.innerHTML = `
+            <button class="poster-button" aria-label="Buka detail anime">
+                <img
+                    src="${escapeHTML(item.poster)}"
+                    alt="${escapeHTML(item.title)}"
+                    draggable="false"
+                >
+            </button>
+
+            <div class="history-content">
+                <div class="history-main">
+                    <div class="anime-title">${escapeHTML(item.title)}</div>
+
+                    <div class="episode-label">
+                        Episode ${item.episode}
+                    </div>
+
+                    <div class="time">
+                        ${formatTime(item.current)} /
+                        ${formatTime(item.duration)}
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar" style="width:${percent}%"></div>
+                    </div>
+                </div>
+
+                <div class="episode-history ${selectMode ? "open" : ""}">
+                    ${renderEpisodes(item)}
+                </div>
+            </div>
+        `;
+
+        const posterButton = card.querySelector(".poster-button");
+        const infoArea = card.querySelector(".history-main");
+        const episodeHistory = card.querySelector(".episode-history");
+
+        posterButton.addEventListener("click",function(){
+            if(selectMode) return;
+
+            window.location.href =
+                "detail.html?slug=" + encodeURIComponent(item.slug);
+        });
+
+        infoArea.addEventListener("click",function(){
+            if(selectMode) return;
+
+            episodeHistory.classList.toggle("open");
+        });
+
+        episodeHistory.querySelectorAll(".episode-item").forEach(ep => {
+
+            const episode = Number(ep.dataset.episode);
+            const key = episodeKey(item.id,episode);
+
+            if(selectedEpisodes.has(key)){
+                ep.classList.add("selected");
+            }
+
+            ep.addEventListener("click",function(e){
+                e.stopPropagation();
+
+                if(selectMode){
+                    toggleEpisode(key);
+                    return;
+                }
+
+                window.location.href =
+                    "watch.html?slug=" +
+                    encodeURIComponent(item.slug) +
+                    "&episode=" +
+                    encodeURIComponent(episode);
+            });
+
+            /* LONG PRESS */
+
+            let holdTimer = null;
+            let moved = false;
+
+            function startHold(){
+
+                if(selectMode) return;
+
+                moved = false;
+
+                ep.classList.add("holding");
+
+                holdTimer = setTimeout(() => {
+
+                    if(moved) return;
+
+                    ep.classList.remove("holding");
+
+                    enterSelectMode(key);
+
+                },650);
+
+            }
+
+            function cancelHold(){
+
+                if(holdTimer){
+                    clearTimeout(holdTimer);
+                    holdTimer = null;
+                }
+
+                ep.classList.remove("holding");
+
+            }
+
+            ep.addEventListener("touchstart",startHold,{passive:true});
+
+            ep.addEventListener("touchmove",function(){
+                moved = true;
+                cancelHold();
+            },{passive:true});
+
+            ep.addEventListener("touchend",cancelHold);
+            ep.addEventListener("touchcancel",cancelHold);
+
+            ep.addEventListener("mousedown",function(e){
+                if(e.button !== 0) return;
+                startHold();
+            });
+
+            ep.addEventListener("mouseup",cancelHold);
+            ep.addEventListener("mouseleave",cancelHold);
+
+        });
+
+        historyList.appendChild(card);
+
+    });
+
+    updateSelectUI();
+}
+
+/* RENDER EPISODES */
+
+function renderEpisodes(item){
+
+    if(!item.episodes || item.episodes.length === 0){
+        return `
+            <div class="episode-item">
+                <div class="episode-name">Belum ada riwayat episode</div>
+            </div>
+        `;
+    }
+
+    return item.episodes.map(ep => {
+
+        const percent = ep.duration > 0
+            ? Math.min(100,(ep.current / ep.duration) * 100)
+            : 0;
+
+        return `
+            <div class="episode-item" data-episode="${ep.episode}">
+                <div class="episode-check">✓</div>
+
+                <div class="episode-top">
+                    <div class="episode-name">
+                        Episode ${ep.episode}
+                    </div>
+
+                    <div class="episode-time">
+                        ${formatTime(ep.current)} /
+                        ${formatTime(ep.duration)}
+                    </div>
+                </div>
+
+                <div class="episode-progress">
+                    <div
+                        class="episode-progress-bar"
+                        style="width:${percent}%"
+                    ></div>
+                </div>
+            </div>
+        `;
+
+    }).join("");
+
+}
+
+/* DELETE SELECTED */
+
+deleteSelected.addEventListener("click",function(){
+
+    if(selectedEpisodes.size === 0) return;
+
+    pendingDeleteKeys = Array.from(selectedEpisodes);
+
+    confirmText.textContent =
+        "Kamu memilih " + pendingDeleteKeys.length +
+        " episode. Episode yang dipilih akan dihapus dari riwayat.";
+
+    confirmScreen.classList.add("show");
+
+});
+
+/* CONFIRM DELETE */
+
+confirmDelete.addEventListener("click",async function(){
+
+    const selectedIds=new Set(pendingDeleteKeys.map(key=>String(key).split(":")[0]));
+    for(const item of historyData){
+        if(selectedIds.has(String(item.id))){
+            try{
+                await fetch(`/api/user/history/${encodeURIComponent(item.type||"anime")}/${encodeURIComponent(item.id)}`,{method:"DELETE",credentials:"include"});
+            }catch(error){ console.error("Gagal menghapus riwayat:",error); }
+        }
+    }
+
+    historyData.forEach(item => {
+
+        item.episodes = item.episodes.filter(ep => {
+
+            const key = episodeKey(item.id,ep.episode);
+
+            return !pendingDeleteKeys.includes(key);
+
+        });
+
+    });
+
+    historyData = historyData.filter(item =>
+        item.episodes.length > 0
+    );
+
+    historyData.forEach(item => {
+
+        const latest = item.episodes[item.episodes.length - 1];
+
+        item.episode = latest.episode;
+        item.current = latest.current;
+        item.duration = latest.duration;
+
+    });
+
+    pendingDeleteKeys = [];
+
+    confirmScreen.classList.remove("show");
+
+    exitSelectMode();
+
+});
+
+/* CANCEL DELETE */
+
+confirmCancel.addEventListener("click",function(){
+
+    pendingDeleteKeys = [];
+
+    confirmScreen.classList.remove("show");
+
+});
+
+/* CANCEL SELECT */
+
+cancelSelect.addEventListener("click",function(){
+    exitSelectMode();
+});
+
+/* CONFIRM BACKDROP */
+
+confirmScreen.addEventListener("click",function(e){
+
+    if(e.target === confirmScreen){
+        confirmCancel.click();
+    }
+
+});
+
+/* ESC KEY */
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key !== "Escape") return;
+
+    if(confirmScreen.classList.contains("show")){
+        confirmCancel.click();
+        return;
+    }
+
+    if(selectMode){
+        exitSelectMode();
+    }
+
+});
+
+/* NAVIGATION ACTIVE STATE */
+
+const currentPage = location.pathname.split("/").pop() || "riwayat.html";
+
+document.querySelectorAll(".nav-item").forEach(link => {
+
+    link.classList.toggle(
+        "active",
+        link.getAttribute("href") === currentPage
+    );
+
+});
+
+/* LOAD FROM SERVER */
+async function loadHistory(){
+    try{
+        const response=await fetch("/api/user/history",{credentials:"include",cache:"no-store"});
+        if(response.status===401){ location.replace("login.html"); return; }
+        if(!response.ok) throw new Error("Gagal memuat riwayat dari server.");
+        const data=await response.json();
+        historyData=(Array.isArray(data.history)?data.history:[]).map(row=>{
+            const episodeText=String(row.episode||"1").replace(/[^0-9]/g,"")||"1";
+            const progress=Math.max(0,Math.min(100,Number(row.progress)||0));
+            const duration=100;
+            return {
+                id:String(row.id), slug:String(row.id), type:row.type||"anime",
+                title:row.title||"Tanpa judul", poster:row.poster||"",
+                episode:episodeText, current:progress, duration,
+                episodes:[{episode:episodeText,current:progress,duration}]
+            };
+        });
+    }catch(error){ console.error("History:",error); historyData=[]; }
+    renderHistory();
+}
+
+/* START */
+
+loadHistory();
+
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

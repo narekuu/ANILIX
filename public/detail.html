@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANILIX — Detail</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --bg:#08070c;
+  --card:#111018;
+  --purple:#8b5cf6;
+  --red:#8b5cf6;
+  --text:#f7f7fa;
+  --muted:#9693a2;
+  --line:rgba(255,255,255,.08);
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(139,92,246,.18),
+      transparent 38%
+    ),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+button{
+  font:inherit;
+}
+
+.header{
+  height:62px;
+  position:sticky;
+  top:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  padding:0 15px;
+  background:rgba(8,7,12,.8);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.back{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:12px;
+  background:rgba(255,255,255,.06);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.back svg{
+  width:21px;
+  height:21px;
+}
+
+.header-title{
+  margin-left:12px;
+  font-size:15px;
+  font-weight:750;
+}
+
+.container{
+  width:min(100%,900px);
+  margin:auto;
+  padding:16px 14px 55px;
+}
+
+/* HERO */
+
+.hero{
+  position:relative;
+  min-height:350px;
+  display:flex;
+  align-items:flex-end;
+  overflow:hidden;
+  padding:18px;
+  border-radius:21px;
+  border:1px solid rgba(255,255,255,.07);
+}
+
+.hero-bg{
+  position:absolute;
+  inset:-12px;
+  background-size:cover;
+  background-position:center;
+  filter:blur(5px) brightness(.48);
+  opacity:.85;
+  transform:scale(1.04);
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to top,
+    rgba(8,7,12,.98),
+    rgba(8,7,12,.58) 55%,
+    rgba(8,7,12,.28)
+  );
+  pointer-events:none;
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-end;
+  gap:16px;
+  width:100%;
+}
+
+.poster{
+  width:135px;
+  min-width:135px;
+  aspect-ratio:2/3;
+  object-fit:cover;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 15px 35px rgba(0,0,0,.5);
+}
+
+.info{
+  min-width:0;
+}
+
+.title{
+  font-size:27px;
+  font-weight:850;
+  margin-bottom:10px;
+}
+
+.meta{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:10px;
+}
+
+.rating,
+.views{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.rating{
+  color:#ffc94d;
+}
+
+.views{
+  color:#aaa7b5;
+}
+
+.meta svg{
+  width:15px;
+  height:15px;
+  flex-shrink:0;
+}
+
+.genres{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+
+.genre{
+  padding:5px 8px;
+  border-radius:7px;
+  color:#c8b8ff;
+  background:rgba(139,92,246,.15);
+  border:1px solid rgba(139,92,246,.2);
+  font-size:10px;
+}
+
+/* DETAIL */
+
+.detail-card{
+  margin-top:14px;
+  padding:16px;
+  border-radius:17px;
+  background:rgba(17,16,24,.9);
+  border:1px solid var(--line);
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.info-box{
+  padding:11px;
+  border-radius:12px;
+  background:rgba(255,255,255,.035);
+}
+
+.info-label{
+  color:#817d8b;
+  font-size:10px;
+  margin-bottom:4px;
+}
+
+.info-value{
+  font-size:13px;
+  font-weight:700;
+}
+
+.actions{
+  display:flex;
+  gap:9px;
+  margin-top:14px;
+}
+
+.watch-btn,
+.favorite-btn{
+  height:47px;
+  border:0;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.watch-btn{
+  flex:1;
+  gap:8px;
+  color:white;
+  background:var(--purple);
+  font-weight:750;
+}
+
+.favorite-btn{
+  width:51px;
+  color:white;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.watch-btn svg,
+.favorite-btn svg{
+  width:18px;
+  height:18px;
+}
+
+/* SECTION */
+
+.section{
+  margin-top:25px;
+}
+
+.section-title{
+  font-size:18px;
+  font-weight:820;
+  margin-bottom:10px;
+}
+
+.synopsis{
+  color:#aaa7b5;
+  font-size:13px;
+  line-height:1.7;
+}
+
+/* EPISODE HEADER */
+
+.episode-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.episode-title{
+  font-size:18px;
+  font-weight:820;
+}
+
+/* MENU BUTTON */
+
+.episode-menu-btn{
+  width:42px;
+  height:38px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:11px;
+  background:rgba(255,255,255,.06);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.episode-menu-btn:active{
+  transform:scale(.94);
+}
+
+.episode-menu-btn svg{
+  width:21px;
+  height:21px;
+}
+
+/* EPISODES */
+
+.episodes{
+  padding:0 15px;
+  border-radius:16px;
+  background:rgba(17,16,24,.72);
+  border:1px solid rgba(255,255,255,.055);
+}
+
+.episode{
+  padding:15px 0 13px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+
+.episode:last-child{
+  border-bottom:0;
+}
+
+.episode-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.episode-left{
+  min-width:0;
+}
+
+.episode-name{
+  display:block;
+  font-size:14px;
+  font-weight:750;
+}
+
+.episode-sub{
+  display:block;
+  margin-top:5px;
+  color:#85818e;
+  font-size:11px;
+}
+
+.play{
+  width:34px;
+  height:34px;
+  flex-shrink:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(139,92,246,.15);
+  color:white;
+}
+
+.play svg{
+  width:15px;
+  height:15px;
+  margin-left:1px;
+}
+
+.progress{
+  width:100%;
+  height:3px;
+  margin-top:9px;
+  border-radius:99px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  background:var(--red);
+  border-radius:99px;
+}
+
+/* EPISODE SELECTOR */
+
+.selector{
+  display:none;
+  margin-bottom:10px;
+  padding:12px;
+  border-radius:15px;
+  background:#15131d;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 12px 30px rgba(0,0,0,.3);
+}
+
+.selector.show{
+  display:block;
+}
+
+.selector-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.selector-label{
+  font-size:12px;
+  font-weight:750;
+}
+
+.selector-pages{
+  color:#85818f;
+  font-size:10px;
+}
+
+.selector-controls{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.page-btn{
+  width:34px;
+  height:34px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;
+  background:rgba(255,255,255,.05);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.page-btn:disabled{
+  opacity:.3;
+}
+
+.page-btn svg{
+  width:17px;
+  height:17px;
+}
+
+.episode-range{
+  flex:1;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+
+.range-btn{
+  height:38px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:9px;
+  background:rgba(255,255,255,.045);
+  color:#c4c0cc;
+  font-size:12px;
+  font-weight:650;
+}
+
+.range-btn.active{
+  background:rgba(139,92,246,.2);
+  border-color:rgba(139,92,246,.4);
+  color:#cbbcff;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+  .container{
+    padding:13px 12px 45px;
+  }
+
+  .hero{
+    min-height:325px;
+    padding:14px;
+  }
+
+  .hero-content{
+    gap:12px;
+  }
+
+  .poster{
+    width:105px;
+    min-width:105px;
+  }
+
+  .title{
+    font-size:22px;
+  }
+
+  .episode-range{
+    grid-template-columns:repeat(5,1fr);
+  }
+}
+
+@media(max-width:380px){
+  .poster{
+    width:92px;
+    min-width:92px;
+  }
+
+  .title{
+    font-size:20px;
+  }
+
+  .episode-range{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
+
+.hero, .container { opacity: 0; }
+body.data-ready .hero, body.data-ready .container {
+  opacity: 1;
+  transition: opacity .2s ease;
+}
+
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<header class="header">
+
+  <button
+    class="back"
+    onclick="history.back()">
+
+    <svg
+      viewBox="0 0 24 24"
+      fill="none">
+
+      <path
+        d="M15 18L9 12L15 6"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+    </svg>
+
+  </button>
+
+  <div class="header-title">
+    Detail Anime
+  </div>
+
+</header>
+
+<main class="container">
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <div class="hero-bg"></div>
+
+  <div class="hero-content">
+
+    <img
+      class="poster"
+      src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=500&q=80"
+      alt="Naruto">
+
+    <div class="info">
+
+      <h1 class="title">
+        Naruto
+      </h1>
+
+      <div class="meta">
+
+        <span class="rating">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true">
+
+            <path
+              d="M12 3.8l2.55 5.16 5.7.83-4.13 4.03.98 5.69L12 16.82l-5.1 2.69.98-5.69-4.13-4.03 5.7-.83L12 3.8z"/>
+
+          </svg>
+
+          8.7
+
+        </span>
+
+        <span class="views">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true">
+
+            <path
+              d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
+              stroke="currentColor"
+              stroke-width="1.7"
+              stroke-linejoin="round"/>
+
+            <circle
+              cx="12"
+              cy="12"
+              r="2.8"
+              stroke="currentColor"
+              stroke-width="1.7"/>
+
+          </svg>
+
+          1.2M Views
+
+        </span>
+
+      </div>
+
+      <div class="genres">
+
+        <span class="genre">Action</span>
+        <span class="genre">Adventure</span>
+        <span class="genre">Shounen</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- INFO -->
+
+<section class="detail-card">
+
+  <div class="info-grid">
+
+    <div class="info-box">
+      <div class="info-label">Status</div>
+      <div class="info-value">Ongoing</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">Tahun</div>
+      <div class="info-value">2002</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">Studio</div>
+      <div class="info-value">Pierrot</div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-label">Tipe</div>
+      <div class="info-value">TV</div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+
+    <button
+      class="watch-btn"
+      onclick="continueWatching()">
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="currentColor">
+
+        <path d="M8 5.5v13l11-6.5-11-6.5z"/>
+
+      </svg>
+
+      Lanjut Nonton
+
+    </button>
+
+    <button
+      class="favorite-btn"
+      onclick="toggleFavorite(this)">
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none">
+
+        <path
+          d="M20.8 8.7c0 5.1-8.8 10.1-8.8 10.1S3.2 13.8 3.2 8.7C3.2 6 5.1 4 7.6 4c1.6 0 3.1.8 4.4 2.2C13.3 4.8 14.8 4 16.4 4c2.5 0 4.4 2 4.4 4.7Z"
+          stroke="currentColor"
+          stroke-width="1.7"/>
+
+      </svg>
+
+    </button>
+
+  </div>
+
+</section>
+
+<!-- SINOPSIS -->
+
+<section class="section">
+
+  <h2 class="section-title">
+    Sinopsis
+  </h2>
+
+  <p class="synopsis">
+
+    Naruto Uzumaki adalah seorang ninja muda dari
+    Desa Konohagakure yang bercita-cita menjadi Hokage.
+    Bersama teman-temannya, Naruto menjalani berbagai
+    misi dan menghadapi banyak tantangan.
+
+  </p>
+
+</section>
+
+<!-- EPISODE -->
+
+<section class="section">
+
+  <div class="episode-header">
+
+    <h2 class="episode-title">
+      Episode
+    </h2>
+
+    <button
+      class="episode-menu-btn"
+      onclick="toggleSelector()"
+      aria-label="Pilih episode">
+
+      <svg
+        viewBox="0 0 24 24"
+        fill="none">
+
+        <path
+          d="M5 7H19M5 12H19M5 17H19"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"/>
+
+      </svg>
+
+    </button>
+
+  </div>
+
+  <!-- SELECTOR -->
+
+  <div
+    class="selector"
+    id="selector">
+
+    <div class="selector-top">
+
+      <span class="selector-label">
+        Pilih Episode
+      </span>
+
+      <span
+        class="selector-pages"
+        id="pageText">
+        1–10
+      </span>
+
+    </div>
+
+    <div class="selector-controls">
+
+      <button
+        class="page-btn"
+        id="prevBtn"
+        onclick="previousPage()">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none">
+
+          <path
+            d="M15 18L9 12L15 6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+        </svg>
+
+      </button>
+
+      <div
+        class="episode-range"
+        id="episodeRange">
+      </div>
+
+      <button
+        class="page-btn"
+        id="nextBtn"
+        onclick="nextPage()">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="none">
+
+          <path
+            d="M9 18L15 12L9 6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+        </svg>
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- EPISODE LIST -->
+
+  <div class="episodes" id="episodes"></div>
+
+</section>
+
+</main>
+
+<script src="js/api.js"></script>
+<script>
+const PER_PAGE = 10;
+let currentPage = 1;
+let animeData = null;
+let episodeList = [];
+
+const params = new URLSearchParams(location.search);
+const animeId = params.get("id") || "";
+const animeType = params.get("type") || "anime";
+const LAST_WATCHED_KEY = "anilix_last_watched_" + animeId;
+
+function setText(selector, value) {
+  const el = document.querySelector(selector);
+  if (el) el.textContent = value || "—";
+}
+
+function showError(message) {
+  const box = document.getElementById("episodes");
+  if (box) box.textContent = message;
+}
+
+async function loadAnime() {
+  if (!animeId) {
+    showError("Anime tidak ditemukan. Buka halaman ini dari katalog.");
+    return;
+  }
+
+  try {
+    const result = animeType === "donghua"
+      ? await window.SankaAPI.getCatalog(
+          "/anime/donghua/detail/" + encodeURIComponent(animeId)
+        )
+      : await window.SankaAPI.getAnime(animeId);
+
+    if (animeType === "donghua") {
+      animeData = {
+        title: result.title || "",
+        poster: result.poster || "",
+        score: result.rating || "N/A",
+        status: result.status || "",
+        aired: result.released_on || result.released || "",
+        studios: result.studio || "",
+        type: result.type || "Donghua",
+        genreList: (result.genres || []).map(item => ({
+          title: item.name || ""
+        })),
+        synopsis: {
+          paragraphs: result.synopsis ? [result.synopsis] : []
+        },
+        episodeList: (Array.isArray(result.episodes_list)
+          ? result.episodes_list
+          : []
+        ).map(item => ({
+          eps: parseInt(item.episode_number, 10) ||
+               parseInt((item.episode || "").match(/\d+/)?.[0], 10) || 0,
+          episodeId: item.slug || "",
+          date: item.release_date || "",
+          title: item.episode || ""
+        })).filter(item => item.eps > 0)
+      };
+    } else {
+      animeData = result.data;
+    }
+    document.body.classList.add("data-ready");
+    episodeList = Array.isArray(animeData.episodeList)
+      ? animeData.episodeList
+      : [];
+
+    document.title = animeData.title + " - ANILIX";
+
+    const poster = document.querySelector(".poster");
+    if (poster) {
+      poster.src = animeData.poster || "";
+      poster.alt = animeData.title || "Poster anime";
+    }
+
+    const heroBg = document.querySelector(".hero-bg");
+    if (heroBg && animeData.poster) {
+      heroBg.style.backgroundImage = `url("${animeData.poster}")`;
+    }
+
+    setText(".title", animeData.title);
+    setText(".rating", animeData.score || "N/A");
+
+    const views = document.querySelector(".views");
+    if (views) views.hidden = true;
+
+    const genres = document.querySelector(".genres");
+    if (genres) {
+      genres.replaceChildren();
+      (animeData.genreList || []).forEach(item => {
+        const tag = document.createElement("span");
+        tag.className = "genre";
+        tag.textContent = item.title;
+        genres.appendChild(tag);
+      });
+    }
+
+    const values = document.querySelectorAll(".info-value");
+    const airedYear = (animeData.aired || "").match(/\b(19|20)\d{2}\b/);
+    const info = [
+      animeData.status,
+      airedYear ? airedYear[0] : "—",
+      animeData.studios,
+      animeData.type
+    ];
+    values.forEach((el, i) => {
+      el.textContent = info[i] || "—";
+    });
+
+    const synopsis = document.querySelector(".synopsis");
+    if (synopsis) {
+      const paragraphs = animeData.synopsis?.paragraphs || [];
+      synopsis.textContent = paragraphs.join("\n\n") || "Sinopsis belum tersedia.";
+    }
+
+    renderEpisodes();
+  } catch (error) {
+    console.error(error);
+    showError("Gagal memuat anime. Periksa koneksi lalu muat ulang halaman.");
+  }
+}
+
+function getEpisodeNumber(item) {
+  return Number(item.eps) || 0;
+}
+
+function getLastWatchedEpisode() {
+  const saved = Number(localStorage.getItem(LAST_WATCHED_KEY));
+  if (episodeList.some(item => getEpisodeNumber(item) === saved)) {
+    return saved;
+  }
+  return episodeList.length ? getEpisodeNumber(episodeList[0]) : 0;
+}
+
+function openEpisode(number) {
+  const item = episodeList.find(ep => getEpisodeNumber(ep) === Number(number));
+  if (!item) return;
+
+  localStorage.setItem(LAST_WATCHED_KEY, String(number));
+
+  const query = new URLSearchParams({
+    id: animeId,
+    title: animeData?.title || "",
+    type: animeType,
+    episode: String(number),
+    episodeId: item.episodeId || ""
+  });
+
+  location.href = "watch.html?" + query.toString();
+}
+
+function continueWatching() {
+  const number = getLastWatchedEpisode();
+  if (number) openEpisode(number);
+  else showError("Belum ada episode yang tersedia.");
+}
+
+function renderEpisodes() {
+  const container = document.getElementById("episodes");
+  container.innerHTML = "";
+
+  const total = episodeList.length;
+  const maxPage = Math.ceil(total / PER_PAGE);
+
+  if (!total) {
+    container.textContent = "Belum ada episode yang tersedia.";
+    document.getElementById("pageText").textContent = "0";
+    document.getElementById("prevBtn").disabled = true;
+    document.getElementById("nextBtn").disabled = true;
+    renderSelector();
+    return;
+  }
+
+  currentPage = Math.min(currentPage, maxPage);
+  const start = (currentPage - 1) * PER_PAGE;
+  const items = episodeList.slice(start, start + PER_PAGE);
+
+  items.forEach(item => {
+    const number = getEpisodeNumber(item);
+    const episode = document.createElement("div");
+    episode.className = "episode";
+    episode.onclick = () => openEpisode(number);
+
+    episode.innerHTML = `
+      <div class="episode-main">
+        <div class="episode-left">
+          <span class="episode-name"></span>
+          <span class="episode-sub"></span>
+        </div>
+        <div class="play">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5.5v13l11-6.5-11-6.5z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" style="width:0%"></div>
+      </div>
+    `;
+
+    episode.querySelector(".episode-name").textContent =
+      "EPISODE " + number;
+    episode.querySelector(".episode-sub").textContent =
+      item.date || item.title || "";
+
+    container.appendChild(episode);
+  });
+
+  const end = start + items.length;
+  document.getElementById("pageText").textContent =
+    `${start + 1}–${end} dari ${total}`;
+  document.getElementById("prevBtn").disabled = currentPage === 1;
+  document.getElementById("nextBtn").disabled = currentPage >= maxPage;
+
+  renderSelector();
+}
+
+function renderSelector() {
+  const range = document.getElementById("episodeRange");
+  if (!range) return;
+
+  range.replaceChildren();
+
+  const start = (currentPage - 1) * PER_PAGE;
+  const items = episodeList.slice(start, start + PER_PAGE);
+
+  items.forEach(item => {
+    const number = getEpisodeNumber(item);
+    const button = document.createElement("button");
+    button.className = "range-btn";
+    button.textContent = number;
+    button.addEventListener("click", () => openEpisode(number));
+    range.appendChild(button);
+  });
+}
+
+function toggleSelector() {
+  document.getElementById("selector")?.classList.toggle("show");
+}
+
+function previousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderEpisodes();
+  }
+}
+
+function nextPage() {
+  if (currentPage < Math.ceil(episodeList.length / PER_PAGE)) {
+    currentPage++;
+    renderEpisodes();
+  }
+}
+
+function toggleFavorite(button) {
+  const active = button.classList.toggle("active");
+  const path = button.querySelector("path");
+  if (path) path.setAttribute("fill", active ? "currentColor" : "none");
+}
+
+loadAnime();
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

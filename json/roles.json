@@ -1,0 +1,105 @@
+
+{
+  "version": 1,
+  "default_role": "member",
+  "allow_custom_roles": true,
+  "roles": {
+    "developer": {
+      "name": "Developer",
+      "className": "role-developer",
+      "color": ["#F5223E", "#D92C43", "#A91D35", "#E83B50"],
+      "animated": true,
+      "priority": 100,
+      "permissions": ["*"],
+      "editable": false
+    },
+    "admin": {
+      "name": "Admin",
+      "className": "role-admin",
+      "color": ["#20C878", "#16A866", "#087D4B", "#28D18A"],
+      "animated": true,
+      "priority": 90,
+      "permissions": [
+        "user.manage",
+        "role.manage",
+        "content.manage",
+        "chat.moderate",
+        "notification.manage"
+      ],
+      "editable": true
+    },
+    "moderator": {
+      "name": "Moderator",
+      "className": "role-moderator",
+      "color": ["#24A9E8", "#168BCB", "#12659E", "#36B8F0"],
+      "animated": true,
+      "priority": 70,
+      "permissions": [
+        "chat.moderate",
+        "comment.moderate",
+        "report.manage"
+      ],
+      "editable": true
+    },
+    "beta": {
+      "name": "Beta Tester",
+      "className": "role-beta",
+      "color": ["#A855F7", "#9140D8", "#682BA6", "#B56BFF"],
+      "animated": true,
+      "priority": 50,
+      "permissions": [
+        "beta.access",
+        "feedback.submit"
+      ],
+      "editable": true
+    },
+    "premium": {
+      "name": "Premium",
+      "className": "role-premium",
+      "color": ["#E5AD35", "#D49A26", "#A9781D", "#F0C354"],
+      "animated": true,
+      "priority": 30,
+      "permissions": [
+        "premium.access",
+        "premium.features"
+      ],
+      "editable": true
+    },
+    "member": {
+      "name": "Member",
+      "className": "role-member",
+      "color": ["#343440", "#343440"],
+      "animated": false,
+      "priority": 10,
+      "permissions": [
+        "user.basic",
+        "anime.watch",
+        "favorite.manage",
+        "history.manage"
+      ],
+      "editable": true
+    }
+  },
+  "custom_role_template": {
+    "name": "Custom Role",
+    "className": "role-custom",
+    "color": ["#7543D6", "#A875FF", "#7543D6"],
+    "animated": true,
+    "priority": 20,
+    "permissions": [],
+    "editable": true
+  },
+  "aliases": {
+    "dev": "developer",
+    "administrator": "admin",
+    "mod": "moderator",
+    "betatester": "beta",
+    "user": "member"
+  },
+  "badge_effects": {
+    "gradient_animation": true,
+    "shine_animation": true,
+    "shine_duration": 3000,
+    "gradient_duration": 5000
+  }
+}

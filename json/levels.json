@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "system": "minecraft_ranks",
+  "starting_level": 0,
+  "starting_exp": 0,
+  "exp_per_level": 2150,
+  "max_level": null,
+  "rank_display": "level",
+  "icon_base_url": "https://project-crafting.github.io/minecraft-auto-updated-textures-api/items/",
+  "ranks": [
+    {
+      "name": "DIRT",
+      "file": "dirt",
+      "min": 1,
+      "max": 99,
+      "colors": ["#8a5728", "#d5a15c", "#60401e"],
+      "glow": "#c18a4c"
+    },
+    {
+      "name": "OAK PLANKS",
+      "file": "oak_planks",
+      "min": 100,
+      "max": 499,
+      "colors": ["#8a5728", "#d5a15c", "#60401e"],
+      "glow": "#c18a4c"
+    },
+    {
+      "name": "COBBLESTONE",
+      "file": "cobblestone",
+      "min": 500,
+      "max": 1499,
+      "colors": ["#555a63", "#a9adb5", "#41454d"],
+      "glow": "#9a9da3"
+    },
+    {
+      "name": "COAL",
+      "file": "coal",
+      "min": 1500,
+      "max": 4999,
+      "colors": ["#333b49", "#87909f", "#202733"],
+      "glow": "#747b89"
+    },
+    {
+      "name": "COPPER",
+      "file": "copper_ingot",
+      "min": 5000,
+      "max": 9999,
+      "colors": ["#914b2e", "#e9a078", "#62351f"],
+      "glow": "#d78352"
+    },
+    {
+      "name": "IRON",
+      "file": "iron_ingot",
+      "min": 10000,
+      "max": 19999,
+      "colors": ["#727e8c", "#e0e5e9", "#56616c"],
+      "glow": "#c2ccd5"
+    },
+    {
+      "name": "LAPIS LAZULI",
+      "file": "lapis_lazuli",
+      "min": 20000,
+      "max": 29999,
+      "colors": ["#174a9b", "#76b0ff", "#12356e"],
+      "glow": "#4389ef"
+    },
+    {
+      "name": "REDSTONE",
+      "file": "redstone",
+      "min": 30000,
+      "max": 49999,
+      "colors": ["#922525", "#ff7777", "#601717"],
+      "glow": "#ed4545"
+    },
+    {
+      "name": "GOLD",
+      "file": "gold_ingot",
+      "min": 50000,
+      "max": 69999,
+      "colors": ["#956a14", "#ffe17a", "#684609"],
+      "glow": "#f2c64e"
+    },
+    {
+      "name": "QUARTZ",
+      "file": "quartz",
+      "min": 70000,
+      "max": 99999,
+      "colors": ["#85847d", "#fffdf0", "#5d5c57"],
+      "glow": "#e8e7df"
+    },
+    {
+      "name": "EMERALD",
+      "file": "emerald",
+      "min": 100000,
+      "max": 149999,
+      "colors": ["#116c45", "#75f0b1", "#10472f"],
+      "glow": "#35d18a"
+    },
+    {
+      "name": "DIAMOND",
+      "file": "diamond",
+      "min": 150000,
+      "max": 199999,
+      "colors": ["#167d91", "#8af0ff", "#104b66"],
+      "glow": "#62dcf5"
+    },
+    {
+      "name": "AMETHYST",
+      "file": "amethyst_shard",
+      "min": 200000,
+      "max": 249999,
+      "colors": ["#63349a", "#d6a4ff", "#3c216d"],
+      "glow": "#bd83f5"
+    },
+    {
+      "name": "BLAZE ROD",
+      "file": "blaze_rod",
+      "min": 250000,
+      "max": 299999,
+      "colors": ["#a64c16", "#ffc078", "#6c2d0c"],
+      "glow": "#ff9a42"
+    },
+    {
+      "name": "NETHERITE",
+      "file": "netherite_ingot",
+      "min": 300000,
+      "max": 399999,
+      "colors": ["#554451", "#b9a4b1", "#332832"],
+      "glow": "#a58b9d"
+    },
+    {
+      "name": "LAVA BUCKET",
+      "file": "lava_bucket",
+      "min": 400000,
+      "max": 499999,
+      "colors": ["#a52c12", "#ff9b48", "#6c180d"],
+      "glow": "#ff5a28"
+    },
+    {
+      "name": "NETHER STAR",
+      "file": "nether_star",
+      "min": 500000,
+      "max": null,
+      "colors": ["#526b86", "#e9f7ff", "#8aa8c8"],
+      "glow": "#c5e8ff"
+    }
+  ]
+}

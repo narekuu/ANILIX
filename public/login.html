@@ -1,0 +1,979 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#080610">
+<title>Login — ANILIX</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    min-height:100vh;
+    min-height:100dvh;
+    overflow-x:hidden;
+    background:
+        radial-gradient(
+            ellipse at 15% 20%,
+            rgba(112,45,220,.17),
+            transparent 38%
+        ),
+        radial-gradient(
+            ellipse at 85% 80%,
+            rgba(75,35,160,.16),
+            transparent 40%
+        ),
+        linear-gradient(
+            135deg,
+            #08070d,
+            #100b1c,
+            #08070d
+        );
+    background-size:200% 200%;
+    color:#fff;
+    font-family:Inter,Arial,sans-serif;
+    animation:backgroundMove 15s ease-in-out infinite;
+}
+
+/* BACKGROUND GLOW */
+
+body::before{
+    content:"";
+    position:fixed;
+    width:420px;
+    height:420px;
+    top:-130px;
+    left:-130px;
+    border-radius:50%;
+    background:rgba(121,60,255,.24);
+    filter:blur(150px);
+    pointer-events:none;
+    z-index:0;
+    animation:glowMove 10s ease-in-out infinite alternate;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    width:420px;
+    height:420px;
+    right:-150px;
+    bottom:-150px;
+    border-radius:50%;
+    background:rgba(91,42,190,.24);
+    filter:blur(155px);
+    pointer-events:none;
+    z-index:0;
+    animation:glowMove 12s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes backgroundMove{
+    0%,100%{
+        background-position:0% 50%;
+    }
+    50%{
+        background-position:100% 50%;
+    }
+}
+
+@keyframes glowMove{
+    from{
+        transform:translate(0,0) scale(1);
+    }
+    to{
+        transform:translate(55px,45px) scale(1.2);
+    }
+}
+
+/* PAGE */
+
+.page{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+/* LOGIN BOX */
+
+.login-box{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:420px;
+    padding:34px 27px 28px;
+    border:1px solid rgba(255,255,255,.085);
+    border-radius:28px;
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.075),
+        rgba(255,255,255,.025)
+    );
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.5),
+        0 0 50px rgba(124,65,230,.055),
+        inset 0 1px rgba(255,255,255,.045);
+    animation:boxIn .65s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes boxIn{
+    from{
+        opacity:0;
+        transform:translateY(22px) scale(.97);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+/* LOGO */
+
+.logo-wrap{
+    display:flex;
+    justify-content:center;
+    margin-bottom:17px;
+}
+
+.logo{
+    width:74px;
+    height:74px;
+    filter:drop-shadow(
+        0 0 18px rgba(139,77,255,.22)
+    );
+}
+
+.logo-white{
+    fill:#fff;
+}
+
+.logo-purple{
+    fill:#8b4dff;
+}
+
+/* TITLE */
+
+.title{
+    text-align:center;
+    font-size:28px;
+    font-weight:800;
+    letter-spacing:-.8px;
+}
+
+.ani{
+    color:#fff;
+}
+
+.lix{
+    color:#8b4dff;
+}
+
+.subtitle{
+    max-width:310px;
+    margin:8px auto 26px;
+    text-align:center;
+    color:#8e8e99;
+    font-size:14px;
+    line-height:1.6;
+}
+
+/* GOOGLE */
+
+.google-btn{
+    width:100%;
+    height:54px;
+    border:0;
+    border-radius:15px;
+    background:#fff;
+    color:#17171b;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.google-btn:active{
+    transform:scale(.98);
+}
+
+.google-icon{
+    width:20px;
+    height:20px;
+    flex:none;
+}
+
+/* DIVIDER */
+
+.divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:23px 0;
+    color:#64646f;
+    font-size:11px;
+    font-weight:600;
+}
+
+.divider::before,
+.divider::after{
+    content:"";
+    height:1px;
+    flex:1;
+    background:rgba(255,255,255,.08);
+}
+
+/* TESTER */
+
+.tester-label{
+    margin-bottom:12px;
+    color:#b8b8c2;
+    font-size:13px;
+}
+
+.input{
+    width:100%;
+    height:51px;
+    margin-bottom:10px;
+    padding:0 15px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:14px;
+    outline:none;
+    background:rgba(255,255,255,.04);
+    color:#fff;
+    font-size:14px;
+    transition:.2s;
+}
+
+.input::placeholder{
+    color:#64646f;
+}
+
+.input:focus{
+    border-color:rgba(139,77,255,.65);
+    background:rgba(139,77,255,.055);
+}
+
+/* PASSWORD */
+
+.password-wrap{
+    position:relative;
+}
+
+.password-wrap .input{
+    padding-right:52px;
+}
+
+.show-pass{
+    position:absolute;
+    right:0;
+    top:0;
+    width:51px;
+    height:51px;
+    border:0;
+    background:transparent;
+    color:#777782;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.show-pass svg{
+    width:19px;
+    height:19px;
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+    width:100%;
+    height:51px;
+    margin-top:4px;
+    border:0;
+    border-radius:14px;
+    background:linear-gradient(
+        135deg,
+        #7740e8,
+        #985cff
+    );
+    color:#fff;
+    font-size:14px;
+    font-weight:750;
+    cursor:pointer;
+    box-shadow:
+        0 10px 30px rgba(126,65,240,.18);
+    transition:.2s;
+}
+
+.login-btn:active{
+    transform:scale(.98);
+}
+
+.login-btn:disabled{
+    opacity:.65;
+    cursor:not-allowed;
+}
+
+/* FOOTER */
+
+.footer{
+    margin-top:22px;
+    text-align:center;
+    color:#555560;
+    font-size:11px;
+    line-height:1.5;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    width:calc(100% - 40px);
+    max-width:380px;
+    padding:14px 17px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:14px;
+    background:rgba(24,24,30,.95);
+    backdrop-filter:blur(15px);
+    color:#fff;
+    text-align:center;
+    font-size:13px;
+    opacity:0;
+    transform:translate(-50%,20px);
+    pointer-events:none;
+    transition:.3s;
+    z-index:20;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:380px){
+    .login-box{
+        padding:28px 20px 24px;
+    }
+
+    .title{
+        font-size:25px;
+    }
+
+    .subtitle{
+        margin-bottom:23px;
+    }
+}
+
+@media(max-height:650px){
+    .page{
+        align-items:flex-start;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    body,
+    body::before,
+    body::after,
+    .login-box{
+        animation:none;
+    }
+
+    *{
+        scroll-behavior:auto!important;
+    }
+}
+</style>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<div class="page">
+
+    <main class="login-box">
+
+        <!-- ANILIX LOGO -->
+
+        <div class="logo-wrap">
+            <svg
+                class="logo"
+                viewBox="0 0 1200 1200"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+
+                <polygon
+                    class="logo-white"
+                    points="
+                    123,1008
+                    581,222
+                    735,485
+                    654,614
+                    582,490
+                    288,1008
+                    "
+                />
+
+                <polygon
+                    class="logo-purple"
+                    points="
+                    481,1008
+                    940,249
+                    1110,249
+                    654,1008
+                    "
+                />
+
+                <polygon
+                    class="logo-purple"
+                    points="
+                    802,875
+                    889,738
+                    1046,1008
+                    880,1008
+                    "
+                />
+
+            </svg>
+        </div>
+
+        <h1 class="title">
+            <span class="ani">ANI</span><span class="lix">LIX</span>
+        </h1>
+
+        <p class="subtitle">
+            Masuk untuk melanjutkan pengalamanmu di ANILIX.
+        </p>
+
+        <!-- GOOGLE LOGIN -->
+
+        <button
+            class="google-btn"
+            type="button"
+            onclick="googleLogin()"
+        >
+
+            <svg
+                class="google-icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <path
+                    fill="#4285F4"
+                    d="M21.35 12.27c0-.78-.07-1.53-.22-2.25H12v4.26h5.24a4.48 4.48 0 0 1-1.94 2.94v2.45h3.14c1.84-1.7 2.91-4.2 2.91-7.4z"
+                />
+
+                <path
+                    fill="#34A853"
+                    d="M12 21.75c2.63 0 4.84-.87 6.45-2.35l-3.14-2.45c-.87.58-1.98.93-3.31.93-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"
+                />
+
+                <path
+                    fill="#FBBC05"
+                    d="M6.54 13.85a5.86 5.86 0 0 1 0-3.7V7.63H3.3a9.75 9.75 0 0 0 0 8.74l3.24-2.52z"
+                />
+
+                <path
+                    fill="#EA4335"
+                    d="M12 6.12c1.43 0 2.72.49 3.73 1.46l2.8-2.8C16.84 3.13 14.63 2.25 12 2.25a9.75 9.75 0 0 0-8.7 5.38l3.24 2.52C7.31 7.84 9.46 6.12 12 6.12z"
+                />
+            </svg>
+
+            Lanjut dengan Google
+
+        </button>
+
+        <!-- DIVIDER -->
+
+        <div class="divider">
+            <span>ATAU</span>
+        </div>
+
+        <!-- TESTER LOGIN -->
+
+        <div class="tester-label">
+            Login Tester
+        </div>
+
+        <input
+            id="username"
+            class="input"
+            type="text"
+            autocomplete="username"
+            placeholder="Username"
+        >
+
+        <div class="password-wrap">
+
+            <input
+                id="password"
+                class="input"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Password"
+            >
+
+            <button
+                class="show-pass"
+                type="button"
+                onclick="togglePassword()"
+                aria-label="Tampilkan password"
+            >
+
+                <svg
+                    id="eyeIcon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path
+                        d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"
+                    />
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="2.5"
+                    />
+                </svg>
+
+            </button>
+
+        </div>
+
+        <button
+            class="login-btn"
+            type="button"
+            onclick="testerLogin()"
+        >
+            Masuk
+        </button>
+
+        <div class="footer">
+            ANILIX Account · Secure Login
+        </div>
+
+    </main>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+
+/* =====================================
+   GOOGLE CLIENT ID
+===================================== */
+
+const GOOGLE_CLIENT_ID =
+"790451555598-83in0u2rdcbiec05k38b6v91jqkr1d6u.apps.googleusercontent.com";
+
+
+/* =====================================
+   TOAST
+===================================== */
+
+function showToast(message){
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(window.toastTimeout);
+
+    window.toastTimeout =
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 2600);
+}
+
+
+/* =====================================
+   SAVE USER SESSION
+===================================== */
+
+function saveUserSession(user, type){
+
+    localStorage.setItem(
+        "anilix_user",
+        JSON.stringify(user)
+    );
+
+    // Session autentikasi disimpan server dalam cookie HttpOnly.
+    // LocalStorage hanya cache tampilan, bukan bukti login.
+    localStorage.setItem("anilix_auth_provider", type);
+    localStorage.removeItem("anilix_session");
+}
+
+
+/* =====================================
+   TESTER LOGIN
+   VALIDATION VIA BACKEND
+===================================== */
+
+async function testerLogin(){
+
+    const username =
+        document.getElementById("username")
+        .value
+        .trim();
+
+    const password =
+        document.getElementById("password")
+        .value;
+
+    if(!username || !password){
+        showToast("Masukkan username dan password.");
+        return;
+    }
+
+    const button =
+        document.querySelector(".login-btn");
+
+    button.disabled = true;
+    button.textContent = "Memeriksa...";
+
+    try {
+
+        const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        });
+
+        const data = await response.json();
+
+        if(!response.ok){
+            showToast(
+                data.message || "Username atau password salah."
+            );
+            return;
+        }
+
+        if(!data.user){
+            showToast("Data akun tidak valid.");
+            return;
+        }
+
+        saveUserSession(data.user, "tester");
+
+        showToast("Login berhasil! Selamat datang.");
+
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 700);
+
+    } catch(error){
+
+        console.error(error);
+        showToast("Gagal terhubung ke server login.");
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "Masuk";
+
+    }
+}
+
+
+/* =====================================
+   GOOGLE LOGIN
+===================================== */
+
+function googleLogin(){
+
+    if(
+        window.google &&
+        google.accounts &&
+        google.accounts.id
+    ){
+
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleCredential
+        });
+
+        google.accounts.id.prompt((notification) => {
+
+            if(
+                notification.isNotDisplayed() ||
+                notification.isSkippedMoment()
+            ){
+                initGoogleTokenClient();
+            }
+
+        });
+
+    } else {
+
+        initGoogleTokenClient();
+
+    }
+}
+
+
+/* =====================================
+   GOOGLE TOKEN CLIENT
+===================================== */
+
+function initGoogleTokenClient(){
+
+    try {
+
+        if(
+            window.google &&
+            google.accounts &&
+            google.accounts.oauth2
+        ){
+
+            const client =
+                google.accounts.oauth2.initTokenClient({
+
+                    client_id: GOOGLE_CLIENT_ID,
+
+                    scope: "email profile openid",
+
+                    callback: async (tokenResponse) => {
+
+                        if(
+                            tokenResponse &&
+                            tokenResponse.access_token
+                        ){
+                            await exchangeGoogleToken(
+                                tokenResponse.access_token
+                            );
+                        }
+
+                    }
+
+                });
+
+            client.requestAccessToken();
+
+        } else {
+
+            showToast(
+                "Google Login sedang menginisialisasi SDK..."
+            );
+
+        }
+
+    } catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Google Login siap dihubungkan ke backend ANILIX."
+        );
+
+    }
+}
+
+
+/* =====================================
+   GOOGLE CREDENTIAL LOGIN
+===================================== */
+
+async function handleGoogleCredential(response){
+
+    try {
+
+        const res = await fetch("/api/auth/google", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                credential: response.credential
+            })
+
+        });
+
+        const data = await res.json();
+
+        if(res.ok && data.user){
+
+            saveUserSession(data.user, "google");
+
+            window.location.href = "/";
+
+        } else {
+
+            showToast(
+                data.message || "Gagal login dengan Google."
+            );
+
+        }
+
+    } catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Koneksi Google ke backend ANILIX gagal."
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   GOOGLE ACCESS TOKEN LOGIN
+===================================== */
+
+async function exchangeGoogleToken(accessToken){
+
+    try {
+
+        const res = await fetch("/api/auth/google-user", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                access_token: accessToken
+            })
+
+        });
+
+        const data = await res.json();
+
+        if(!res.ok || !data.user){
+
+            showToast(
+                data.message || "Login Google gagal."
+            );
+
+            return;
+        }
+
+        saveUserSession(data.user, "google");
+
+        window.location.href = "/";
+
+    } catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Login Google gagal terhubung ke server."
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   SHOW / HIDE PASSWORD
+===================================== */
+
+function togglePassword(){
+
+    const password =
+        document.getElementById("password");
+
+    const icon =
+        document.getElementById("eyeIcon");
+
+    if(password.type === "password"){
+
+        password.type = "text";
+
+        icon.innerHTML = `
+            <path d="M3 3l18 18"/>
+            <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/>
+            <path d="M9.9 5.2A9.9 9.9 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3.2 3.8"/>
+            <path d="M6.2 6.2C3.9 7.8 2.5 12 2.5 12s3.5 7 9.5 7c1.4 0 2.7-.3 3.8-.8"/>
+        `;
+
+    } else {
+
+        password.type = "password";
+
+        icon.innerHTML = `
+            <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/>
+            <circle cx="12" cy="12" r="2.5"/>
+        `;
+
+    }
+
+}
+
+
+/* =====================================
+   ENTER = TESTER LOGIN
+===================================== */
+
+document.addEventListener("keydown", function(event){
+
+    if(event.key === "Enter"){
+
+        const active =
+            document.activeElement;
+
+        if(
+            active &&
+            (
+                active.id === "username" ||
+                active.id === "password"
+            )
+        ){
+            event.preventDefault();
+            testerLogin();
+        }
+
+    }
+
+});
+
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

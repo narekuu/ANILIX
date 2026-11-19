@@ -1,0 +1,1181 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090711">
+<title>Profile — ANILIX</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,500,1,0">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+<style>
+:root{
+ --bg:#090711;
+ --purple:#a875ff;
+ --purple2:#7543d6;
+ --light:#d4baff;
+ --muted:#93899f;
+ --white:#f8f5ff;
+ --border:rgba(190,150,255,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ min-height:100vh;
+ background:radial-gradient(ellipse at 50% -15%,#30204d 0%,transparent 45%),var(--bg);
+ color:var(--white);
+ font-family:Inter,Arial,sans-serif;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+svg{
+ width:19px;height:19px;stroke:currentColor;fill:none;
+ stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+.app{max-width:700px;margin:auto;padding-bottom:125px}
+
+/* PROFILE HEADER */
+.profile-top{
+ position:relative;
+ background:linear-gradient(180deg,#17131f,#0d0b12);
+ padding-bottom:19px;
+}
+.banner{
+ height:165px;width:100%;position:relative;overflow:hidden;
+ background:
+ linear-gradient(135deg,rgba(117,67,214,.42),rgba(9,7,17,.35)),
+ radial-gradient(ellipse at 25% 20%,#68428e,transparent 55%),
+ linear-gradient(120deg,#30213f,#17111f 60%,#342044);
+ background-size:cover;background-position:center;
+}
+.banner:after{
+ content:"";position:absolute;inset:0;
+ background:linear-gradient(180deg,transparent,rgba(9,7,17,.5));
+}
+.settings-button{
+ position:absolute;z-index:5;top:13px;right:15px;
+ width:37px;height:37px;display:grid;place-items:center;
+ border-radius:13px;color:#fff;
+ background:rgba(20,13,32,.65);
+ border:1px solid rgba(220,190,255,.25);
+ backdrop-filter:blur(15px);
+}
+.settings-button svg{width:21px;height:21px}
+.avatar-wrap{
+ position:relative;z-index:2;width:105px;height:105px;
+ margin:-73px auto 0;
+}
+.avatar{
+ width:105px;height:105px;display:grid;place-items:center;
+ overflow:hidden;border-radius:50%;
+ background:linear-gradient(145deg,#9b68e9,#211433);
+ border:4px solid #0d0b12;box-shadow:0 4px 18px #0008;
+ color:white;font-size:34px;font-weight:800;
+}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.profile-info{text-align:center;padding:11px 15px 0}
+.username-line{
+ display:flex;align-items:center;justify-content:center;
+ flex-wrap:wrap;gap:7px;
+}
+.username{font-size:21px;line-height:1.35;font-weight:800;overflow-wrap:anywhere}
+.user-id{color:#958b9d;font-size:12px;font-weight:500}
+.verified{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:19px}
+.verified .material-symbols-rounded{
+ font-size:inherit;
+ font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+}
+.v-developer{color:#F5223E}
+.v-admin{color:#20C878}
+.v-moderator{color:#24A9E8}
+.v-beta{color:#A855F7}
+.v-premium{color:#E5AD35}
+.member-badges{
+ display:flex;justify-content:center;align-items:center;
+ flex-wrap:wrap;gap:8px;margin-top:14px;
+}
+.level{
+ --c1:#526b86;--c2:#e9f7ff;--c3:#8aa8c8;--glow:#c5e8ff;
+ display:inline-flex;align-items:center;gap:6px;
+ padding:5px 10px;border-radius:30px;color:white;
+ font-size:10px;font-weight:800;line-height:1.2;
+ white-space:nowrap;
+ background:linear-gradient(115deg,var(--c1),var(--c2),var(--c3),var(--c1));
+ background-size:250% 100%;animation:levelGradient 3s ease-in-out infinite;
+ border:1px solid #ffffff45;
+ box-shadow:0 0 12px color-mix(in srgb,var(--glow) 30%,transparent);
+ cursor:pointer;
+}
+.level img{width:13px;height:13px;object-fit:contain;image-rendering:pixelated}
+@keyframes levelGradient{
+ 0%{background-position:0% 50%}
+ 50%{background-position:100% 50%}
+ 100%{background-position:0% 50%}
+}
+.profile-role{
+ position:relative;display:inline-flex;align-items:center;justify-content:center;
+ overflow:hidden;padding:5px 10px;border-radius:999px;color:#fff;
+ font-size:10px;font-weight:800;letter-spacing:.3px;line-height:1.2;
+ border:1px solid rgba(255,255,255,.17);
+ background-size:250% 250%;animation:badgeColorFlow 5s ease-in-out infinite;
+ isolation:isolate;white-space:nowrap;
+}
+.profile-role:after{
+ content:"";position:absolute;top:-50%;left:-80%;width:45%;height:200%;
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+ transform:rotate(25deg);animation:badgeShine 3s ease-in-out infinite;
+ pointer-events:none;z-index:-1;
+}
+@keyframes badgeColorFlow{
+ 0%{background-position:0% 50%}
+ 50%{background-position:100% 50%}
+ 100%{background-position:0% 50%}
+}
+@keyframes badgeShine{0%{left:-80%}55%,100%{left:140%}}
+.role-developer{background-image:linear-gradient(120deg,#F5223E,#D92C43,#A91D35,#E83B50,#F5223E)}
+.role-admin{background-image:linear-gradient(120deg,#20C878,#16A866,#087D4B,#28D18A,#20C878)}
+.role-moderator{background-image:linear-gradient(120deg,#24A9E8,#168BCB,#12659E,#36B8F0,#24A9E8)}
+.role-beta{background-image:linear-gradient(120deg,#A855F7,#9140D8,#682BA6,#B56BFF,#A855F7)}
+.role-premium{background-image:linear-gradient(120deg,#E5AD35,#D49A26,#A9781D,#F0C354,#E5AD35);color:#30200A}
+.role-member{background:#343440;color:#D0D0DC;animation:none}
+
+/* STATS */
+.stats{
+ display:grid;grid-template-columns:repeat(4,1fr);
+ gap:4px;margin-top:20px;padding:0 12px;
+}
+.stat{text-align:center;min-width:0}
+.stat strong{
+ display:block;font-size:20px;font-weight:800;line-height:1.4;
+ overflow:hidden;text-overflow:ellipsis;
+}
+.stat span{display:block;margin-top:2px;color:#aaa0b8;font-size:11px;font-weight:600}
+
+/* XP */
+.progress-section{margin:16px 15px 0}
+.progress-card{
+ padding:15px;border-radius:16px;
+ background:rgba(168,117,255,.09);
+ border:1px solid rgba(168,117,255,.24);
+}
+.progress-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.progress-heading strong{font-size:13px;font-weight:800;color:#e5d5ff}
+.progress-heading span{color:#c7a5ff;font-size:10px;font-weight:800}
+.progress-track{height:8px;width:100%;overflow:hidden;border-radius:20px;background:rgba(255,255,255,.09)}
+.progress-fill{
+ width:0%;height:100%;border-radius:20px;
+ background:linear-gradient(90deg,#7543d6,#a875ff,#d4baff);
+ box-shadow:0 0 12px #a875ff80;transition:width .7s ease;
+}
+.progress-bottom{display:flex;justify-content:space-between;gap:10px;margin-top:9px}
+.xp-text{color:#e5d9f5;font-size:10px;font-weight:700}
+.xp-next{color:var(--muted);font-size:10px;text-align:right}
+
+/* TABS */
+.tabs-section{margin-top:20px}
+.tabs{
+ display:grid;grid-template-columns:repeat(3,1fr);align-items:center;
+ border-bottom:1px solid rgba(190,150,255,.12);padding:0 13px;
+}
+.tab{
+ position:relative;height:52px;display:flex;justify-content:center;align-items:center;
+ background:none;border:0;color:#9990a9;font-size:13px;font-weight:800;
+ cursor:pointer;transition:.2s;
+}
+.tab.active{color:#fff}
+.tab.active:after{
+ content:"";position:absolute;bottom:0;left:25%;width:50%;height:3px;
+ border-radius:10px;background:#a875ff;box-shadow:0 0 10px #a875ff65;
+}
+.tab-content{padding:14px 15px}
+.activity-item{padding:13px 0 16px;border-bottom:1px solid rgba(190,150,255,.13)}
+.activity-user{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px}
+.activity-user-left{display:flex;align-items:center;gap:9px;min-width:0}
+.small-avatar{
+ width:39px;height:39px;flex-shrink:0;overflow:hidden;display:grid;place-items:center;
+ border-radius:50%;background:linear-gradient(145deg,#9b68e9,#211433);
+ border:1px solid rgba(190,150,255,.35);font-size:14px;font-weight:800;
+}
+.small-avatar img{width:100%;height:100%;object-fit:cover}
+.activity-name{display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:12px;font-weight:800;overflow-wrap:anywhere}
+.activity-name .user-id{font-size:10px;color:#93899f;font-weight:500}
+.comment-verified{font-size:13px;width:14px;height:14px}
+.activity-time{flex-shrink:0;color:#93899f;font-size:9px}
+.activity-media{display:flex;align-items:center;gap:11px;margin-top:3px}
+.anime-poster{width:72px;height:87px;flex-shrink:0;overflow:hidden;border-radius:10px;background:#211a2c}
+.anime-poster img{width:100%;height:100%;object-fit:cover}
+.media-info{min-width:0}
+.media-title{font-size:12px;line-height:1.5;font-weight:600;color:#e8e1f0}
+.media-subtitle{margin-top:4px;font-size:10px;color:#a79bb7}
+.activity-description{margin-top:11px;font-size:12px;line-height:1.6;color:#eee8f5}
+.empty-state{padding:40px 15px;text-align:center}
+.empty-icon{
+ width:44px;height:44px;display:grid;place-items:center;margin:0 auto 12px;
+ border-radius:15px;background:rgba(168,117,255,.10);color:#b995f2;
+}
+.empty-icon svg{width:22px;height:22px}
+.empty-state strong{display:block;font-size:12px}
+.empty-state p{margin-top:7px;color:var(--muted);font-size:10px;line-height:1.6}
+
+/* RANK MODAL */
+.level-modal{
+ position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+ padding:16px;background:rgba(0,0,0,0);backdrop-filter:blur(0);
+ visibility:hidden;opacity:0;pointer-events:none;
+ transition:opacity .25s ease,background .25s ease,visibility .25s;
+}
+.level-modal.show{
+ visibility:visible;opacity:1;pointer-events:auto;
+ background:rgba(0,0,0,.76);backdrop-filter:blur(6px);
+}
+.level-dialog{
+ width:100%;max-width:350px;max-height:72vh;overflow-y:auto;
+ padding:17px 16px;border-radius:19px;background:#141824;
+ border:1px solid #30394d;box-shadow:0 15px 45px #0009;
+ opacity:0;transform:translateY(18px) scale(.94);
+ transition:opacity .25s ease,transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.level-modal.show .level-dialog{opacity:1;transform:translateY(0) scale(1)}
+.level-title{text-align:center;font-size:19px;font-weight:800}
+.level-current{text-align:center;color:#b8c1d3;font-size:11px;margin:7px 0 15px}
+.rank-item{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid #ffffff0b}
+.rank-icon{width:27px;height:27px;object-fit:contain;image-rendering:pixelated;flex-shrink:0}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:12px;font-weight:800}
+.rank-range{margin-top:3px;font-size:10px;color:#9da5b5}
+.rank-status{font-size:17px;color:#748096}
+.rank-item.completed .rank-status{color:#61df9b}
+.rank-item.current .rank-status{color:#dce6ff}
+.rank-item.locked{opacity:.4}
+.rank-progress{height:4px;margin-top:7px;background:#30394a;border-radius:20px;overflow:hidden}
+.rank-progress-fill{height:100%;background:#a875ff;border-radius:20px}
+.rank-progress-text{margin-top:5px;font-size:9px;color:#c4cee0}
+
+/* BOTTOM NAV */
+.bottom-nav{
+ position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;
+ width:calc(100% - 32px);max-width:520px;height:72px;
+ display:flex;justify-content:space-around;align-items:center;padding:6px 10px;
+ background:rgba(28,20,42,.62);border:1px solid rgba(210,180,255,.2);
+ border-radius:25px;backdrop-filter:blur(25px) saturate(160%);
+ box-shadow:0 8px 32px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.nav-item{
+ flex:1;height:58px;max-width:95px;background:none;border:0;color:#a69aaf;
+ display:flex;align-items:center;justify-content:center;flex-direction:column;
+ gap:5px;font-size:10px;font-weight:600;border-radius:18px;transition:.25s;
+}
+.nav-item svg{width:23px;height:23px;transition:.25s}
+.nav-item.active{
+ color:#fff;background:rgba(168,117,255,.28);
+ box-shadow:inset 0 0 0 1px rgba(190,150,255,.12),0 3px 12px rgba(168,117,255,.12);
+}
+.nav-item.active svg{color:#d7baff;filter:drop-shadow(0 0 7px #a875ff99)}
+.nav-item:active{transform:scale(.92)}
+
+@media(min-width:600px){
+ .banner{height:200px}
+ .avatar-wrap{width:115px;height:115px;margin-top:-80px}
+ .avatar{width:115px;height:115px}
+ .username{font-size:23px}
+ .stats{max-width:550px;margin:22px auto 0}
+ .progress-section{max-width:550px;margin:17px auto 0}
+ .tab-content{max-width:650px;margin:auto}
+}
+@media(max-width:360px){
+ .username{font-size:18px}
+ .stat strong{font-size:18px}
+ .stat span{font-size:10px}
+ .activity-time{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+<main class="app">
+
+<section class="profile-top">
+ <div class="banner" id="profileBanner"></div>
+
+ <a href="#profile-settings" data-no-transition class="settings-button" aria-label="Pengaturan">
+  <svg viewBox="0 0 24 24">
+   <path d="M12 8.25a3.75 3.75 0 1 0 0 7.5 3.75 3.75 0 0 0 0-7.5Z"/>
+   <path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.5-2-3.5-2.35.95a7.7 7.7 0 0 0-2.6-1.5L14 2.5h-4l-.45 2.45a7.7 7.7 0 0 0-2.6 1.5L4.6 5.5l-2 3.5 2 1.5a7.7 7.7 0 0 0 0 3l-2 1.5 2 3.5 2.35-.95a7.7 7.7 0 0 0 2.6 1.5L10 21.5h4l.45-2.45a7.7 7.7 0 0 0 2.6-1.5l2.35.95 2-3.5-2-1.5Z"/>
+  </svg>
+ </a>
+
+ <div class="avatar-wrap">
+  <div class="avatar" id="avatar">?</div>
+ </div>
+
+ <div class="profile-info">
+  <div class="username-line">
+   <span class="username" id="profileName">Memuat profil...</span>
+   <span class="user-id" id="userId"></span>
+   <span class="verified" id="verifiedBadge" style="display:none">
+    <span class="material-symbols-rounded">verified</span>
+   </span>
+  </div>
+
+  <div class="member-badges">
+   <button class="level" id="levelBadge" type="button">
+    <img id="levelIcon" src="" alt="" hidden>
+    <span id="levelText">Lv —</span>
+   </button>
+   <span class="profile-role role-member" id="roleBadge">Member</span>
+  </div>
+ </div>
+
+ <div class="stats">
+  <div class="stat"><strong id="statMonth">—</strong><span>Bulan</span></div>
+  <div class="stat"><strong id="statComments">0</strong><span>Komentar</span></div>
+  <div class="stat"><strong id="statHistory">0</strong><span>Riwayat</span></div>
+  <div class="stat"><strong id="statMinutes">0</strong><span>Menit</span></div>
+ </div>
+
+ <section class="progress-section">
+  <div class="progress-card">
+   <div class="progress-heading">
+    <strong>Progres Level</strong>
+    <span id="progressPercent">0%</span>
+   </div>
+   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+   <div class="progress-bottom">
+    <span class="xp-text" id="xpText">0 XP</span>
+    <span class="xp-next" id="xpNext">Data XP belum tersedia</span>
+   </div>
+  </div>
+ </section>
+</section>
+
+<section class="tabs-section">
+ <div class="tabs">
+  <button class="tab active" data-tab="comments">Komentar</button>
+  <button class="tab" data-tab="favorites">Favorit</button>
+  <button class="tab" data-tab="history">Riwayat</button>
+ </div>
+ <div class="tab-content" id="tabContent"></div>
+</section>
+</main>
+
+<div class="level-modal" id="levelModal">
+ <div class="level-dialog">
+  <div class="level-title">Rank Progress</div>
+  <div class="level-current" id="modalCurrentLevel"></div>
+  <div id="rankList"></div>
+ </div>
+</div>
+
+<nav class="bottom-nav">
+ <a href="/" class="nav-item">
+  <svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg>
+  Home
+ </a>
+ <a href="jadwal.html" class="nav-item">
+  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+  Jadwal
+ </a>
+ <a href="favorit.html" class="nav-item">
+  <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg>
+  Favorit
+ </a>
+ <a href="riwayat.html" class="nav-item">
+  <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>
+  Riwayat
+ </a>
+ <a href="profile.html" class="nav-item active">
+  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+  Profile
+ </a>
+</nav>
+
+<script>
+"use strict";
+
+/* CONFIG */
+const API_PROFILE = "/api/auth/me";
+const MEDIA_DB_NAME = "ANILIX_STORAGE";
+const MEDIA_STORE_NAME = "images";
+const LEVEL_IMAGE_BASE =
+ "https://project-crafting.github.io/minecraft-auto-updated-textures-api/items/";
+
+const RANKS = [
+ {name:"DIRT",icon:"dirt",min:1,max:99,color:"#a77b52"},
+ {name:"OAK PLANKS",icon:"oak_planks",min:100,max:499,color:"#c18a4c"},
+ {name:"COBBLESTONE",icon:"cobblestone",min:500,max:1499,color:"#9a9da3"},
+ {name:"COAL",icon:"coal",min:1500,max:4999,color:"#747b89"},
+ {name:"COPPER",icon:"copper_ingot",min:5000,max:9999,color:"#d78352"},
+ {name:"IRON",icon:"iron_ingot",min:10000,max:19999,color:"#c2ccd5"},
+ {name:"LAPIS LAZULI",icon:"lapis_lazuli",min:20000,max:29999,color:"#4389ef"},
+ {name:"REDSTONE",icon:"redstone",min:30000,max:49999,color:"#ed4545"},
+ {name:"GOLD",icon:"gold_ingot",min:50000,max:69999,color:"#f2c64e"},
+ {name:"QUARTZ",icon:"quartz",min:70000,max:99999,color:"#e8e7df"},
+ {name:"EMERALD",icon:"emerald",min:100000,max:149999,color:"#35d18a"},
+ {name:"DIAMOND",icon:"diamond",min:150000,max:199999,color:"#62dcf5"},
+ {name:"AMETHYST",icon:"amethyst_shard",min:200000,max:249999,color:"#bd83f5"},
+ {name:"BLAZE ROD",icon:"blaze_rod",min:250000,max:299999,color:"#ff9a42"},
+ {name:"NETHERITE",icon:"netherite_ingot",min:300000,max:399999,color:"#a58b9d"},
+ {name:"LAVA BUCKET",icon:"lava_bucket",min:400000,max:499999,color:"#ff5a28"},
+ {name:"NETHER STAR",icon:"nether_star",min:500000,max:Infinity,color:"#b9a1ff"}
+];
+
+const ROLE_SETTINGS = {
+ developer:{name:"Developer",badge:"role-developer",verified:"v-developer"},
+ admin:{name:"Admin",badge:"role-admin",verified:"v-admin"},
+ moderator:{name:"Moderator",badge:"role-moderator",verified:"v-moderator"},
+ beta:{name:"Beta Tester",badge:"role-beta",verified:"v-beta"},
+ premium:{name:"Premium",badge:"role-premium",verified:"v-premium"},
+ member:{name:"Member",badge:"role-member",verified:""}
+};
+
+let currentUser = {};
+let currentTab = "comments";
+let avatarObjectURL = "";
+let bannerObjectURL = "";
+
+/* HELPERS */
+function readStorage(key,fallback=null){
+ try{
+  const value=localStorage.getItem(key);
+  return value===null ? fallback : JSON.parse(value);
+ }catch{
+  return fallback;
+ }
+}
+
+function saveStorage(key,value){
+ try{localStorage.setItem(key,JSON.stringify(value));}
+ catch(error){console.warn("Storage tidak dapat disimpan:",error);}
+}
+
+function numberValue(value,fallback=0){
+ const number=Number(value);
+ return Number.isFinite(number) ? number : fallback;
+}
+
+function formatNumber(value){
+ return numberValue(value).toLocaleString("id-ID");
+}
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,char=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ }[char]));
+}
+
+function safeImageURL(value){
+ if(typeof value!=="string" || !value.trim()) return "";
+ const url=value.trim();
+ if(url.startsWith("/") || url.startsWith("./") || url.startsWith("../")) return url;
+ try{
+  const parsed=new URL(url,location.origin);
+  return ["http:","https:"].includes(parsed.protocol) ? url : "";
+ }catch{return "";}
+}
+
+/* INDEXEDDB MEDIA */
+function openMediaDB(){
+ return new Promise((resolve,reject)=>{
+  if(!("indexedDB" in window)){
+   reject(new Error("IndexedDB tidak tersedia"));
+   return;
+  }
+
+  const request=indexedDB.open(MEDIA_DB_NAME,1);
+
+  request.onupgradeneeded=()=>{
+   const db=request.result;
+   if(!db.objectStoreNames.contains(MEDIA_STORE_NAME)){
+    db.createObjectStore(MEDIA_STORE_NAME);
+   }
+  };
+
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+}
+
+async function getMedia(key){
+ const db=await openMediaDB();
+
+ return new Promise((resolve,reject)=>{
+  const transaction=db.transaction(MEDIA_STORE_NAME,"readonly");
+  const request=transaction.objectStore(MEDIA_STORE_NAME).get(key);
+
+  request.onsuccess=()=>{
+   const result=request.result||null;
+   db.close();
+   resolve(result);
+  };
+
+  request.onerror=()=>{
+   db.close();
+   reject(request.error);
+  };
+ });
+}
+
+/* IMAGE DISPLAY */
+function releaseObjectURL(type){
+ if(type==="avatar" && avatarObjectURL){
+  URL.revokeObjectURL(avatarObjectURL);
+  avatarObjectURL="";
+ }
+ if(type==="banner" && bannerObjectURL){
+  URL.revokeObjectURL(bannerObjectURL);
+  bannerObjectURL="";
+ }
+}
+
+function setAvatarImage(source){
+ const element=document.getElementById("avatar");
+ releaseObjectURL("avatar");
+
+ if(!source){
+  const name=currentUser.name || currentUser.displayName || "";
+  element.textContent=name ? name.charAt(0).toUpperCase() : "?";
+  return;
+ }
+
+ let src=source;
+ if(source instanceof Blob){
+  src=URL.createObjectURL(source);
+  avatarObjectURL=src;
+ }
+
+ const image=document.createElement("img");
+ image.src=src;
+ image.alt="Foto profil";
+ image.onerror=()=>{
+  const name=currentUser.name || currentUser.displayName || "";
+  element.textContent=name ? name.charAt(0).toUpperCase() : "?";
+ };
+ element.replaceChildren(image);
+}
+
+function setBannerImage(source){
+ const element=document.getElementById("profileBanner");
+ releaseObjectURL("banner");
+
+ if(!source){
+  element.style.backgroundImage="";
+  return;
+ }
+
+ let src=source;
+ if(source instanceof Blob){
+  src=URL.createObjectURL(source);
+  bannerObjectURL=src;
+ }
+
+ element.style.backgroundImage=
+  `linear-gradient(180deg,rgba(0,0,0,.05),rgba(9,7,17,.45)),url("${src}")`;
+}
+
+/* LEGACY MEDIA MIGRATION */
+function dataURLToBlob(dataURL){
+ try{
+  const parts=dataURL.split(",");
+  const mime=parts[0].match(/:(.*?);/)[1];
+  const binary=atob(parts[1]);
+  const bytes=new Uint8Array(binary.length);
+
+  for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+  return new Blob([bytes],{type:mime});
+ }catch{return null;}
+}
+
+async function migrateLegacyMedia(){
+ const user=readStorage("anilix_user",{});
+ const oldAvatar=localStorage.getItem("anilix_avatar") ||
+  user.photoURL || user.photo || user.avatar || "";
+ const oldBanner=localStorage.getItem("anilix_banner") || user.banner || "";
+
+ try{
+  const [savedAvatar,savedBanner]=await Promise.all([
+   getMedia("avatar"),getMedia("banner")
+  ]);
+
+  if(!savedAvatar && oldAvatar.startsWith("data:image/")){
+   const blob=dataURLToBlob(oldAvatar);
+   if(blob) await saveMedia("avatar",blob);
+  }
+
+  if(!savedBanner && oldBanner.startsWith("data:image/")){
+   const blob=dataURLToBlob(oldBanner);
+   if(blob) await saveMedia("banner",blob);
+  }
+
+  if(oldAvatar.startsWith("data:image/")) localStorage.removeItem("anilix_avatar");
+  if(oldBanner.startsWith("data:image/")) localStorage.removeItem("anilix_banner");
+
+  let changed=false;
+  ["photoURL","photo","avatar","banner"].forEach(key=>{
+   if(typeof user[key]==="string" && user[key].startsWith("data:image/")){
+    delete user[key];
+    changed=true;
+   }
+  });
+
+  if(changed) saveStorage("anilix_user",user);
+ }catch(error){
+  console.warn("Migrasi media:",error);
+ }
+}
+
+/* AUTH PROFILE */
+function getSessionToken(){
+ const session=localStorage.getItem("anilix_session");
+ if(!session) return "";
+
+ try{
+  const parsed=JSON.parse(session);
+  if(typeof parsed==="string") return parsed;
+  return parsed.token || parsed.accessToken || parsed.access_token || "";
+ }catch{
+  return session;
+ }
+}
+
+function normalizeProfileResponse(response){
+ if(!response || typeof response!=="object") return null;
+
+ let data=response.data ?? response.user ?? response.profile ?? response;
+
+ if(data && typeof data==="object"){
+  if(data.user && typeof data.user==="object") data=data.user;
+  if(data.profile && typeof data.profile==="object") data=data.profile;
+ }
+
+ return data && typeof data==="object" ? data : null;
+}
+
+async function fetchServerProfile(){
+ const token=getSessionToken();
+ const headers={"Accept":"application/json"};
+
+ if(token) headers.Authorization=`Bearer ${token}`;
+
+ try{
+  const response=await fetch(API_PROFILE,{
+   method:"GET",
+   headers,
+   credentials:"include",
+   cache:"no-store"
+  });
+
+  if(!response.ok){
+   if(response.status!==401 && response.status!==403){
+    console.warn("Profile API:",response.status);
+   }
+   return null;
+  }
+
+  const json=await response.json();
+  return normalizeProfileResponse(json);
+ }catch(error){
+  console.warn("Tidak dapat mengambil profil dari server:",error);
+  return null;
+ }
+}
+
+async function getProfile(){
+ const serverUser=await fetchServerProfile();
+ if(!serverUser){
+  currentUser={};
+  if(!location.pathname.endsWith("login.html")) location.replace("login.html");
+  return currentUser;
+ }
+ currentUser=serverUser;
+ saveStorage("anilix_user",currentUser);
+ return currentUser;
+}
+
+/* ROLE */
+function getRoleKey(role){
+ const normalized=String(role||"member")
+  .toLowerCase().trim().replace(/[\s_-]+/g,"");
+
+ const aliases={
+  developer:"developer",dev:"developer",
+  admin:"admin",administrator:"admin",
+  moderator:"moderator",mod:"moderator",
+  beta:"beta",betatester:"beta",
+  premium:"premium",member:"member",user:"member"
+ };
+
+ return aliases[normalized] || "member";
+}
+
+function updateRole(role,verifiedValue){
+ const key=getRoleKey(role);
+ const settings=ROLE_SETTINGS[key];
+ const badge=document.getElementById("roleBadge");
+ const verified=document.getElementById("verifiedBadge");
+
+ badge.textContent=settings.name;
+ badge.className="profile-role "+settings.badge;
+ verified.className="verified "+settings.verified;
+
+ const shouldVerify=Boolean(verifiedValue) && key!=="member";
+ verified.style.display=shouldVerify ? "inline-flex" : "none";
+}
+
+/* LEVEL */
+function getRank(level){
+ return RANKS.find(rank=>level>=rank.min && level<=rank.max) || null;
+}
+
+function updateMinecraftLevel(level){
+ const value=Math.max(0,Math.floor(numberValue(level)));
+ const rank=getRank(value);
+ const badge=document.getElementById("levelBadge");
+ const icon=document.getElementById("levelIcon");
+
+ document.getElementById("levelText").textContent=
+  "Lv "+formatNumber(value);
+
+ if(rank){
+  const palettes={
+   dirt:["#8a5728","#d5a15c","#60401e","#c18a4c"],
+   oak_planks:["#8a5728","#d5a15c","#60401e","#c18a4c"],
+   cobblestone:["#555a63","#a9adb5","#41454d","#9a9da3"],
+   coal:["#333b49","#87909f","#202733","#747b89"],
+   copper_ingot:["#914b2e","#e9a078","#62351f","#d78352"],
+   iron_ingot:["#727e8c","#e0e5e9","#56616c","#c2ccd5"],
+   lapis_lazuli:["#174a9b","#76b0ff","#12356e","#4389ef"],
+   redstone:["#922525","#ff7777","#601717","#ed4545"],
+   gold_ingot:["#956a14","#ffe17a","#684609","#f2c64e"],
+   quartz:["#85847d","#fffdf0","#5d5c57","#e8e7df"],
+   emerald:["#116c45","#75f0b1","#10472f","#35d18a"],
+   diamond:["#167d91","#8af0ff","#104b66","#62dcf5"],
+   amethyst_shard:["#63349a","#d6a4ff","#3c216d","#bd83f5"],
+   blaze_rod:["#a64c16","#ffc078","#6c2d0c","#ff9a42"],
+   netherite_ingot:["#554451","#b9a4b1","#332832","#a58b9d"],
+   lava_bucket:["#a52c12","#ff9b48","#6c180d","#ff5a28"],
+   nether_star:["#526b86","#e9f7ff","#8aa8c8","#c5e8ff"]
+  };
+
+  const colors=palettes[rank.icon];
+  if(colors){
+   badge.style.setProperty("--c1",colors[0]);
+   badge.style.setProperty("--c2",colors[1]);
+   badge.style.setProperty("--c3",colors[2]);
+   badge.style.setProperty("--glow",colors[3]);
+  }
+
+  icon.src=LEVEL_IMAGE_BASE+rank.icon+".png";
+  icon.hidden=false;
+ }else{
+  icon.hidden=true;
+  icon.removeAttribute("src");
+ }
+}
+
+/* XP PROGRESS */
+function updateLevelProgress(xp,requiredXP){
+ const hasXP=xp!==undefined && xp!==null && xp!=="";
+ const hasRequired=requiredXP!==undefined && requiredXP!==null && requiredXP!=="";
+
+ const current=Math.max(0,numberValue(xp));
+ const required=Math.max(0,numberValue(requiredXP));
+
+ const percent=hasXP && hasRequired && required>0
+  ? Math.min(100,current/required*100)
+  : 0;
+
+ document.getElementById("progressFill").style.width=percent+"%";
+ document.getElementById("progressPercent").textContent=
+  hasXP && hasRequired && required>0 ? Math.floor(percent)+"%" : "—";
+
+ document.getElementById("xpText").textContent=
+  hasXP ? formatNumber(current)+" XP" : "XP belum tersedia";
+
+ document.getElementById("xpNext").textContent=
+  hasXP && hasRequired && required>0
+   ? formatNumber(Math.max(0,required-current))+" XP lagi"
+   : "Data XP belum tersedia";
+}
+
+/* PROFILE MEDIA */
+async function loadProfileMedia(){
+ const avatarFromUser=currentUser.photoURL ||
+  currentUser.photo || currentUser.avatar || "";
+ const bannerFromUser=currentUser.banner || "";
+
+ try{
+  const [avatar,banner]=await Promise.all([
+   getMedia("avatar"),getMedia("banner")
+  ]);
+
+  setAvatarImage(avatar || avatarFromUser || null);
+  setBannerImage(banner || bannerFromUser || null);
+ }catch(error){
+  console.warn("Media profil:",error);
+  setAvatarImage(avatarFromUser || null);
+  setBannerImage(bannerFromUser || null);
+ }
+}
+
+/* ACTIVITY DATA */
+function getTabData(tab){
+ const keys={
+  comments:"anilix_comments",
+  favorites:"anilix_favorites",
+  history:"anilix_history"
+ };
+
+ const stored=readStorage(keys[tab],[]);
+ return Array.isArray(stored) ? stored : [];
+}
+
+function getItemTitle(item){
+ return item.title || item.animeTitle || item.name || "";
+}
+
+function getItemImage(item){
+ return safeImageURL(item.image || item.poster || item.cover || "");
+}
+
+function getItemSubtitle(item){
+ const episode=item.episode;
+ if(episode!==undefined && episode!==null && episode!==""){
+  const text=String(episode);
+  return text.toLowerCase().includes("episode") ? text : "Episode "+text;
+ }
+
+ if(currentTab==="comments") return "Komentar";
+ if(currentTab==="favorites") return "Favorit";
+ return "Riwayat tontonan";
+}
+
+function renderEmpty(message){
+ const wrapper=document.createElement("div");
+ wrapper.className="empty-state";
+
+ wrapper.innerHTML=`
+  <div class="empty-icon">
+   <svg viewBox="0 0 24 24">
+    <path d="M4 5h16v14H4z"/>
+    <path d="M8 10h8M8 14h5"/>
+   </svg>
+  </div>
+  <strong></strong>
+  <p>Aktivitas yang kamu lakukan akan muncul di sini.</p>
+ `;
+
+ wrapper.querySelector("strong").textContent=message;
+ return wrapper;
+}
+
+function renderActivityItem(item){
+ const article=document.createElement("article");
+ article.className="activity-item";
+
+ const userRow=document.createElement("div");
+ userRow.className="activity-user";
+
+ const left=document.createElement("div");
+ left.className="activity-user-left";
+
+ const avatar=document.createElement("div");
+ avatar.className="small-avatar";
+ avatar.textContent=(currentUser.name || currentUser.displayName || "?").charAt(0).toUpperCase();
+
+ const nameWrap=document.createElement("div");
+ nameWrap.className="activity-name";
+
+ const name=document.createElement("span");
+ name.textContent=currentUser.name || currentUser.displayName || "Pengguna";
+
+ const id=document.createElement("span");
+ id.className="user-id";
+ if(currentUser.id!==undefined && currentUser.id!==null && currentUser.id!==""){
+  id.textContent="#"+currentUser.id;
+ }
+
+ nameWrap.append(name);
+ if(id.textContent) nameWrap.append(id);
+
+ const roleKey=getRoleKey(currentUser.role);
+ if(currentUser.verified && roleKey!=="member"){
+  const verified=document.createElement("span");
+  verified.className="verified "+ROLE_SETTINGS[roleKey].verified+" comment-verified";
+  verified.innerHTML='<span class="material-symbols-rounded">verified</span>';
+  nameWrap.append(verified);
+ }
+
+ left.append(avatar,nameWrap);
+
+ const time=document.createElement("span");
+ time.className="activity-time";
+ time.textContent=item.time || item.date || item.updatedAt || "";
+
+ userRow.append(left,time);
+ article.append(userRow);
+
+ const title=getItemTitle(item);
+ const imageURL=getItemImage(item);
+
+ if(title || imageURL){
+  const media=document.createElement("div");
+  media.className="activity-media";
+
+  if(imageURL){
+   const poster=document.createElement("div");
+   poster.className="anime-poster";
+
+   const img=document.createElement("img");
+   img.src=imageURL;
+   img.alt=title || "Poster";
+   img.loading="lazy";
+   poster.append(img);
+   media.append(poster);
+  }
+
+  const info=document.createElement("div");
+  info.className="media-info";
+
+  if(title){
+   const titleElement=document.createElement("div");
+   titleElement.className="media-title";
+   titleElement.textContent=title;
+   info.append(titleElement);
+  }
+
+  const subtitle=document.createElement("div");
+  subtitle.className="media-subtitle";
+  subtitle.textContent=getItemSubtitle(item);
+  info.append(subtitle);
+
+  media.append(info);
+  article.append(media);
+ }
+
+ const description=item.description || item.comment || "";
+ if(description){
+  const text=document.createElement("div");
+  text.className="activity-description";
+  text.textContent=description;
+  article.append(text);
+ }
+
+ return article;
+}
+
+function renderTab(){
+ const container=document.getElementById("tabContent");
+ const items=getTabData(currentTab);
+
+ container.replaceChildren();
+
+ if(!items.length){
+  const messages={
+   comments:"Belum ada komentar",
+   favorites:"Belum ada anime favorit",
+   history:"Belum ada riwayat tontonan"
+  };
+
+  container.append(renderEmpty(messages[currentTab]));
+  return;
+ }
+
+ items.slice(0,30).forEach(item=>{
+  if(item && typeof item==="object"){
+   container.append(renderActivityItem(item));
+  }
+ });
+}
+
+/* PROFILE VIEW */
+async function loadProfile(){
+ const user=await getProfile();
+
+ const name=user.name || user.displayName || user.username || "";
+ const id=user.id ?? user.userId ?? "";
+ const level=user.level ?? 0;
+
+ document.getElementById("profileName").textContent=name || "Profil";
+ document.getElementById("userId").textContent=
+  id!=="" ? "#"+id : "";
+
+ updateMinecraftLevel(level);
+ updateRole(user.role,user.verified);
+
+ const xp=user.exp_in_level ?? user.xp ?? 0;
+ const requiredXP=user.requiredXP ?? user.exp_per_level ?? user.expPerLevel ?? 2150;
+ updateLevelProgress(xp,requiredXP);
+
+ const comments=getTabData("comments");
+ const history=getTabData("history");
+
+ document.getElementById("statMonth").textContent=
+  user.months!==undefined && user.months!==null ? formatNumber(user.months) : "—";
+
+ document.getElementById("statComments").textContent=formatNumber(comments.length);
+ document.getElementById("statHistory").textContent=formatNumber(history.length);
+ document.getElementById("statMinutes").textContent=
+  formatNumber(user.totalMinutes ?? user.minutesWatched ?? 0);
+
+ await loadProfileMedia();
+}
+
+/* RANK MODAL */
+function renderLevelModal(){
+ const level=Math.max(0,Math.floor(numberValue(currentUser.level)));
+ const currentIndex=RANKS.findIndex(rank=>level>=rank.min && level<=rank.max);
+ const currentRank=currentIndex>=0 ? RANKS[currentIndex] : null;
+
+ document.getElementById("modalCurrentLevel").textContent=
+  currentRank
+   ? `Level ${formatNumber(level)} · ${currentRank.name}`
+   : `Level ${formatNumber(level)} · Belum ada rank`;
+
+ const list=document.getElementById("rankList");
+ list.replaceChildren();
+
+ RANKS.forEach((rank,index)=>{
+  const completed=currentIndex>=0 && index<currentIndex;
+  const current=index===currentIndex;
+  const locked=currentIndex<0 || index>currentIndex;
+
+  const row=document.createElement("div");
+  row.className="rank-item"+
+   (completed?" completed":"")+
+   (current?" current":"")+
+   (locked?" locked":"");
+
+  const icon=document.createElement("img");
+  icon.className="rank-icon";
+  icon.src=LEVEL_IMAGE_BASE+rank.icon+".png";
+  icon.alt=rank.name;
+
+  const info=document.createElement("div");
+  info.className="rank-info";
+
+  const name=document.createElement("div");
+  name.className="rank-name";
+  name.style.color=rank.color;
+  name.textContent=rank.name;
+
+  const range=document.createElement("div");
+  range.className="rank-range";
+  range.textContent=
+   "Level "+formatNumber(rank.min)+" - "+
+   (rank.max===Infinity ? "500.000+" : formatNumber(rank.max));
+
+  info.append(name,range);
+
+  if(current && rank.max!==Infinity && RANKS[index+1]){
+   const total=rank.max-rank.min+1;
+   const gained=level-rank.min+1;
+   const percent=Math.min(100,gained/total*100);
+
+   const progress=document.createElement("div");
+   progress.className="rank-progress";
+
+   const fill=document.createElement("div");
+   fill.className="rank-progress-fill";
+   fill.style.width=percent+"%";
+   progress.append(fill);
+
+   const progressText=document.createElement("div");
+   progressText.className="rank-progress-text";
+   progressText.textContent=
+    Math.floor(percent)+"% menuju "+RANKS[index+1].name;
+
+   info.append(progress,progressText);
+  }
+
+  const status=document.createElement("span");
+  status.className="material-symbols-rounded rank-status";
+  status.textContent=completed ? "check_circle" :
+   current ? "radio_button_checked" : "lock";
+
+  row.append(icon,info,status);
+  list.append(row);
+ });
+}
+
+const levelModal=document.getElementById("levelModal");
+const levelDialog=document.querySelector(".level-dialog");
+
+document.getElementById("levelBadge").addEventListener("click",()=>{
+ renderLevelModal();
+ levelModal.classList.add("show");
+});
+
+function closeLevelModal(){
+ levelModal.classList.remove("show");
+}
+
+levelModal.addEventListener("click",event=>{
+ if(!levelDialog.contains(event.target)) closeLevelModal();
+});
+
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape") closeLevelModal();
+});
+
+/* TAB EVENTS */
+document.querySelectorAll(".tab").forEach(button=>{
+ button.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(tab=>tab.classList.remove("active"));
+  button.classList.add("active");
+  currentTab=button.dataset.tab;
+  renderTab();
+ });
+});
+
+/* STORAGE SYNC */
+window.addEventListener("storage",event=>{
+ const watchedKeys=[
+  "anilix_favorites","anilix_history","anilix_comments",
+  "anilix_user","anilix_username","anilix_avatar","anilix_banner"
+ ];
+
+ if(!event.key || watchedKeys.includes(event.key)){
+  loadProfile().then(renderTab);
+ }
+});
+
+/* MEDIA SYNC */
+if("BroadcastChannel" in window){
+ const mediaChannel=new BroadcastChannel("anilix_media_sync");
+
+ mediaChannel.addEventListener("message",async event=>{
+  if(event.data==="media-updated"){
+   await loadProfile();
+   renderTab();
+  }
+ });
+}
+
+/* ACTIVE NAV */
+const currentPage=location.pathname.split("/").pop() || "profile.html";
+
+document.querySelectorAll(".nav-item").forEach(link=>{
+ const target=link.getAttribute("href").split("/").pop();
+ link.classList.toggle("active",target===currentPage);
+});
+
+/* INIT */
+async function initProfile(){
+ await migrateLegacyMedia();
+ await loadProfile();
+ renderTab();
+}
+
+initProfile();
+</script>
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,1869 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#020203">
+<title>ANILIX</title>
+
+<style>
+/* =====================================
+   GLOBAL
+===================================== */
+
+:root{
+    --bg:#020203;
+    --purple:#7639e8;
+    --purple-light:#d0b1ff;
+    --muted:#a5a2ae;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#020203;
+    color:white;
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+
+button{font-family:inherit}
+
+/* =====================================
+   LOADING SCREEN
+===================================== */
+
+.loading{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(
+            ellipse at 50% 43%,
+            rgba(118,57,232,.09),
+            transparent 48%
+        ),
+        #020203;
+    overflow:hidden;
+    opacity:1;
+    visibility:visible;
+    transition:opacity .65s ease,visibility .65s ease;
+}
+
+.loading.hide{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+.loading::before{
+    content:"";
+    position:absolute;
+    width:340px;
+    height:340px;
+    border-radius:50%;
+    background:rgba(118,57,232,.10);
+    filter:blur(100px);
+    animation:ambient 5s ease-in-out infinite alternate;
+}
+
+@keyframes ambient{
+    from{
+        opacity:.45;
+        transform:scale(.85);
+    }
+    to{
+        opacity:.9;
+        transform:scale(1.15);
+    }
+}
+
+.loading-area{
+    width:300px;
+    height:360px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    z-index:2;
+}
+
+.logo-wrap{
+    position:relative;
+    width:250px;
+    height:250px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    animation:logoLock .65s cubic-bezier(.16,1,.3,1) 1.45s both;
+}
+
+.logo{
+    width:240px;
+    height:240px;
+    overflow:visible;
+}
+
+.shape{
+    transform-box:fill-box;
+    transform-origin:center;
+    opacity:0;
+}
+
+.white-a{
+    fill:#fff;
+    transform:translate(-150px,90px) rotate(-18deg) scale(.75);
+    animation:whiteForm 1.2s cubic-bezier(.16,1,.3,1) .1s forwards;
+}
+
+@keyframes whiteForm{
+    0%{
+        opacity:0;
+        transform:translate(-150px,90px) rotate(-18deg) scale(.75);
+    }
+    20%{opacity:1}
+    58%{
+        transform:translate(15px,-9px) rotate(3deg) scale(1.055);
+    }
+    76%{
+        transform:translate(-5px,3px) rotate(-1deg) scale(.985);
+    }
+    90%{
+        transform:translate(2px,-1px) scale(1.01);
+    }
+    100%{
+        opacity:1;
+        transform:translate(0,0) rotate(0) scale(1);
+    }
+}
+
+.purple-main{
+    fill:#7639e8;
+    transform:translate(150px,-100px) rotate(18deg) scale(.75);
+    animation:purpleForm 1.3s cubic-bezier(.16,1,.3,1) .18s forwards;
+}
+
+@keyframes purpleForm{
+    0%{
+        opacity:0;
+        transform:translate(150px,-100px) rotate(18deg) scale(.75);
+    }
+    20%{opacity:1}
+    58%{
+        transform:translate(-14px,11px) rotate(-3deg) scale(1.055);
+    }
+    76%{
+        transform:translate(5px,-3px) rotate(1deg) scale(.985);
+    }
+    90%{
+        transform:translate(-2px,1px) scale(1.01);
+    }
+    100%{
+        opacity:1;
+        transform:translate(0,0) rotate(0) scale(1);
+    }
+}
+
+.purple-bottom{
+    fill:#7639e8;
+    transform:translate(80px,130px) rotate(20deg) scale(.7);
+    animation:bottomForm 1.05s cubic-bezier(.16,1,.3,1) .38s forwards;
+}
+
+@keyframes bottomForm{
+    0%{
+        opacity:0;
+        transform:translate(80px,130px) rotate(20deg) scale(.7);
+    }
+    22%{opacity:1}
+    60%{
+        transform:translate(-7px,-7px) rotate(-2deg) scale(1.05);
+    }
+    80%{
+        transform:translate(3px,2px) rotate(.5deg) scale(.985);
+    }
+    100%{
+        opacity:1;
+        transform:translate(0,0) rotate(0) scale(1);
+    }
+}
+
+@keyframes logoLock{
+    0%{transform:scale(1)}
+    35%{transform:scale(1.045)}
+    65%{transform:scale(.985)}
+    100%{transform:scale(1)}
+}
+
+.loading-brand{
+    position:relative;
+    margin-top:-5px;
+    margin-left:7px;
+    font-size:30px;
+    font-weight:900;
+    letter-spacing:7px;
+    opacity:0;
+    transform:translateY(18px) scale(.92);
+    filter:blur(7px);
+    animation:brandAppear .85s cubic-bezier(.16,1,.3,1) 1.65s forwards;
+}
+
+.ani{color:#fff}
+.lix{color:#7639e8}
+
+@keyframes brandAppear{
+    0%{
+        opacity:0;
+        transform:translateY(18px) scale(.92);
+        filter:blur(7px);
+    }
+    55%{
+        opacity:1;
+        transform:translateY(-2px) scale(1.035);
+        filter:blur(0);
+    }
+    78%{transform:translateY(1px) scale(.99)}
+    100%{
+        opacity:1;
+        transform:translateY(0) scale(1);
+        filter:blur(0);
+    }
+}
+
+/* =====================================
+   ONBOARDING / WELCOME
+===================================== */
+
+.onboarding{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    overflow:hidden;
+    background:#08080d;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .8s ease,visibility .8s ease;
+}
+
+.onboarding.show{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+/* GALERI POSTER */
+
+.gallery{
+    position:absolute;
+    inset:0 0 auto;
+    height:79%;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:9px;
+    padding:0 11px;
+    overflow:hidden;
+}
+
+.gallery-column{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    will-change:transform;
+}
+
+.gallery-column:nth-child(1){
+    animation:scrollUp 75s linear infinite;
+}
+
+.gallery-column:nth-child(2){
+    animation:scrollDown 82s linear infinite;
+}
+
+.gallery-column:nth-child(3){
+    animation:scrollUp 68s linear infinite;
+}
+
+@keyframes scrollUp{
+    to{transform:translateY(-50%)}
+}
+
+@keyframes scrollDown{
+    from{transform:translateY(-50%)}
+    to{transform:translateY(0)}
+}
+
+.poster{
+    position:relative;
+    width:100%;
+    height:190px;
+    flex:0 0 190px;
+    overflow:hidden;
+    border-radius:13px;
+    background:#211d2b;
+    border:1px solid rgba(255,255,255,.07);
+}
+
+/* SKELETON */
+
+.poster-skeleton{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    overflow:hidden;
+    background:#211d2b;
+    transition:opacity .4s ease;
+}
+
+.poster-skeleton::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    transform:translateX(-100%);
+    background:linear-gradient(
+        100deg,
+        transparent 15%,
+        rgba(255,255,255,.07) 40%,
+        rgba(255,255,255,.16) 50%,
+        rgba(255,255,255,.07) 60%,
+        transparent 85%
+    );
+    animation:skeletonShimmer 1.4s infinite;
+}
+
+@keyframes skeletonShimmer{
+    to{transform:translateX(100%)}
+}
+
+.poster-skeleton.hide{
+    opacity:0;
+    pointer-events:none;
+}
+
+.poster img{
+    position:relative;
+    z-index:2;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    opacity:0;
+    transition:opacity .45s ease;
+}
+
+.poster img.loaded{opacity:1}
+
+/* POSTER ERROR */
+
+.poster-error{
+    position:absolute;
+    inset:0;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:8px;
+    background:linear-gradient(145deg,#211a2c,#15121c);
+    text-align:center;
+}
+
+.poster-error-number{
+    color:#d0b1ff;
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.poster-error-label{
+    color:#8e829f;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:1.2px;
+}
+
+.gallery-overlay{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    background:linear-gradient(
+        180deg,
+        rgba(8,8,13,.08),
+        transparent 20%,
+        rgba(8,8,13,.15) 48%,
+        rgba(8,8,13,.8) 75%,
+        #08080d 100%
+    );
+}
+
+/* SLIDER */
+
+.slider{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    display:flex;
+    transition:transform .7s cubic-bezier(.77,0,.18,1);
+}
+
+.slide{
+    position:relative;
+    flex:0 0 100%;
+    min-width:0;
+    height:100%;
+}
+
+/* PANEL */
+
+.panel{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:var(--sheet-height,45vh);
+    min-height:280px;
+    max-height:100%;
+    display:flex;
+    flex-direction:column;
+    padding:0 24px 68px;
+    overflow:hidden;
+    border-radius:25px 25px 0 0;
+    border-top:1px solid rgba(255,255,255,.09);
+    background:linear-gradient(180deg,#1b1922,#111016 55%,#0b0b10);
+    box-shadow:0 -18px 55px rgba(0,0,0,.3);
+    will-change:height;
+}
+
+.panel-content{
+    width:100%;
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:10px;
+}
+
+.panel-content::-webkit-scrollbar{display:none}
+
+.slide.active .panel-content{
+    animation:contentEnter .4s ease both;
+}
+
+@keyframes contentEnter{
+    from{opacity:0;transform:translateY(9px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* PEGANGAN */
+
+.grab-area{
+    width:100%;
+    height:48px;
+    min-height:48px;
+    flex:0 0 48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:grab;
+    touch-action:none;
+    user-select:none;
+}
+
+.handle{
+    width:39px;
+    height:4px;
+    border-radius:20px;
+    background:rgba(255,255,255,.3);
+    transition:.2s;
+}
+
+.grab-area:active .handle{
+    width:52px;
+    background:#c6a5ff;
+}
+
+/* TEKS */
+
+.eyebrow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:13px;
+    color:#bd9af9;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:2px;
+}
+
+.eyebrow:before{
+    content:"";
+    width:17px;
+    height:2px;
+    background:#8648ec;
+    border-radius:10px;
+}
+
+.title{
+    font-size:29px;
+    line-height:1.2;
+    font-weight:900;
+    letter-spacing:-1px;
+    margin-bottom:11px;
+}
+
+.purple{color:#d0b1ff}
+
+.subtitle{
+    color:#a5a2ae;
+    font-size:13px;
+    line-height:1.8;
+    max-width:460px;
+}
+
+.subtitle strong{color:white}
+
+/* TENTANG ANILIX */
+
+.about-list{
+    margin-top:19px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.about-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.about-icon{
+    width:38px;
+    height:38px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:rgba(134,72,236,.12);
+    border:1px solid rgba(134,72,236,.22);
+}
+
+.about-icon svg{
+    width:19px;
+    height:19px;
+    fill:none;
+    stroke:#d0b1ff;
+    stroke-width:1.7;
+    stroke-linecap:round;
+}
+
+.about-item strong{
+    display:block;
+    font-size:12px;
+    margin-bottom:4px;
+}
+
+.about-item small{
+    color:#92909d;
+    font-size:11px;
+}
+
+/* DISCLAIMER */
+
+.disclaimer-box{
+    margin-top:15px;
+    padding:16px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.035);
+    border-radius:17px;
+}
+
+.disclaimer-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:13px;
+}
+
+.disclaimer-heading svg{
+    width:21px;
+    height:21px;
+    fill:none;
+    stroke:#c6a5ff;
+    stroke-width:1.7;
+}
+
+.disclaimer-heading strong{font-size:12px}
+
+.disclaimer-box p{
+    color:#aaa7b2;
+    font-size:11px;
+    line-height:1.8;
+}
+
+.disclaimer-box p+p{margin-top:11px}
+.disclaimer-box strong{color:white}
+
+/* EMAIL */
+
+.email{
+    margin-top:20px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-radius:15px;
+    background:rgba(134,72,236,.10);
+    border:1px solid rgba(134,72,236,.25);
+}
+
+.email-icon{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:11px;
+    background:rgba(134,72,236,.17);
+}
+
+.email-icon svg{
+    width:19px;
+    height:19px;
+    fill:none;
+    stroke:#d0b1ff;
+    stroke-width:1.7;
+}
+
+.email-info small{
+    display:block;
+    color:#928ba1;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1.3px;
+    margin-bottom:5px;
+}
+
+.email-info strong{
+    color:#dfcaff;
+    font-size:12px;
+}
+
+/* STATUS */
+
+.ready{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    margin-top:22px;
+    padding:11px 15px;
+    border:1px solid rgba(134,72,236,.25);
+    background:rgba(134,72,236,.09);
+    border-radius:30px;
+    color:#d0b1ff;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.3px;
+}
+
+.ready-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#ae82ff;
+    box-shadow:0 0 9px #ae82ff;
+}
+
+/* NAVIGASI */
+
+.controls{
+    position:absolute;
+    z-index:30;
+    left:24px;
+    right:24px;
+    bottom:12px;
+    height:49px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.dots{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.dot{
+    width:6px;
+    height:6px;
+    border-radius:20px;
+    background:#484650;
+    transition:all .3s;
+}
+
+.dot.active{
+    width:22px;
+    background:#a77aff;
+    box-shadow:0 0 10px rgba(134,72,236,.5);
+}
+
+.back{
+    position:absolute;
+    left:0;
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    color:#aaa7b3;
+    background:rgba(255,255,255,.045);
+    opacity:0;
+    pointer-events:none;
+    transform:translateX(-7px);
+    transition:.25s;
+}
+
+.back.show{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateX(0);
+}
+
+.back svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+}
+
+.next{
+    position:absolute;
+    right:0;
+    min-width:105px;
+    height:42px;
+    padding:0 17px;
+    border:0;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    color:white;
+    background:linear-gradient(135deg,#965af4,#7037d6);
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.7px;
+    box-shadow:0 7px 22px rgba(118,57,232,.22);
+    cursor:pointer;
+    transition:transform .2s;
+}
+
+.next:active{transform:scale(.94)}
+
+.next svg{
+    width:16px;
+    height:16px;
+    fill:none;
+    stroke:white;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:360px){
+    .panel{
+        padding-left:19px;
+        padding-right:19px;
+    }
+
+    .title{font-size:25px}
+
+    .controls{
+        left:19px;
+        right:19px;
+    }
+}
+
+@media(max-height:650px){
+    .loading-area{
+        transform:scale(.82);
+    }
+
+    .panel{padding-bottom:65px}
+    .title{font-size:24px}
+    .subtitle{font-size:12px}
+    .about-list{margin-top:12px;gap:9px}
+    .disclaimer-box{padding:12px}
+}
+
+@media(prefers-reduced-motion:reduce){
+    .gallery-column{animation:none!important}
+    .poster-skeleton::after{animation:none!important}
+    *,
+    *::before,
+    *::after{
+        transition:none!important;
+    }
+}
+</style>
+
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<!-- =====================================
+     LOADING
+===================================== -->
+
+<div class="loading" id="loadingScreen">
+
+    <div class="loading-area">
+
+        <div class="logo-wrap">
+
+            <svg class="logo" viewBox="0 0 1200 1200"
+                xmlns="http://www.w3.org/2000/svg">
+
+                <polygon
+                    class="shape white-a"
+                    points="
+                        123,1008
+                        581,222
+                        735,485
+                        654,614
+                        582,490
+                        288,1008
+                    "
+                />
+
+                <polygon
+                    class="shape purple-main"
+                    points="
+                        481,1008
+                        940,249
+                        1110,249
+                        654,1008
+                    "
+                />
+
+                <polygon
+                    class="shape purple-bottom"
+                    points="
+                        802,875
+                        889,738
+                        1046,1008
+                        880,1008
+                    "
+                />
+
+            </svg>
+
+        </div>
+
+        <div class="loading-brand">
+            <span class="ani">ANI</span><span class="lix">LIX</span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =====================================
+     WELCOME
+===================================== -->
+
+<div class="onboarding" id="onboarding">
+
+    <div class="gallery">
+        <div class="gallery-column" id="column1"></div>
+        <div class="gallery-column" id="column2"></div>
+        <div class="gallery-column" id="column3"></div>
+    </div>
+
+    <div class="gallery-overlay"></div>
+
+    <div class="slider" id="slider">
+
+        <!-- SLIDE 1 -->
+
+        <section class="slide active">
+            <div class="panel">
+
+                <div class="grab-area">
+                    <div class="handle"></div>
+                </div>
+
+                <div class="panel-content">
+
+                    <div class="eyebrow">DUNIA ANIME</div>
+
+                    <h1 class="title">
+                        Cerita dimulai<br>
+                        <span class="purple">di ANILIX.</span>
+                    </h1>
+
+                    <p class="subtitle">
+                        Satu tempat untuk menjelajahi berbagai
+                        kisah anime dan donghua. Temukan judul
+                        baru, ikuti cerita favorit, dan nikmati
+                        setiap petualangannya.
+                    </p>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2 -->
+
+        <section class="slide">
+            <div class="panel">
+
+                <div class="grab-area">
+                    <div class="handle"></div>
+                </div>
+
+                <div class="panel-content">
+
+                    <div class="eyebrow">TENTANG ANILIX</div>
+
+                    <h1 class="title">
+                        Dibangun untuk<br>
+                        <span class="purple">para penikmat cerita.</span>
+                    </h1>
+
+                    <p class="subtitle">
+                        ANILIX menghadirkan ruang untuk menemukan
+                        hiburan favorit dengan pengalaman yang
+                        terus berkembang.
+                    </p>
+
+                    <div class="about-list">
+
+                        <div class="about-item">
+                            <div class="about-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="16" rx="3"/>
+                                    <path d="M8 8h8M8 12h5"/>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <strong>Jelajahi koleksi</strong>
+                                <small>Temukan berbagai judul anime dan donghua.</small>
+                            </div>
+                        </div>
+
+                        <div class="about-item">
+                            <div class="about-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 3v18M5 8l7-5 7 5M6 21h12"/>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <strong>Terus berkembang</strong>
+                                <small>Fitur dan pengalaman terus diperbarui.</small>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3 -->
+
+        <section class="slide">
+            <div class="panel">
+
+                <div class="grab-area">
+                    <div class="handle"></div>
+                </div>
+
+                <div class="panel-content">
+
+                    <div class="eyebrow">INFORMASI KONTEN</div>
+
+                    <h1 class="title">
+                        Perhatikan<br>
+                        <span class="purple">informasi berikut.</span>
+                    </h1>
+
+                    <div class="disclaimer-box">
+
+                        <div class="disclaimer-heading">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 9v4M12 17h.01"/>
+                                <circle cx="12" cy="12" r="9"/>
+                            </svg>
+                            <strong>Hak Cipta & Konten</strong>
+                        </div>
+
+                        <p><strong>Setiap karya memiliki pemiliknya.</strong></p>
+
+                        <p>
+                            ANILIX tidak mengklaim kepemilikan atas
+                            judul anime, karakter, ilustrasi, audio,
+                            teks terjemahan, maupun video yang ditampilkan.
+                            Hak atas seluruh materi tetap berada
+                            pada pemegang hak masing-masing.
+                        </p>
+
+                        <p>
+                            Konten dapat berasal dari sumber
+                            eksternal, API, server media, dan
+                            layanan pihak ketiga. Apabila terdapat
+                            keberatan terkait suatu materi,
+                            pemegang hak dapat menghubungi tim
+                            ANILIX untuk proses peninjauan.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4 -->
+
+        <section class="slide">
+            <div class="panel">
+
+                <div class="grab-area">
+                    <div class="handle"></div>
+                </div>
+
+                <div class="panel-content">
+
+                    <div class="eyebrow">PUSAT BANTUAN ANILIX</div>
+
+                    <h1 class="title">
+                        Menemukan sesuatu<br>
+                        <span class="purple">yang tidak beres?</span>
+                    </h1>
+
+                    <p class="subtitle">
+                        Jika menemukan halaman bermasalah,
+                        informasi yang keliru, atau konten
+                        yang perlu diperiksa, kamu dapat
+                        menyampaikannya kepada tim kami.
+                    </p>
+
+                    <div class="email">
+
+                        <div class="email-icon">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="5" width="18" height="14" rx="3"/>
+                                <path d="m4 7 8 6 8-6"/>
+                            </svg>
+                        </div>
+
+                        <div class="email-info">
+                            <small>BANTUAN ANILIX</small>
+                            <strong>anilixid@gmail.com</strong>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5 -->
+
+        <section class="slide">
+            <div class="panel">
+
+                <div class="grab-area">
+                    <div class="handle"></div>
+                </div>
+
+                <div class="panel-content">
+
+                    <div class="eyebrow">PETUALANGANMU DIMULAI</div>
+
+                    <h1 class="title">
+                        Pilih ceritamu.<br>
+                        <span class="purple">Nikmati dunianya.</span>
+                    </h1>
+
+                    <p class="subtitle">
+                        Bersiaplah menjelajahi berbagai cerita
+                        dan menemukan pengalaman baru
+                        bersama ANILIX.
+                    </p>
+
+                    <div class="ready">
+                        <span class="ready-dot"></span>
+                        SEMUA SUDAH SIAP
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+        <button class="back" id="back" type="button"
+            onclick="prevSlide()" aria-label="Kembali">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+
+        </button>
+
+        <div class="dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <button class="next" id="next" type="button"
+            onclick="nextSlide()">
+
+            <span id="nextText">LANJUT</span>
+
+            <svg viewBox="0 0 24 24">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+/* =====================================
+   CONFIGURATION
+===================================== */
+
+const ANIMATION_DURATION = 2550;
+const HOLD_DURATION = 2000;
+
+const loadingScreen = document.getElementById("loadingScreen");
+const onboarding = document.getElementById("onboarding");
+
+let isFinishing = false;
+let current = 0;
+
+const total = 5;
+
+const slider = document.getElementById("slider");
+const back = document.getElementById("back");
+const nextText = document.getElementById("nextText");
+const dots = document.querySelectorAll(".dot");
+const slides = document.querySelectorAll(".slide");
+
+/* =====================================
+   SYSTEM CHECK
+===================================== */
+
+async function checkSystem(){
+
+    try{
+
+        const response = await fetch("/api/system/status",{
+            method:"GET",
+            credentials:"include",
+            headers:{
+                "Accept":"application/json"
+            },
+            cache:"no-store"
+        });
+
+        if(response.ok){
+
+            const data = await response.json();
+
+            if(data.maintenance){
+                window.location.replace("/maintenance.html");
+                return false;
+            }
+
+            if(data.updateRequired){
+                window.location.replace("/update.html");
+                return false;
+            }
+
+            if(data.banned){
+                window.location.replace("/banned.html");
+                return false;
+            }
+
+        }
+
+    }catch(error){
+
+        console.warn("System check note:",error);
+
+    }
+
+    return true;
+
+}
+
+/* =====================================
+   AUTH CHECK
+===================================== */
+
+async function isAuthenticated(){
+
+    try{
+
+        const response = await fetch("/api/auth/me",{
+            method:"GET",
+            credentials:"include",
+            headers:{
+                "Accept":"application/json"
+            },
+            cache:"no-store"
+        });
+
+        return response.ok;
+
+    }catch(error){
+
+        console.warn("Auth check note:",error);
+
+        return false;
+
+    }
+
+}
+
+/* =====================================
+   SHOW WELCOME
+===================================== */
+
+function showWelcome(){
+
+    loadingScreen.classList.add("hide");
+
+    setTimeout(()=>{
+
+        onboarding.classList.add("show");
+
+        calculateSheet();
+        update();
+        renderGallery();
+
+    },350);
+
+}
+
+/* =====================================
+   START APPLICATION
+===================================== */
+
+async function startApplication(){
+
+    const systemReady = await checkSystem();
+
+    if(!systemReady)return;
+
+    /*
+       SELALU TAMPILKAN WELCOME.
+       Tidak membaca anilix_welcome_done
+       agar tidak langsung lompat ke Login/Home.
+    */
+
+    showWelcome();
+
+}
+
+/* =====================================
+   LOADING TIMER
+===================================== */
+
+window.addEventListener("load",()=>{
+
+    const totalDuration =
+        ANIMATION_DURATION + HOLD_DURATION;
+
+    setTimeout(()=>{
+
+        startApplication();
+
+    },totalDuration);
+
+});
+
+/* =====================================
+   DAFTAR POSTER
+===================================== */
+
+const posterList = [
+
+    {title:"Sousou no Frieren",image:"https://cdn.myanimelist.net/images/anime/1015/138006.jpg"},
+    {title:"Fullmetal Alchemist Brotherhood",image:"https://cdn.myanimelist.net/images/anime/1223/96541.jpg"},
+    {title:"Steins Gate",image:"https://cdn.myanimelist.net/images/anime/5/73199.jpg"},
+    {title:"Hunter x Hunter",image:"https://cdn.myanimelist.net/images/anime/1337/99013.jpg"},
+    {title:"Gintama",image:"https://cdn.myanimelist.net/images/anime/3/72078.jpg"},
+    {title:"Attack on Titan",image:"https://cdn.myanimelist.net/images/anime/10/47347.jpg"},
+    {title:"Death Note",image:"https://cdn.myanimelist.net/images/anime/9/9453.jpg"},
+    {title:"One Piece",image:"https://cdn.myanimelist.net/images/anime/6/73245.jpg"},
+    {title:"Naruto",image:"https://cdn.myanimelist.net/images/anime/13/17405.jpg"},
+    {title:"Naruto Shippuden",image:"https://cdn.myanimelist.net/images/anime/5/17407.jpg"},
+    {title:"Kimetsu no Yaiba",image:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg"},
+    {title:"Jujutsu Kaisen",image:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg"},
+    {title:"Boku no Hero Academia",image:"https://cdn.myanimelist.net/images/anime/10/78745.jpg"},
+    {title:"Chainsaw Man",image:"https://cdn.myanimelist.net/images/anime/1806/126216.jpg"},
+    {title:"Spy x Family",image:"https://cdn.myanimelist.net/images/anime/1441/122795.jpg"},
+    {title:"Vinland Saga",image:"https://cdn.myanimelist.net/images/anime/1500/103005.jpg"},
+    {title:"Dr. Stone",image:"https://cdn.myanimelist.net/images/anime/1613/102576.jpg"},
+    {title:"Black Clover",image:"https://cdn.myanimelist.net/images/anime/2/88336.jpg"},
+    {title:"One Punch Man",image:"https://cdn.myanimelist.net/images/anime/12/76049.jpg"},
+    {title:"Mob Psycho 100",image:"https://cdn.myanimelist.net/images/anime/8/80356.jpg"},
+    {title:"Haikyuu",image:"https://cdn.myanimelist.net/images/anime/7/76014.jpg"},
+    {title:"Solo Leveling",image:"https://cdn.myanimelist.net/images/anime/1801/142390.jpg"},
+    {title:"Tokyo Revengers",image:"https://cdn.myanimelist.net/images/anime/1839/122012.jpg"},
+    {title:"My Hero Academia",image:"https://cdn.myanimelist.net/images/anime/10/78745.jpg"},
+    {title:"Demon Slayer",image:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg"}
+
+];
+
+const columns = [
+    document.getElementById("column1"),
+    document.getElementById("column2"),
+    document.getElementById("column3")
+];
+
+/* =====================================
+   SHUFFLE POSTER
+===================================== */
+
+function shuffle(array){
+
+    const result=[...array];
+
+    for(let i=result.length-1;i>0;i--){
+
+        const j=Math.floor(Math.random()*(i+1));
+
+        [result[i],result[j]]=
+        [result[j],result[i]];
+
+    }
+
+    return result;
+
+}
+
+/* =====================================
+   CREATE POSTER
+===================================== */
+
+function createPoster(anime,index){
+
+    const card=document.createElement("div");
+    card.className="poster";
+
+    const skeleton=document.createElement("div");
+    skeleton.className="poster-skeleton";
+
+    const img=document.createElement("img");
+
+    img.alt=anime.title;
+    img.loading="lazy";
+    img.decoding="async";
+    img.referrerPolicy="no-referrer";
+
+    img.onload=()=>{
+
+        img.classList.add("loaded");
+        skeleton.classList.add("hide");
+
+        setTimeout(()=>{
+            skeleton.remove();
+        },450);
+
+    };
+
+    img.onerror=()=>{
+
+        img.remove();
+        skeleton.remove();
+
+        const error=document.createElement("div");
+        error.className="poster-error";
+
+        const number=document.createElement("div");
+        number.className="poster-error-number";
+
+        number.textContent=
+            "#"+String(index+1).padStart(2,"0");
+
+        const label=document.createElement("div");
+        label.className="poster-error-label";
+
+        label.textContent="GAMBAR TIDAK TERSEDIA";
+
+        error.appendChild(number);
+        error.appendChild(label);
+
+        card.appendChild(error);
+
+        console.warn(
+            "Poster gagal dimuat:",
+            anime.title,
+            anime.image
+        );
+
+    };
+
+    card.appendChild(skeleton);
+    card.appendChild(img);
+
+    img.src=anime.image;
+
+    return card;
+
+}
+
+/* =====================================
+   RENDER GALLERY
+===================================== */
+
+function renderGallery(){
+
+    const selected=shuffle(
+        posterList.map((anime,index)=>({
+            ...anime,
+            originalIndex:index
+        }))
+    );
+
+    columns.forEach((column,index)=>{
+
+        column.innerHTML="";
+
+        const items=selected.filter(
+            (_,i)=>i%3===index
+        );
+
+        [...items,...items].forEach(anime=>{
+
+            column.appendChild(
+                createPoster(anime,anime.originalIndex)
+            );
+
+        });
+
+    });
+
+}
+
+/* =====================================
+   SLIDE NAVIGATION
+===================================== */
+
+function update(){
+
+    slider.style.transform=
+        "translateX(-"+(current*100)+"%)";
+
+    dots.forEach((dot,index)=>{
+
+        dot.classList.toggle(
+            "active",
+            index===current
+        );
+
+    });
+
+    slides.forEach((slide,index)=>{
+
+        slide.classList.toggle(
+            "active",
+            index===current
+        );
+
+    });
+
+    back.classList.toggle(
+        "show",
+        current>0
+    );
+
+    nextText.textContent=
+        current===total-1 ? "MULAI" : "LANJUT";
+
+}
+
+function nextSlide(){
+
+    if(isFinishing)return;
+
+    if(current<total-1){
+
+        current++;
+        update();
+
+    }else{
+
+        finish();
+
+    }
+
+}
+
+function prevSlide(){
+
+    if(isFinishing)return;
+
+    if(current>0){
+
+        current--;
+        update();
+
+    }
+
+}
+
+/* =====================================
+   FINISH WELCOME
+===================================== */
+
+function finish(){
+
+    if(isFinishing)return;
+
+    isFinishing=true;
+
+    const screen=document.getElementById("onboarding");
+
+    screen.style.transition="opacity .5s ease";
+    screen.style.opacity="0";
+    screen.style.pointerEvents="none";
+
+    try{
+
+        localStorage.setItem(
+            "anilix_welcome_done",
+            "true"
+        );
+
+    }catch(error){
+
+        console.warn("Welcome storage note:",error);
+
+    }
+
+    setTimeout(async()=>{
+
+        /*
+           Setelah welcome selesai,
+           cek ulang kondisi sistem.
+        */
+
+        const systemReady=await checkSystem();
+
+        if(!systemReady)return;
+
+        /*
+           Jika sesi sudah login,
+           masuk ke halaman utama.
+        */
+
+        const authenticated=await isAuthenticated();
+
+        if(authenticated){
+
+            window.location.replace("/index.html");
+
+        }else{
+
+            window.location.replace("/login.html");
+
+        }
+
+    },500);
+
+}
+
+/* =====================================
+   PANEL BAWAH
+===================================== */
+
+const panels=document.querySelectorAll(".panel");
+const grabAreas=document.querySelectorAll(".grab-area");
+
+let collapsedHeight=0;
+let currentHeight=0;
+let expanded=false;
+let dragging=false;
+let startY=0;
+let startHeight=0;
+let activePointer=null;
+
+function setSheetHeight(height,animate=true){
+
+    currentHeight=height;
+
+    panels.forEach(panel=>{
+
+        panel.style.transition=animate
+            ? "height .38s cubic-bezier(.22,.8,.25,1)"
+            : "none";
+
+    });
+
+    onboarding.style.setProperty(
+        "--sheet-height",
+        height+"px"
+    );
+
+}
+
+function calculateSheet(){
+
+    collapsedHeight=Math.max(
+        280,
+        Math.min(window.innerHeight*.45,460)
+    );
+
+    if(!expanded && !dragging){
+
+        setSheetHeight(collapsedHeight,false);
+
+    }
+
+}
+
+function expandSheet(){
+
+    expanded=true;
+
+    setSheetHeight(
+        window.innerHeight,
+        true
+    );
+
+}
+
+function collapseSheet(){
+
+    expanded=false;
+
+    setSheetHeight(
+        collapsedHeight,
+        true
+    );
+
+}
+
+/* =====================================
+   DRAG PANEL
+===================================== */
+
+grabAreas.forEach(area=>{
+
+    area.addEventListener("pointerdown",e=>{
+
+        if(isFinishing || e.button!==0)return;
+
+        dragging=true;
+        activePointer=e.pointerId;
+
+        startY=e.clientY;
+        startHeight=currentHeight;
+
+        area.setPointerCapture(e.pointerId);
+
+        panels.forEach(panel=>{
+            panel.style.transition="none";
+        });
+
+        e.preventDefault();
+
+    });
+
+    area.addEventListener("pointermove",e=>{
+
+        if(!dragging || e.pointerId!==activePointer)return;
+
+        const difference=e.clientY-startY;
+
+        const height=Math.max(
+            collapsedHeight,
+            Math.min(
+                window.innerHeight,
+                startHeight-difference
+            )
+        );
+
+        setSheetHeight(height,false);
+
+    });
+
+    function endDrag(e){
+
+        if(!dragging || e.pointerId!==activePointer)return;
+
+        const difference=e.clientY-startY;
+
+        dragging=false;
+        activePointer=null;
+
+        if(difference < -35){
+
+            expandSheet();
+
+        }else if(difference > 35){
+
+            collapseSheet();
+
+        }else if(
+            currentHeight>
+            (collapsedHeight+window.innerHeight)/2
+        ){
+
+            expandSheet();
+
+        }else{
+
+            collapseSheet();
+
+        }
+
+    }
+
+    area.addEventListener("pointerup",endDrag);
+
+    area.addEventListener("pointercancel",()=>{
+
+        if(!dragging)return;
+
+        dragging=false;
+        activePointer=null;
+
+        if(expanded){
+            expandSheet();
+        }else{
+            collapseSheet();
+        }
+
+    });
+
+});
+
+/* =====================================
+   RESIZE
+===================================== */
+
+window.addEventListener("resize",()=>{
+
+    if(dragging)return;
+
+    calculateSheet();
+
+    if(expanded){
+
+        setSheetHeight(
+            window.innerHeight,
+            true
+        );
+
+    }
+
+});
+
+/* =====================================
+   SWIPE SLIDE
+===================================== */
+
+let swipeStartX=0;
+let swipeStartY=0;
+
+document.addEventListener("touchstart",e=>{
+
+    if(!onboarding.classList.contains("show"))return;
+
+    swipeStartX=e.touches[0].clientX;
+    swipeStartY=e.touches[0].clientY;
+
+},{passive:true});
+
+document.addEventListener("touchend",e=>{
+
+    if(isFinishing)return;
+    if(!onboarding.classList.contains("show"))return;
+
+    const dx=
+        e.changedTouches[0].clientX-swipeStartX;
+
+    const dy=
+        e.changedTouches[0].clientY-swipeStartY;
+
+    if(Math.abs(dx)<65)return;
+    if(Math.abs(dx)<Math.abs(dy))return;
+
+    if(dx<0){
+        nextSlide();
+    }else{
+        prevSlide();
+    }
+
+},{passive:true});
+
+/* =====================================
+   KEYBOARD
+===================================== */
+
+document.addEventListener("keydown",e=>{
+
+    if(!onboarding.classList.contains("show"))return;
+
+    if(e.key==="ArrowRight")nextSlide();
+    if(e.key==="ArrowLeft")prevSlide();
+
+});
+
+/* =====================================
+   INITIALIZE
+===================================== */
+
+calculateSheet();
+update();
+
+</script>
+
+<script src="../js/page-transition.js"></script>
+
+
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

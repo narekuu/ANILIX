@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#08080d">
+<title>SELAMAT DATANG — ANILIX</title>
+
+<style>
+:root{
+    --bg:#08080d;
+    --purple:#8648ec;
+    --muted:#a5a2ae;
+}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:var(--bg);
+    color:white;
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+button{font-family:inherit}
+.onboarding{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    background:var(--bg);
+}
+
+/* GALERI POSTER */
+
+.gallery{
+    position:absolute;
+    inset:0 0 auto;
+    height:79%;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:9px;
+    padding:0 11px;
+    overflow:hidden;
+}
+.gallery-column{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+    will-change:transform;
+}
+.gallery-column:nth-child(1){
+    animation:scrollUp 75s linear infinite;
+}
+.gallery-column:nth-child(2){
+    animation:scrollDown 82s linear infinite;
+}
+.gallery-column:nth-child(3){
+    animation:scrollUp 68s linear infinite;
+}
+@keyframes scrollUp{
+    to{transform:translateY(-50%)}
+}
+@keyframes scrollDown{
+    from{transform:translateY(-50%)}
+    to{transform:translateY(0)}
+}
+
+.poster{
+    position:relative;
+    width:100%;
+    height:190px;
+    flex:0 0 190px;
+    overflow:hidden;
+    border-radius:13px;
+    background:#211d2b;
+    border:1px solid rgba(255,255,255,.07);
+}
+
+/* ANIMASI PEMUATAN */
+
+.poster-skeleton{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    overflow:hidden;
+    background:#211d2b;
+    transition:opacity .4s ease;
+}
+.poster-skeleton::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    transform:translateX(-100%);
+    background:linear-gradient(
+        100deg,
+        transparent 15%,
+        rgba(255,255,255,.07) 40%,
+        rgba(255,255,255,.16) 50%,
+        rgba(255,255,255,.07) 60%,
+        transparent 85%
+    );
+    animation:skeletonShimmer 1.4s infinite;
+}
+@keyframes skeletonShimmer{
+    to{transform:translateX(100%)}
+}
+.poster-skeleton.hide{
+    opacity:0;
+    pointer-events:none;
+}
+
+/* GAMBAR POSTER */
+
+.poster img{
+    position:relative;
+    z-index:2;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    opacity:0;
+    transition:opacity .45s ease;
+}
+.poster img.loaded{
+    opacity:1;
+}
+
+/* POSTER GAGAL DIMUAT */
+
+.poster-error{
+    position:absolute;
+    inset:0;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:8px;
+    background:linear-gradient(145deg,#211a2c,#15121c);
+    text-align:center;
+}
+.poster-error-number{
+    color:#d0b1ff;
+    font-size:23px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+.poster-error-label{
+    color:#8e829f;
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:1.2px;
+}
+
+.gallery-overlay{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    background:linear-gradient(
+        180deg,
+        rgba(8,8,13,.08),
+        transparent 20%,
+        rgba(8,8,13,.15) 48%,
+        rgba(8,8,13,.8) 75%,
+        #08080d 100%
+    );
+}
+
+/* PERPINDAHAN HALAMAN */
+
+.slider{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    display:flex;
+    transition:transform .7s cubic-bezier(.77,0,.18,1);
+}
+.slide{
+    position:relative;
+    flex:0 0 100%;
+    min-width:0;
+    height:100%;
+}
+
+/* PANEL BAWAH */
+
+.panel{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:var(--sheet-height,45vh);
+    min-height:280px;
+    max-height:100%;
+    display:flex;
+    flex-direction:column;
+    padding:0 24px 68px;
+    overflow:hidden;
+    border-radius:25px 25px 0 0;
+    border-top:1px solid rgba(255,255,255,.09);
+    background:linear-gradient(180deg,#1b1922,#111016 55%,#0b0b10);
+    box-shadow:0 -18px 55px rgba(0,0,0,.3);
+    will-change:height;
+}
+.panel-content{
+    width:100%;
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:10px;
+}
+.panel-content::-webkit-scrollbar{display:none}
+.slide.active .panel-content{
+    animation:contentEnter .4s ease both;
+}
+@keyframes contentEnter{
+    from{opacity:0;transform:translateY(9px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+/* PEGANGAN PANEL */
+
+.grab-area{
+    width:100%;
+    height:48px;
+    min-height:48px;
+    flex:0 0 48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:grab;
+    touch-action:none;
+    user-select:none;
+}
+.handle{
+    width:39px;
+    height:4px;
+    border-radius:20px;
+    background:rgba(255,255,255,.3);
+    transition:.2s;
+}
+.grab-area:active .handle{
+    width:52px;
+    background:#c6a5ff;
+}
+
+/* TEKS */
+
+.eyebrow{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:13px;
+    color:#bd9af9;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:2px;
+}
+.eyebrow:before{
+    content:"";
+    width:17px;
+    height:2px;
+    background:var(--purple);
+    border-radius:10px;
+}
+.title{
+    font-size:29px;
+    line-height:1.2;
+    font-weight:900;
+    letter-spacing:-1px;
+    margin-bottom:11px;
+}
+.purple{color:#d0b1ff}
+.subtitle{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.8;
+    max-width:460px;
+}
+.subtitle strong{color:white}
+
+/* TENTANG ANILIX */
+
+.about-list{
+    margin-top:19px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+.about-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.about-icon{
+    width:38px;
+    height:38px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    background:rgba(134,72,236,.12);
+    border:1px solid rgba(134,72,236,.22);
+}
+.about-icon svg{
+    width:19px;
+    height:19px;
+    fill:none;
+    stroke:#d0b1ff;
+    stroke-width:1.7;
+    stroke-linecap:round;
+}
+.about-item strong{
+    display:block;
+    font-size:12px;
+    margin-bottom:4px;
+}
+.about-item small{
+    color:#92909d;
+    font-size:11px;
+}
+
+/* INFORMASI KONTEN */
+
+.disclaimer-box{
+    margin-top:15px;
+    padding:16px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.035);
+    border-radius:17px;
+}
+.disclaimer-heading{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:13px;
+}
+.disclaimer-heading svg{
+    width:21px;
+    height:21px;
+    fill:none;
+    stroke:#c6a5ff;
+    stroke-width:1.7;
+}
+.disclaimer-heading strong{font-size:12px}
+.disclaimer-box p{
+    color:#aaa7b2;
+    font-size:11px;
+    line-height:1.8;
+}
+.disclaimer-box p+p{margin-top:11px}
+.disclaimer-box strong{color:white}
+
+/* EMAIL */
+
+.email{
+    margin-top:20px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-radius:15px;
+    background:rgba(134,72,236,.10);
+    border:1px solid rgba(134,72,236,.25);
+}
+.email-icon{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:11px;
+    background:rgba(134,72,236,.17);
+}
+.email-icon svg{
+    width:19px;
+    height:19px;
+    fill:none;
+    stroke:#d0b1ff;
+    stroke-width:1.7;
+}
+.email-info small{
+    display:block;
+    color:#928ba1;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1.3px;
+    margin-bottom:5px;
+}
+.email-info strong{
+    color:#dfcaff;
+    font-size:12px;
+}
+
+/* STATUS SIAP */
+
+.ready{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    margin-top:22px;
+    padding:11px 15px;
+    border:1px solid rgba(134,72,236,.25);
+    background:rgba(134,72,236,.09);
+    border-radius:30px;
+    color:#d0b1ff;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:1.3px;
+}
+.ready-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#ae82ff;
+    box-shadow:0 0 9px #ae82ff;
+}
+
+/* TOMBOL NAVIGASI */
+
+.controls{
+    position:absolute;
+    z-index:30;
+    left:24px;
+    right:24px;
+    bottom:12px;
+    height:49px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.dots{
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+.dot{
+    width:6px;
+    height:6px;
+    border-radius:20px;
+    background:#484650;
+    transition:all .3s;
+}
+.dot.active{
+    width:22px;
+    background:#a77aff;
+    box-shadow:0 0 10px rgba(134,72,236,.5);
+}
+.back{
+    position:absolute;
+    left:0;
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    color:#aaa7b3;
+    background:rgba(255,255,255,.045);
+    opacity:0;
+    pointer-events:none;
+    transform:translateX(-7px);
+    transition:.25s;
+}
+.back.show{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateX(0);
+}
+.back svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2;
+    stroke-linecap:round;
+}
+.next{
+    position:absolute;
+    right:0;
+    min-width:105px;
+    height:42px;
+    padding:0 17px;
+    border:0;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    color:white;
+    background:linear-gradient(135deg,#965af4,#7037d6);
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.7px;
+    box-shadow:0 7px 22px rgba(118,57,232,.22);
+    cursor:pointer;
+    transition:transform .2s;
+}
+.next:active{transform:scale(.94)}
+.next svg{
+    width:16px;
+    height:16px;
+    fill:none;
+    stroke:white;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+@media(max-width:360px){
+    .panel{padding-left:19px;padding-right:19px}
+    .title{font-size:25px}
+    .controls{left:19px;right:19px}
+}
+@media(max-height:650px){
+    .panel{padding-bottom:65px}
+    .title{font-size:24px}
+    .subtitle{font-size:12px}
+    .about-list{margin-top:12px;gap:9px}
+    .disclaimer-box{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){
+    .gallery-column{animation:none!important}
+    .poster-skeleton::after{animation:none!important}
+    *,*::before,*::after{transition:none!important}
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<div class="onboarding" id="onboarding">
+
+    <div class="gallery">
+        <div class="gallery-column" id="column1"></div>
+        <div class="gallery-column" id="column2"></div>
+        <div class="gallery-column" id="column3"></div>
+    </div>
+
+    <div class="gallery-overlay"></div>
+
+    <div class="slider" id="slider">
+
+        <section class="slide active">
+            <div class="panel">
+                <div class="grab-area"><div class="handle"></div></div>
+                <div class="panel-content">
+                    <div class="eyebrow">DUNIA ANIME</div>
+                    <h1 class="title">
+                        Cerita dimulai<br>
+                        <span class="purple">di ANILIX.</span>
+                    </h1>
+                    <p class="subtitle">
+                        Satu tempat untuk menjelajahi berbagai
+                        kisah anime dan donghua. Temukan judul
+                        baru, ikuti cerita favorit, dan nikmati
+                        setiap petualangannya.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="panel">
+                <div class="grab-area"><div class="handle"></div></div>
+                <div class="panel-content">
+                    <div class="eyebrow">TENTANG ANILIX</div>
+                    <h1 class="title">
+                        Dibangun untuk<br>
+                        <span class="purple">para penikmat cerita.</span>
+                    </h1>
+                    <p class="subtitle">
+                        ANILIX menghadirkan ruang untuk menemukan
+                        hiburan favorit dengan pengalaman yang
+                        terus berkembang.
+                    </p>
+
+                    <div class="about-list">
+                        <div class="about-item">
+                            <div class="about-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="16" rx="3"/>
+                                    <path d="M8 8h8M8 12h5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Jelajahi koleksi</strong>
+                                <small>Temukan berbagai judul anime dan donghua.</small>
+                            </div>
+                        </div>
+
+                        <div class="about-item">
+                            <div class="about-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 3v18M5 8l7-5 7 5M6 21h12"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Terus berkembang</strong>
+                                <small>Fitur dan pengalaman terus diperbarui.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="panel">
+                <div class="grab-area"><div class="handle"></div></div>
+                <div class="panel-content">
+                    <div class="eyebrow">INFORMASI KONTEN</div>
+                    <h1 class="title">
+                        Perhatikan<br>
+                        <span class="purple">informasi berikut.</span>
+                    </h1>
+
+                    <div class="disclaimer-box">
+                        <div class="disclaimer-heading">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 9v4M12 17h.01"/>
+                                <circle cx="12" cy="12" r="9"/>
+                            </svg>
+                            <strong>Hak Cipta & Konten</strong>
+                        </div>
+
+                        <p><strong>Setiap karya memiliki pemiliknya.</strong></p>
+                        <p>
+                            ANILIX tidak mengklaim kepemilikan atas
+                            judul anime, karakter, ilustrasi, audio,
+                            teks terjemahan, maupun video yang ditampilkan.
+                            Hak atas seluruh materi tetap berada
+                            pada pemegang hak masing-masing.
+                        </p>
+                        <p>
+                            Konten dapat berasal dari sumber
+                            eksternal, API, server media, dan
+                            layanan pihak ketiga. Apabila terdapat
+                            keberatan terkait suatu materi,
+                            pemegang hak dapat menghubungi tim
+                            ANILIX untuk proses peninjauan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="panel">
+                <div class="grab-area"><div class="handle"></div></div>
+                <div class="panel-content">
+                    <div class="eyebrow">PUSAT BANTUAN ANILIX</div>
+                    <h1 class="title">
+                        Menemukan sesuatu<br>
+                        <span class="purple">yang tidak beres?</span>
+                    </h1>
+                    <p class="subtitle">
+                        Jika menemukan halaman bermasalah,
+                        informasi yang keliru, atau konten
+                        yang perlu diperiksa, kamu dapat
+                        menyampaikannya kepada tim kami.
+                    </p>
+
+                    <div class="email">
+                        <div class="email-icon">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="3" y="5" width="18" height="14" rx="3"/>
+                                <path d="m4 7 8 6 8-6"/>
+                            </svg>
+                        </div>
+                        <div class="email-info">
+                            <small>BANTUAN ANILIX</small>
+                            <strong>anilixid@gmail.com</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="panel">
+                <div class="grab-area"><div class="handle"></div></div>
+                <div class="panel-content">
+                    <div class="eyebrow">PETUALANGANMU DIMULAI</div>
+                    <h1 class="title">
+                        Pilih ceritamu.<br>
+                        <span class="purple">Nikmati dunianya.</span>
+                    </h1>
+                    <p class="subtitle">
+                        Bersiaplah menjelajahi berbagai cerita
+                        dan menemukan pengalaman baru
+                        bersama ANILIX.
+                    </p>
+                    <div class="ready">
+                        <span class="ready-dot"></span>
+                        SEMUA SUDAH SIAP
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="controls">
+        <button class="back" id="back" type="button"
+            onclick="prevSlide()" aria-label="Kembali">
+            <svg viewBox="0 0 24 24">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+
+        <div class="dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <button class="next" id="next" type="button"
+            onclick="nextSlide()">
+            <span id="nextText">LANJUT</span>
+            <svg viewBox="0 0 24 24">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+
+/* DAFTAR POSTER */
+
+const posterList = [
+    {title:"Sousou no Frieren",image:"https://cdn.myanimelist.net/images/anime/1015/138006.jpg"},
+    {title:"Fullmetal Alchemist Brotherhood",image:"https://cdn.myanimelist.net/images/anime/1223/96541.jpg"},
+    {title:"Steins Gate",image:"https://cdn.myanimelist.net/images/anime/5/73199.jpg"},
+    {title:"Hunter x Hunter",image:"https://cdn.myanimelist.net/images/anime/1337/99013.jpg"},
+    {title:"Gintama",image:"https://cdn.myanimelist.net/images/anime/3/72078.jpg"},
+    {title:"Attack on Titan",image:"https://cdn.myanimelist.net/images/anime/10/47347.jpg"},
+    {title:"Death Note",image:"https://cdn.myanimelist.net/images/anime/9/9453.jpg"},
+    {title:"One Piece",image:"https://cdn.myanimelist.net/images/anime/6/73245.jpg"},
+    {title:"Naruto",image:"https://cdn.myanimelist.net/images/anime/13/17405.jpg"},
+    {title:"Naruto Shippuden",image:"https://cdn.myanimelist.net/images/anime/5/17407.jpg"},
+    {title:"Kimetsu no Yaiba",image:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg"},
+    {title:"Jujutsu Kaisen",image:"https://cdn.myanimelist.net/images/anime/1171/109222.jpg"},
+    {title:"Boku no Hero Academia",image:"https://cdn.myanimelist.net/images/anime/10/78745.jpg"},
+    {title:"Chainsaw Man",image:"https://cdn.myanimelist.net/images/anime/1806/126216.jpg"},
+    {title:"Spy x Family",image:"https://cdn.myanimelist.net/images/anime/1441/122795.jpg"},
+
+    {title:"Vinland Saga",image:"https://cdn.myanimelist.net/images/anime/1500/103005.jpg"},
+
+    {title:"Dr. Stone",image:"https://cdn.myanimelist.net/images/anime/1613/102576.jpg"},
+    {title:"Black Clover",image:"https://cdn.myanimelist.net/images/anime/2/88336.jpg"},
+
+    {title:"One Punch Man",image:"https://cdn.myanimelist.net/images/anime/12/76049.jpg"},
+    {title:"Mob Psycho 100",image:"https://cdn.myanimelist.net/images/anime/8/80356.jpg"},
+    {title:"Haikyuu",image:"https://cdn.myanimelist.net/images/anime/7/76014.jpg"},
+
+    {title:"Solo Leveling",image:"https://cdn.myanimelist.net/images/anime/1801/142390.jpg"},
+    {title:"Tokyo Revengers",image:"https://cdn.myanimelist.net/images/anime/1839/122012.jpg"},
+
+    {title:"My Hero Academia",image:"https://cdn.myanimelist.net/images/anime/10/78745.jpg"},
+    {title:"Demon Slayer",image:"https://cdn.myanimelist.net/images/anime/1286/99889.jpg"}
+];
+
+const columns = [
+    document.getElementById("column1"),
+    document.getElementById("column2"),
+    document.getElementById("column3")
+];
+
+function shuffle(array){
+    const result=[...array];
+
+    for(let i=result.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [result[i],result[j]]=[result[j],result[i]];
+    }
+
+    return result;
+}
+
+/* TAMPILKAN POSTER DAN ANIMASI PEMUATAN */
+
+function createPoster(anime,index){
+
+    const card=document.createElement("div");
+    card.className="poster";
+
+    const skeleton=document.createElement("div");
+    skeleton.className="poster-skeleton";
+
+    const img=document.createElement("img");
+
+    img.alt=anime.title;
+    img.loading="lazy";
+    img.decoding="async";
+    img.referrerPolicy="no-referrer";
+
+    img.onload=()=>{
+
+        img.classList.add("loaded");
+        skeleton.classList.add("hide");
+
+        setTimeout(()=>{
+            skeleton.remove();
+        },450);
+
+    };
+
+    img.onerror=()=>{
+
+        img.remove();
+        skeleton.remove();
+
+        const error=document.createElement("div");
+        error.className="poster-error";
+
+        const number=document.createElement("div");
+        number.className="poster-error-number";
+        number.textContent="#"+String(index+1).padStart(2,"0");
+
+        const label=document.createElement("div");
+        label.className="poster-error-label";
+        label.textContent="GAMBAR TIDAK TERSEDIA";
+
+        error.appendChild(number);
+        error.appendChild(label);
+
+        card.appendChild(error);
+
+        console.warn(
+            "Poster gagal dimuat:",
+            "#"+String(index+1).padStart(2,"0"),
+            anime.title,
+            anime.image
+        );
+
+    };
+
+    card.appendChild(skeleton);
+    card.appendChild(img);
+
+    img.src=anime.image;
+
+    return card;
+
+}
+
+function renderGallery(){
+
+    const selected=shuffle(
+        posterList.map((anime,index)=>({
+            ...anime,
+            originalIndex:index
+        }))
+    );
+
+    columns.forEach((column,index)=>{
+
+        column.innerHTML="";
+
+        const items=selected.filter(
+            (_,i)=>i%3===index
+        );
+
+        [...items,...items].forEach(anime=>{
+
+            column.appendChild(
+                createPoster(anime,anime.originalIndex)
+            );
+
+        });
+
+    });
+
+}
+
+/* PERPINDAHAN HALAMAN */
+
+let current=0;
+const total=5;
+
+const slider=document.getElementById("slider");
+const back=document.getElementById("back");
+const nextText=document.getElementById("nextText");
+const dots=document.querySelectorAll(".dot");
+const slides=document.querySelectorAll(".slide");
+
+let isFinishing=false;
+
+function update(){
+
+    slider.style.transform=
+        "translateX(-"+(current*100)+"%)";
+
+    dots.forEach((dot,index)=>{
+        dot.classList.toggle("active",index===current);
+    });
+
+    slides.forEach((slide,index)=>{
+        slide.classList.toggle("active",index===current);
+    });
+
+    back.classList.toggle("show",current>0);
+
+    nextText.textContent=
+        current===total-1 ? "MULAI" : "LANJUT";
+
+}
+
+function nextSlide(){
+
+    if(isFinishing)return;
+
+    if(current<total-1){
+        current++;
+        update();
+    }else{
+        finish();
+    }
+
+}
+
+function prevSlide(){
+
+    if(isFinishing)return;
+
+    if(current>0){
+        current--;
+        update();
+    }
+
+}
+
+/* SELESAI */
+
+function finish(){
+
+    if(isFinishing)return;
+
+    isFinishing=true;
+
+    const screen=document.getElementById("onboarding");
+
+    screen.style.transition="opacity .5s ease";
+    screen.style.opacity="0";
+
+    try{
+        localStorage.setItem(
+            "anilix_welcome_done",
+            "true"
+        );
+    }catch(e){}
+
+    setTimeout(()=>{
+        window.location.href="login.html";
+    },500);
+
+}
+
+/* PANEL BAWAH */
+
+const onboarding=document.getElementById("onboarding");
+const panels=document.querySelectorAll(".panel");
+const grabAreas=document.querySelectorAll(".grab-area");
+
+let collapsedHeight=0;
+let currentHeight=0;
+let expanded=false;
+let dragging=false;
+let startY=0;
+let startHeight=0;
+let activePointer=null;
+
+function setSheetHeight(height,animate=true){
+
+    currentHeight=height;
+
+    panels.forEach(panel=>{
+        panel.style.transition=animate
+            ? "height .38s cubic-bezier(.22,.8,.25,1)"
+            : "none";
+    });
+
+    onboarding.style.setProperty(
+        "--sheet-height",
+        height+"px"
+    );
+
+}
+
+function calculateSheet(){
+
+    collapsedHeight=Math.max(
+        280,
+        Math.min(window.innerHeight*.45,460)
+    );
+
+    if(!expanded && !dragging){
+        setSheetHeight(collapsedHeight,false);
+    }
+
+}
+
+function expandSheet(){
+
+    expanded=true;
+    setSheetHeight(window.innerHeight,true);
+
+}
+
+function collapseSheet(){
+
+    expanded=false;
+    setSheetHeight(collapsedHeight,true);
+
+}
+
+grabAreas.forEach(area=>{
+
+    area.addEventListener("pointerdown",e=>{
+
+        if(isFinishing || e.button!==0)return;
+
+        dragging=true;
+        activePointer=e.pointerId;
+
+        startY=e.clientY;
+        startHeight=currentHeight;
+
+        area.setPointerCapture(e.pointerId);
+
+        panels.forEach(panel=>{
+            panel.style.transition="none";
+        });
+
+        e.preventDefault();
+
+    });
+
+    area.addEventListener("pointermove",e=>{
+
+        if(!dragging || e.pointerId!==activePointer)return;
+
+        const difference=e.clientY-startY;
+
+        const height=Math.max(
+            collapsedHeight,
+            Math.min(
+                window.innerHeight,
+                startHeight-difference
+            )
+        );
+
+        setSheetHeight(height,false);
+
+    });
+
+    function endDrag(e){
+
+        if(!dragging || e.pointerId!==activePointer)return;
+
+        const difference=e.clientY-startY;
+
+        dragging=false;
+        activePointer=null;
+
+        if(difference < -35){
+            expandSheet();
+        }else if(difference > 35){
+            collapseSheet();
+        }else if(currentHeight>
+            (collapsedHeight+window.innerHeight)/2){
+            expandSheet();
+        }else{
+            collapseSheet();
+        }
+
+    }
+
+    area.addEventListener("pointerup",endDrag);
+
+    area.addEventListener("pointercancel",()=>{
+
+        if(!dragging)return;
+
+        dragging=false;
+        activePointer=null;
+
+        if(expanded){
+            expandSheet();
+        }else{
+            collapseSheet();
+        }
+
+    });
+
+});
+
+/* UKURAN LAYAR */
+
+window.addEventListener("resize",()=>{
+
+    if(dragging)return;
+
+    calculateSheet();
+
+    if(expanded){
+        setSheetHeight(window.innerHeight,true);
+    }
+
+});
+
+/* GESER HALAMAN */
+
+let swipeStartX=0;
+let swipeStartY=0;
+
+document.addEventListener("touchstart",e=>{
+
+    swipeStartX=e.touches[0].clientX;
+    swipeStartY=e.touches[0].clientY;
+
+},{passive:true});
+
+document.addEventListener("touchend",e=>{
+
+    if(isFinishing)return;
+
+    const dx=e.changedTouches[0].clientX-swipeStartX;
+    const dy=e.changedTouches[0].clientY-swipeStartY;
+
+    if(Math.abs(dx)<65)return;
+    if(Math.abs(dx)<Math.abs(dy))return;
+
+    if(dx<0){
+        nextSlide();
+    }else{
+        prevSlide();
+    }
+
+},{passive:true});
+
+/* TOMBOL PANAH PAPAN KETIK */
+
+document.addEventListener("keydown",e=>{
+
+    if(e.key==="ArrowRight")nextSlide();
+    if(e.key==="ArrowLeft")prevSlide();
+
+});
+
+/* MULAI */
+
+calculateSheet();
+update();
+renderGallery();
+
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

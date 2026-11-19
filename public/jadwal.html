@@ -1,0 +1,1095 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090711">
+<title>Jadwal Tayang — ANILIX</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+ --bg:#090711;
+ --glass:rgba(30,23,45,.66);
+ --border:rgba(190,150,255,.13);
+ --purple:#a875ff;
+ --light:#d4baff;
+ --muted:#93899f;
+ --white:#f8f5ff;
+ --time-width:54px;
+ --spine-width:22px;
+ --timeline-gap:9px;
+ --dot-size:9px;
+}
+
+html{
+ background:var(--bg);
+ scroll-behavior:smooth;
+ scroll-padding-top:135px;
+}
+
+body{
+ min-height:100vh;
+ background:
+ radial-gradient(ellipse at 50% -15%,#30204d 0%,transparent 45%),
+ var(--bg);
+ color:var(--white);
+ font-family:Inter,Arial,sans-serif;
+ overflow-x:hidden;
+ -webkit-tap-highlight-color:transparent;
+}
+
+button{font:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+svg{
+ width:20px;
+ height:20px;
+ stroke:currentColor;
+ fill:none;
+ stroke-width:1.8;
+ stroke-linecap:round;
+ stroke-linejoin:round;
+}
+
+/* HEADER */
+
+.header{
+ height:62px;
+ width:calc(100% - 28px);
+ max-width:720px;
+ margin:15px auto 12px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ padding:0 16px;
+ background:var(--glass);
+ border:1px solid var(--border);
+ border-radius:18px;
+ backdrop-filter:blur(22px);
+ -webkit-backdrop-filter:blur(22px);
+ box-shadow:0 8px 35px #0004;
+}
+
+.header-title{
+ font-size:17px;
+ font-weight:800;
+ letter-spacing:-.5px;
+}
+
+.header-title span{color:var(--purple)}
+
+/* DAY NAVIGATION */
+
+.day-jumper{
+ position:sticky;
+ top:10px;
+ z-index:90;
+ width:calc(100% - 28px);
+ max-width:720px;
+ margin:0 auto;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:13px;
+ padding:10px 14px;
+ background:rgba(30,23,45,.86);
+ border:1px solid var(--border);
+ border-radius:16px;
+ backdrop-filter:blur(22px);
+ -webkit-backdrop-filter:blur(22px);
+ box-shadow:0 6px 25px #0003;
+}
+
+.day-jumper button{
+ width:36px;
+ height:36px;
+ flex-shrink:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border:1px solid var(--border);
+ border-radius:11px;
+ background:rgba(255,255,255,.045);
+ color:#fff;
+ font-size:21px;
+ transition:background .2s;
+}
+
+.day-jumper button:active{
+ background:rgba(168,117,255,.2);
+}
+
+.day-jumper button:disabled{
+ opacity:.3;
+ cursor:default;
+}
+
+.day-center{
+ min-width:112px;
+ text-align:center;
+}
+
+.day-name{
+ font-size:13px;
+ font-weight:800;
+}
+
+.day-subtitle{
+ margin-top:3px;
+ font-size:9px;
+ color:var(--muted);
+ letter-spacing:.4px;
+}
+
+/* MAIN */
+
+.schedule-wrap{
+ width:100%;
+ max-width:720px;
+ margin:auto;
+ padding:10px 14px 125px;
+}
+
+/* DAY SECTION */
+
+.day-section{
+ scroll-margin-top:135px;
+ padding:21px 0 23px;
+}
+
+.day-section+.day-section{
+ border-top:1px solid rgba(190,150,255,.10);
+}
+
+.day-head{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin-bottom:19px;
+ padding:0 2px;
+}
+
+.day-heading{
+ display:flex;
+ align-items:center;
+ gap:10px;
+}
+
+.day-indicator{
+ width:4px;
+ height:21px;
+ border-radius:10px;
+ background:var(--purple);
+ box-shadow:0 0 12px rgba(168,117,255,.35);
+}
+
+.day-title{
+ font-size:19px;
+ font-weight:900;
+ letter-spacing:-.5px;
+}
+
+.day-count{
+ font-size:10px;
+ font-weight:600;
+ color:#c1b5d0;
+ padding:6px 10px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ background:rgba(30,23,45,.55);
+}
+
+/* TIMELINE */
+
+.timeline{
+ position:relative;
+ width:100%;
+}
+
+.schedule-item{
+ position:relative;
+ display:grid;
+ grid-template-columns:
+ var(--time-width)
+ var(--spine-width)
+ minmax(0,1fr);
+ column-gap:var(--timeline-gap);
+ min-height:116px;
+}
+
+.schedule-item::before{
+ content:"";
+ position:absolute;
+ left:calc(
+ var(--time-width) +
+ var(--timeline-gap) +
+ (var(--spine-width)/2)
+ );
+ top:0;
+ bottom:0;
+ width:1px;
+ background:rgba(168,117,255,.25);
+ transform:translateX(-50%);
+ z-index:1;
+}
+
+.schedule-item:last-child::before{display:none}
+
+.schedule-time{
+ grid-column:1;
+ position:relative;
+ z-index:5;
+ padding-top:10px;
+ text-align:right;
+ font-size:10px;
+ font-weight:700;
+ color:#b9adc9;
+ white-space:nowrap;
+}
+
+.schedule-dot-wrap{
+ grid-column:2;
+ position:relative;
+ z-index:10;
+ width:var(--spine-width);
+ height:100%;
+ display:flex;
+ align-items:flex-start;
+ justify-content:center;
+ padding-top:11px;
+}
+
+.schedule-dot{
+ width:var(--dot-size);
+ height:var(--dot-size);
+ flex:0 0 var(--dot-size);
+ border-radius:50%;
+ background:var(--purple);
+ box-shadow:
+ 0 0 0 4px rgba(168,117,255,.10),
+ 0 0 12px rgba(168,117,255,.3);
+}
+
+/* ANIME CARD */
+
+.anime-card{
+ grid-column:3;
+ position:relative;
+ z-index:4;
+ width:100%;
+ min-width:0;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:10px;
+ margin-bottom:14px;
+ background:linear-gradient(
+ 135deg,
+ rgba(30,23,45,.78),
+ rgba(21,17,31,.68)
+ );
+ border:1px solid var(--border);
+ border-radius:15px;
+ color:#fff;
+ overflow:hidden;
+ box-shadow:0 5px 18px rgba(0,0,0,.15);
+ transition:background .2s,border-color .2s;
+}
+
+.anime-card:active{
+ background:rgba(50,35,73,.85);
+ border-color:rgba(168,117,255,.35);
+}
+
+.poster{
+ width:68px;
+ height:94px;
+ flex:0 0 68px;
+ object-fit:cover;
+ border-radius:10px;
+ background:#211633;
+ border:1px solid rgba(190,150,255,.12);
+}
+
+.poster-placeholder{
+ width:68px;
+ height:94px;
+ flex:0 0 68px;
+ display:grid;
+ place-items:center;
+ border-radius:10px;
+ background:linear-gradient(145deg,#211633,#100c19);
+ border:1px solid var(--border);
+ color:#6e5a8b;
+}
+
+.poster-placeholder svg{
+ width:27px;
+ height:27px;
+ opacity:.5;
+}
+
+.anime-info{
+ min-width:0;
+ flex:1;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+}
+
+.anime-title{
+ font-size:13px;
+ font-weight:800;
+ line-height:1.4;
+ margin-bottom:5px;
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ overflow:hidden;
+}
+
+.anime-episode{
+ font-size:10px;
+ font-weight:700;
+ color:#bd93ff;
+ margin-bottom:9px;
+}
+
+.anime-meta{
+ display:flex;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:8px;
+ font-size:9px;
+ color:#a99db8;
+}
+
+.meta-status{
+ padding:5px 8px;
+ border-radius:6px;
+ background:rgba(168,117,255,.14);
+ color:#d4baff;
+ font-size:9px;
+ font-weight:700;
+}
+
+.meta-status.soon{
+ background:rgba(255,255,255,.07);
+ color:#b9adc9;
+}
+
+/* EMPTY / ERROR */
+
+.state-card{
+ width:100%;
+ padding:24px 15px;
+ text-align:center;
+ color:var(--muted);
+ font-size:11px;
+ line-height:1.7;
+ border:1px dashed var(--border);
+ border-radius:15px;
+ background:rgba(30,23,45,.25);
+}
+
+.state-card strong{
+ display:block;
+ color:#d4baff;
+ font-size:12px;
+ margin-bottom:5px;
+}
+
+.state-card button{
+ margin-top:10px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ padding:8px 13px;
+ background:#241a35;
+ color:#d4baff;
+ font-size:11px;
+}
+
+/* NAVIGATION */
+
+.bottom-nav{
+ position:fixed!important;
+ bottom:18px!important;
+ left:50%!important;
+ top:auto!important;
+ right:auto!important;
+ transform:translateX(-50%)!important;
+ z-index:99999!important;
+ width:calc(100% - 32px)!important;
+ max-width:520px;
+ height:72px;
+ display:flex;
+ justify-content:space-around;
+ align-items:center;
+ padding:6px 10px;
+ margin:0;
+ background:rgba(28,20,42,.78);
+ border:1px solid rgba(210,180,255,.2);
+ border-radius:25px;
+ backdrop-filter:blur(25px) saturate(160%);
+ -webkit-backdrop-filter:blur(25px) saturate(160%);
+ box-shadow:
+ 0 8px 32px rgba(0,0,0,.42),
+ inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.nav-item{
+ flex:1;
+ height:58px;
+ max-width:95px;
+ background:none;
+ border:0;
+ color:#a69aaf;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex-direction:column;
+ gap:5px;
+ font-size:10px;
+ font-weight:600;
+ border-radius:18px;
+ transition:.25s;
+ text-decoration:none;
+}
+
+.nav-item svg{
+ width:23px;
+ height:23px;
+ transition:.25s;
+}
+
+.nav-item.active{
+ color:#fff;
+ background:rgba(168,117,255,.28);
+ box-shadow:
+ inset 0 0 0 1px rgba(190,150,255,.12),
+ 0 3px 12px rgba(168,117,255,.12);
+}
+
+.nav-item.active svg{
+ color:#d7baff;
+ filter:drop-shadow(0 0 7px #a875ff99);
+}
+
+.nav-item:active{transform:scale(.92)}
+
+/* RESPONSIVE */
+
+@media(min-width:700px){
+ .schedule-wrap{
+  padding-left:20px;
+  padding-right:20px;
+ }
+
+ .day-section{
+  padding-top:26px;
+  padding-bottom:27px;
+ }
+
+ .anime-card{padding:12px}
+
+ .poster,.poster-placeholder{
+  width:74px;
+  height:100px;
+  flex-basis:74px;
+ }
+
+ .anime-title{font-size:14px}
+}
+
+@media(max-width:430px){
+ :root{
+  --time-width:49px;
+  --spine-width:20px;
+  --timeline-gap:8px;
+ }
+
+ .schedule-wrap{
+  padding-left:10px;
+  padding-right:10px;
+ }
+
+ .poster,.poster-placeholder{
+  width:64px;
+  height:90px;
+  flex-basis:64px;
+ }
+
+ .anime-card{
+  gap:10px;
+  padding:9px;
+ }
+
+ .anime-title{font-size:12px}
+}
+
+@media(max-width:350px){
+ :root{
+  --time-width:44px;
+  --spine-width:18px;
+  --timeline-gap:7px;
+ }
+
+ .schedule-time{font-size:9px}
+
+ .poster,.poster-placeholder{
+  width:57px;
+  height:82px;
+  flex-basis:57px;
+ }
+
+ .anime-card{
+  padding:8px;
+  gap:8px;
+ }
+
+ .anime-title{font-size:11px}
+ .nav-item{font-size:9px}
+ .nav-item svg{
+  width:21px;
+  height:21px;
+ }
+}
+
+@media(prefers-reduced-motion:reduce){
+ *{scroll-behavior:auto!important;transition:none!important}
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<header class="header">
+ <div class="header-title">
+  Jadwal <span>Tayang</span>
+ </div>
+</header>
+
+<div class="day-jumper">
+ <button type="button" id="prevDay" aria-label="Hari sebelumnya">‹</button>
+
+ <div class="day-center">
+  <div class="day-name" id="currentDay">Memuat...</div>
+  <div class="day-subtitle">JADWAL ANIME MINGGUAN</div>
+ </div>
+
+ <button type="button" id="nextDay" aria-label="Hari berikutnya">›</button>
+</div>
+
+<main class="schedule-wrap" id="scheduleWrap">
+ <div class="state-card">
+  <strong>Memuat jadwal...</strong>
+  Mengambil data jadwal tayang.
+ </div>
+</main>
+
+<nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama">
+
+ <a href="/" class="nav-item">
+  <svg viewBox="0 0 24 24">
+   <path d="m3 10 9-7 9 7v10H3z"/>
+   <path d="M9 20v-7h6v7"/>
+  </svg>
+  Home
+ </a>
+
+ <a href="./jadwal.html" class="nav-item active" aria-current="page">
+  <svg viewBox="0 0 24 24">
+   <rect x="3" y="4" width="18" height="17" rx="2"/>
+   <path d="M8 2v4M16 2v4M3 10h18"/>
+  </svg>
+  Jadwal
+ </a>
+
+ <a href="./favorit.html" class="nav-item">
+  <svg viewBox="0 0 24 24">
+   <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/>
+  </svg>
+  Favorit
+ </a>
+
+ <a href="./riwayat.html" class="nav-item">
+  <svg viewBox="0 0 24 24">
+   <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+   <path d="M3 3v5h5M12 7v5l3 2"/>
+  </svg>
+  Riwayat
+ </a>
+
+ <a href="./profile.html" class="nav-item">
+  <svg viewBox="0 0 24 24">
+   <circle cx="12" cy="8" r="4"/>
+   <path d="M4 21a8 8 0 0 1 16 0"/>
+  </svg>
+  Profile
+ </a>
+
+</nav>
+
+<script>
+"use strict";
+
+/* ======================================
+   ANILIX SCHEDULE API
+====================================== */
+
+const SCHEDULE_API = "../api/jadwal.json";
+
+const DAY_NAMES = [
+ "Senin",
+ "Selasa",
+ "Rabu",
+ "Kamis",
+ "Jumat",
+ "Sabtu",
+ "Minggu"
+];
+
+const scheduleWrap = document.getElementById("scheduleWrap");
+const currentDayLabel = document.getElementById("currentDay");
+const prevButton = document.getElementById("prevDay");
+const nextButton = document.getElementById("nextDay");
+
+let scheduleSections = [];
+let activeIndex = 0;
+let scrollTimer = null;
+
+/* ======================================
+   HELPERS
+====================================== */
+
+function escapeHTML(value){
+ return String(value ?? "").replace(/[&<>"']/g,char=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ })[char]);
+}
+
+function safeURL(value){
+ if(typeof value !== "string" || !value.trim()) return "";
+
+ try{
+  const url = new URL(value,location.href);
+
+  if(url.protocol === "http:" || url.protocol === "https:"){
+   return url.href;
+  }
+ }catch(error){}
+
+ return "";
+}
+
+function normalizeDay(value){
+ const text = String(value || "").trim().toLowerCase();
+
+ return DAY_NAMES.find(day=>
+  day.toLowerCase() === text
+ ) || null;
+}
+
+function getScheduleDays(data){
+ if(Array.isArray(data)) return data;
+ if(Array.isArray(data?.days)) return data.days;
+ if(Array.isArray(data?.data)) return data.data;
+ if(data?.schedule && typeof data.schedule === "object"){
+  return Object.entries(data.schedule).map(([day,items])=>({
+   day,
+   items
+  }));
+ }
+ return [];
+}
+
+function getDayItems(dayData){
+ if(Array.isArray(dayData)) return dayData;
+ if(Array.isArray(dayData?.items)) return dayData.items;
+ if(Array.isArray(dayData?.anime)) return dayData.anime;
+ if(Array.isArray(dayData?.data)) return dayData.data;
+ return [];
+}
+
+function getAnimeURL(item){
+ if(item.url){
+  const customURL = safeURL(item.url);
+  if(customURL) return customURL;
+ }
+
+ const id = item.id || item.anime_id || item.slug;
+
+ if(!id) return "";
+
+ return "./detail.html?id=" + encodeURIComponent(id);
+}
+
+function getImage(item){
+ return safeURL(
+  item.image ||
+  item.poster ||
+  item.cover ||
+  item.thumbnail
+ );
+}
+
+function getTime(item){
+ const value = String(
+  item.time ||
+  item.airing_time ||
+  item.airingTime ||
+  ""
+ ).trim();
+
+ if(/^\d{1,2}:\d{2}$/.test(value)){
+  return value;
+ }
+
+ return "";
+}
+
+/* ======================================
+   EMPTY STATE
+====================================== */
+
+function renderEmpty(message){
+ scheduleWrap.innerHTML = `
+  <div class="state-card">
+   <strong>Jadwal belum tersedia</strong>
+   ${escapeHTML(message)}
+  </div>
+ `;
+}
+
+/* ======================================
+   ANIME CARD
+====================================== */
+
+function renderAnimeCard(item){
+
+ const title = item.title || item.name || "";
+ const episode = item.episode || item.episode_number || "";
+ const status = item.status || "";
+ const image = getImage(item);
+ const url = getAnimeURL(item);
+ const time = getTime(item);
+
+ const statusText = status
+  ? escapeHTML(status)
+  : "";
+
+ const statusClass = /soon|upcoming|segera/i.test(status)
+  ? "soon"
+  : "";
+
+ const episodeText = episode
+  ? escapeHTML(
+     typeof episode === "number"
+      ? "Episode " + episode
+      : episode
+    )
+  : "";
+
+ const poster = image
+  ? `
+    <img
+     class="poster"
+     src="${escapeHTML(image)}"
+     alt="${escapeHTML(title)}"
+     loading="lazy"
+     onerror="this.replaceWith(createPosterPlaceholder())"
+    >
+   `
+  : `
+    <div class="poster-placeholder" aria-hidden="true">
+     <svg viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="3"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <path d="m21 15-5-5L5 21"/>
+     </svg>
+    </div>
+   `;
+
+ const meta = statusText
+  ? `<span class="meta-status ${statusClass}">${statusText}</span>`
+  : "";
+
+ const content = `
+  ${poster}
+  <div class="anime-info">
+   <div class="anime-title">${escapeHTML(title)}</div>
+   ${episodeText ? `<div class="anime-episode">${episodeText}</div>` : ""}
+   ${meta ? `<div class="anime-meta">${meta}</div>` : ""}
+  </div>
+ `;
+
+ if(url){
+  return `
+   <a class="anime-card" href="${escapeHTML(url)}">
+    ${content}
+   </a>
+  `;
+ }
+
+ return `
+  <article class="anime-card">
+   ${content}
+  </article>
+ `;
+}
+
+/* Create placeholder for broken image */
+function createPosterPlaceholder(){
+ const element = document.createElement("div");
+ element.className = "poster-placeholder";
+ element.setAttribute("aria-hidden","true");
+
+ element.innerHTML = `
+  <svg viewBox="0 0 24 24">
+   <rect x="3" y="3" width="18" height="18" rx="3"/>
+   <circle cx="8.5" cy="8.5" r="1.5"/>
+   <path d="m21 15-5-5L5 21"/>
+  </svg>
+ `;
+
+ return element;
+}
+
+/* ======================================
+   RENDER DAY
+====================================== */
+
+function renderDay(day,items){
+
+ const validItems = items
+  .filter(item=>item && typeof item === "object")
+  .map(item=>({
+   ...item,
+   _time:getTime(item)
+  }))
+  .sort((a,b)=>a._time.localeCompare(b._time));
+
+ const cards = validItems.map(item=>`
+  <div class="schedule-item">
+   <div class="schedule-time">
+    ${escapeHTML(item._time || "—")}
+   </div>
+
+   <div class="schedule-dot-wrap">
+    <span class="schedule-dot"></span>
+   </div>
+
+   ${renderAnimeCard(item)}
+  </div>
+ `).join("");
+
+ const content = validItems.length
+  ? `<div class="timeline">${cards}</div>`
+  : `
+    <div class="state-card">
+     <strong>Tidak ada jadwal</strong>
+     Belum ada anime yang dijadwalkan pada hari ini.
+    </div>
+   `;
+
+ return `
+  <section class="day-section" data-day="${escapeHTML(day)}">
+   <div class="day-head">
+    <div class="day-heading">
+     <span class="day-indicator"></span>
+     <h2 class="day-title">${escapeHTML(day)}</h2>
+    </div>
+
+    <span class="day-count">
+     ${validItems.length} Anime
+    </span>
+   </div>
+
+   ${content}
+  </section>
+ `;
+}
+
+/* ======================================
+   RENDER ALL DAYS
+====================================== */
+
+function renderSchedule(data){
+
+ const sourceDays = getScheduleDays(data);
+
+ const dayMap = new Map();
+
+ sourceDays.forEach(dayData=>{
+
+  if(!dayData || typeof dayData !== "object") return;
+
+  const dayName = normalizeDay(
+   dayData.day ||
+   dayData.name ||
+   dayData.weekday
+  );
+
+  if(!dayName) return;
+
+  dayMap.set(dayName,getDayItems(dayData));
+ });
+
+ scheduleWrap.innerHTML = DAY_NAMES.map(day=>
+  renderDay(day,dayMap.get(day) || [])
+ ).join("");
+
+ scheduleSections = [
+  ...document.querySelectorAll(".day-section")
+ ];
+
+ const today = new Date().getDay();
+ activeIndex = today === 0 ? 6 : today - 1;
+
+ updateDayLabel();
+}
+
+/* ======================================
+   DAY NAVIGATION
+====================================== */
+
+function updateDayLabel(){
+
+ if(!scheduleSections.length) return;
+
+ currentDayLabel.textContent = DAY_NAMES[activeIndex];
+
+ prevButton.disabled = activeIndex <= 0;
+ nextButton.disabled = activeIndex >= DAY_NAMES.length - 1;
+}
+
+function goToDay(index){
+
+ if(!scheduleSections.length) return;
+
+ activeIndex = Math.max(
+  0,
+  Math.min(index,DAY_NAMES.length - 1)
+ );
+
+ updateDayLabel();
+
+ scheduleSections[activeIndex].scrollIntoView({
+  behavior:"smooth",
+  block:"start"
+ });
+}
+
+prevButton.addEventListener("click",()=>{
+ if(activeIndex > 0){
+  goToDay(activeIndex - 1);
+ }
+});
+
+nextButton.addEventListener("click",()=>{
+ if(activeIndex < DAY_NAMES.length - 1){
+  goToDay(activeIndex + 1);
+ }
+});
+
+/* ======================================
+   SCROLL SYNC
+====================================== */
+
+window.addEventListener("scroll",()=>{
+
+ clearTimeout(scrollTimer);
+
+ scrollTimer = setTimeout(()=>{
+
+  if(!scheduleSections.length) return;
+
+  const position = window.scrollY + 155;
+  let closestIndex = 0;
+
+  scheduleSections.forEach((section,index)=>{
+   if(section.getBoundingClientRect().top + window.scrollY <= position){
+    closestIndex = index;
+   }
+  });
+
+  activeIndex = closestIndex;
+  updateDayLabel();
+
+ },70);
+
+},{passive:true});
+
+/* ======================================
+   LOAD API
+====================================== */
+
+async function loadSchedule(){
+
+ scheduleWrap.innerHTML = `
+  <div class="state-card">
+   <strong>Memuat jadwal...</strong>
+   Mengambil data jadwal tayang.
+  </div>
+ `;
+
+ try{
+
+  const response = await fetch(SCHEDULE_API,{
+   cache:"no-store"
+  });
+
+  if(!response.ok){
+   throw new Error("HTTP " + response.status);
+  }
+
+  const data = await response.json();
+
+  renderSchedule(data);
+
+ }catch(error){
+
+  console.error("ANILIX Schedule:",error);
+
+  scheduleWrap.innerHTML = `
+   <div class="state-card">
+    <strong>Gagal memuat jadwal</strong>
+    Data jadwal tidak dapat diambil dari server.
+    <br>
+    <button type="button" id="retrySchedule">
+     Coba Lagi
+    </button>
+   </div>
+  `;
+
+  document
+   .getElementById("retrySchedule")
+   ?.addEventListener("click",loadSchedule);
+
+ }
+}
+
+/* ======================================
+   INITIALIZE
+====================================== */
+
+loadSchedule();
+
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

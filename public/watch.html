@@ -1,0 +1,2714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0b0c10">
+<title>ANILIX — Watch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,500,1,0">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;min-height:100%;background:#0b0c10;color:#f5f5f7;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow-x:hidden}
+button,input{font:inherit}
+button{border:0;outline:0;cursor:pointer;color:inherit}
+.app{width:100%;max-width:none;min-height:100vh;margin:0 auto;transform:translateY(0);transition:transform .28s cubic-bezier(.2,.75,.25,1);will-change:transform}
+
+/* PLAYER */
+.player-wrap{width:100%;background:#000}
+.player{width:100%;aspect-ratio:16/9;position:relative;overflow:hidden;background:#000;user-select:none;touch-action:none}
+.player video{width:100%;height:100%;display:block;background:#000;object-fit:contain;pointer-events:auto}
+.player-top{position:absolute;top:0;left:0;right:0;height:100px;background:linear-gradient(to bottom,rgba(0,0,0,.75),transparent);pointer-events:none;z-index:3}
+.player-bottom{position:absolute;left:0;right:0;bottom:0;height:130px;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);pointer-events:none;z-index:3}
+
+/* PLAYER TITLE */
+.player-title{position:absolute;top:13px;left:15px;z-index:10;font-size:14px;font-weight:800;text-shadow:0 1px 5px rgba(0,0,0,.6);transition:opacity .2s,visibility .2s}
+.player-episode{display:block;margin-top:2px;color:rgba(255,255,255,.65);font-size:11px;font-weight:500}
+
+/* SETTINGS */
+.player-settings{position:absolute;top:9px;right:10px;width:40px;height:40px;display:grid;place-items:center;border-radius:11px;background:rgba(12,10,20,.48);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:20;font-size:25px;line-height:1}
+.player-settings:active{background:rgba(139,92,246,.25)}
+
+/* HIDDEN UI */
+.player.ui-hidden .player-title,
+.player.ui-hidden .player-settings,
+.player.ui-hidden .controls,
+.player.ui-hidden .episode-nav,
+.player.ui-hidden .center-play{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+/* TAP AREAS */
+.tap-left,.tap-center,.tap-right{position:absolute;top:0;bottom:55px;z-index:5;touch-action:none}
+.tap-left{left:0;width:33.333%}
+.tap-center{left:33.333%;width:33.333%}
+.tap-right{right:0;width:33.333%}
+
+/* CENTER PLAY */
+.center-play{
+    position:absolute;left:50%;top:50%;
+    transform:translate(-50%,-50%);
+    width:62px;height:62px;
+    display:grid;place-items:center;
+    border-radius:50%;
+    background:rgba(12,10,20,.58);
+    border:1px solid rgba(255,255,255,.13);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    z-index:12;
+    opacity:1;
+    visibility:visible;
+    transition:opacity .2s,visibility .2s,transform .2s;
+}
+.center-play:active{transform:translate(-50%,-50%) scale(.92)}
+.play-icon{width:0;height:0;display:block;margin-left:4px;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:14px solid #fff}
+.play-icon.pause{width:15px;height:18px;margin-left:0;border:0;background:linear-gradient(90deg,#fff 0 35%,transparent 35% 65%,#fff 65% 100%)}
+
+/* EPISODE NAV */
+.episode-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:49px;height:49px;display:grid;place-items:center;
+    border-radius:50%;color:#fff;background:rgba(20,20,20,.62);
+    border:1px solid rgba(255,255,255,.13);
+    box-shadow:0 3px 14px rgba(0,0,0,.25);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    z-index:15;transition:opacity .2s,visibility .2s,background .2s,transform .2s;
+}
+.episode-nav.prev{left:27%}
+.episode-nav.next{right:27%}
+.episode-nav:active:not(:disabled){background:rgba(139,92,246,.65);transform:translateY(-50%) scale(.9)}
+.episode-nav:disabled{opacity:.25;cursor:default}
+.episode-nav svg{width:25px;height:25px;display:block;fill:#fff;stroke:none}
+
+/* HOLD 2X */
+.speed-hold-indicator{
+    position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(.85);
+    padding:11px 19px;border-radius:30px;
+    background:rgba(12,10,20,.78);
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    color:#fff;font-size:16px;font-weight:900;
+    opacity:0;pointer-events:none;z-index:30;
+    transition:opacity .2s,transform .2s;
+}
+.speed-hold-indicator.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+/* SKIP */
+.skip{position:absolute;top:50%;transform:translateY(-50%) scale(.8);width:78px;height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:18px;background:rgba(0,0,0,.52);opacity:0;pointer-events:none;z-index:13}
+.skip.left{left:13%}
+.skip.right{right:13%}
+.skip.show{animation:skipShow .55s ease}
+@keyframes skipShow{0%{opacity:0;transform:translateY(-50%) scale(.75)}25%{opacity:1;transform:translateY(-50%) scale(1)}100%{opacity:0;transform:translateY(-50%) scale(1)}}
+.skip-arrow{font-size:22px;line-height:15px}
+.skip-number{font-size:11px;font-weight:800}
+
+/* CONTROLS */
+.controls{position:absolute;left:0;right:0;bottom:0;padding:0 12px 10px;z-index:16;transition:opacity .2s,visibility .2s}
+.progress-area{width:100%;height:20px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+.progress{width:100%;height:4px;position:relative;overflow:visible;border-radius:20px;background:rgba(255,255,255,.22)}
+.progress-fill{position:absolute;left:0;top:0;width:0%;height:100%;border-radius:20px;background:linear-gradient(90deg,#7c3aed,#a78bfa,#c4b5fd);box-shadow:0 0 9px rgba(139,92,246,.65)}
+.progress-thumb{position:absolute;top:50%;left:0%;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid #a78bfa;box-shadow:0 0 8px rgba(139,92,246,.7);transform:translate(-50%,-50%);z-index:2;pointer-events:none;transition:width .12s,height .12s}
+.progress-area:active .progress-thumb{width:15px;height:15px}
+.control-row{display:flex;align-items:center;gap:7px}
+.control{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:transparent}
+.control:active{background:rgba(139,92,246,.2)}
+.time{flex:1;color:rgba(255,255,255,.78);font-size:11px}
+.pip-icon{width:17px;height:13px;display:block;border:1.5px solid #fff;border-radius:2px;position:relative}
+.pip-icon::after{content:"";position:absolute;right:1px;bottom:1px;width:7px;height:5px;background:#fff;border-radius:1px}
+.full-icon{width:16px;height:16px;display:block;position:relative}
+.full-icon::before,.full-icon::after{content:"";position:absolute;width:7px;height:7px;border-color:#fff;border-style:solid}
+.full-icon::before{left:0;top:0;border-width:2px 0 0 2px}
+.full-icon::after{right:0;bottom:0;border-width:0 2px 2px 0}
+
+/* CONTENT */
+.content{padding:15px}
+.info-row{display:flex;gap:13px}
+.poster{width:76px;height:105px;flex:none;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#2c2441,#15131d);border:1px solid rgba(255,255,255,.08);display:grid;place-items:center}
+.poster::after{content:"AN";font-size:20px;font-weight:900;opacity:.45}
+.info{min-width:0;flex:1}
+.title{margin-top:2px;font-size:18px;font-weight:850}
+.episode-meta{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:7px;color:#9296a3;font-size:12px}
+.dot{opacity:.5}
+
+/* SINOPSIS */
+.synopsis{margin-top:16px;padding-top:15px;border-top:1px solid rgba(255,255,255,.07)}
+.synopsis-title{margin-bottom:7px;font-size:14px;font-weight:850}
+.synopsis-text{color:#c4c6ce;font-size:13px;line-height:1.65;max-height:63px;overflow:hidden;transition:max-height .3s}
+.synopsis-text.open{max-height:500px}
+.more{display:flex;align-items:center;gap:3px;margin-top:6px;padding:0;background:transparent;color:#a78bfa;font-size:12px;font-weight:750}
+
+/* ACTIONS */
+.actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:17px}
+.action{min-width:0;height:65px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:7px 3px;border-radius:13px;background:linear-gradient(145deg,#191b24,#13151c);border:1px solid rgba(255,255,255,.075);color:#dfe0e8;font-size:10px;font-weight:750;white-space:nowrap;transition:background .2s,border-color .2s,transform .2s}
+.action:active{transform:scale(.95);background:#252033;border-color:rgba(167,139,250,.4)}
+.action-icon{width:21px;height:21px;display:grid;place-items:center;color:#b9a2ff}
+.action-icon svg{width:20px;height:20px;display:block;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* EPISODES */
+.section-header{margin-top:20px;padding-top:15px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.section-title{font-size:14px;font-weight:850}
+.episode-menu{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:#171920;border:1px solid rgba(255,255,255,.07);font-size:17px}
+.episode-panel{display:none;margin-top:10px;padding:12px;border-radius:13px;background:#12141a;border:1px solid rgba(255,255,255,.07)}
+.episode-panel.open{display:block}
+.episode-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.episode-button{height:37px;border-radius:9px;background:#171920;border:1px solid rgba(255,255,255,.07);color:#aaaeba;font-size:11px;font-weight:750}
+.episode-button.active{color:#fff;background:#8b5cf6;border-color:#8b5cf6}
+
+/* COMMENTS */
+.comments{margin:0 -15px;padding:18px 15px 18px;border-top:1px solid rgba(255,255,255,.07);background:#0b0c10}
+.comments-title{font-size:20px;font-weight:800;margin-bottom:14px}
+.comment-form{display:flex;align-items:center;gap:8px}
+.comment-avatar,.comment-user-avatar{cursor:pointer;width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:50%;background:#242731;color:#dfe1e7;font-size:10px;font-weight:850;overflow:hidden}
+.comment-avatar img,.comment-user-avatar img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
+.comment-input{min-width:0;flex:1;height:40px;padding:0 12px;border-radius:11px;outline:none;border:1px solid rgba(255,255,255,.07);background:#12141a;color:#fff;font-size:12px}
+.comment-input::placeholder{color:#696d78}
+.comment-send{width:40px;height:40px;border-radius:11px;background:#8b5cf6;font-size:14px}
+.comment-list{display:flex;flex-direction:column;gap:0;margin:14px -15px 0}
+.comment{display:flex;gap:10px;padding:15px 16px 14px;border-radius:0;background:linear-gradient(110deg,rgba(13,15,22,.92),rgba(19,22,31,.84)),radial-gradient(ellipse at 80% 20%,#313b57 0%,#141821 65%);border:0;border-bottom:1px solid rgba(255,255,255,.09);position:relative;min-height:0}
+.comment.reply-level-1{margin-left:0;padding-left:28px;background:linear-gradient(110deg,rgba(13,15,22,.92),rgba(19,22,31,.84))}
+.comment.reply-level-2{margin-left:0;padding-left:40px;background:linear-gradient(110deg,rgba(13,15,22,.92),rgba(19,22,31,.84))}
+.comment.reply-level-3{margin-left:0;padding-left:52px;background:linear-gradient(110deg,rgba(13,15,22,.92),rgba(19,22,31,.84))}
+.comment-body{min-width:0;flex:1}
+.comment-head{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding-right:30px}
+.comment-more{position:absolute;top:7px;right:8px;width:36px;height:36px;display:grid;place-items:center;border-radius:9px;background:rgba(30,32,42,.85);color:#fff;font-size:23px;line-height:1;z-index:30;pointer-events:auto;cursor:pointer;touch-action:manipulation}
+.comment-more:active{background:#252033;color:#fff}
+.report-backdrop{position:fixed;inset:0;z-index:220000;display:flex;align-items:flex-end;justify-content:center;padding:14px;background:rgba(0,0,0,.68);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s,visibility .2s}
+.report-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
+.report-dialog{width:min(100%,480px);max-height:80vh;overflow-y:auto;padding:17px;border-radius:20px;background:#15171e;border:1px solid rgba(255,255,255,.09);box-shadow:0 18px 55px #0009;transform:translateY(18px);transition:transform .25s}
+.report-backdrop.open .report-dialog{transform:translateY(0)}
+.report-dialog-title{font-size:15px;font-weight:850;margin-bottom:12px}
+.report-dialog-desc{margin:-5px 0 13px;color:#9296a3;font-size:11px;line-height:1.5}
+.report-choice{width:100%;min-height:43px;display:flex;align-items:center;justify-content:flex-start;padding:0 12px;margin-top:7px;border-radius:11px;background:#20232c;border:1px solid rgba(255,255,255,.06);color:#e7e8ee;text-align:left;font-size:12px;font-weight:700}
+.report-choice:active{background:#302545;border-color:#8b5cf6}
+.report-choice.danger{color:#ff929f}
+.report-cancel{width:100%;height:41px;margin-top:12px;border-radius:11px;background:#30333d;color:#fff;font-size:12px;font-weight:800}
+.comment-name{font-size:12px;font-weight:900;position:relative;color:#fff;background:none!important;background-image:none!important;-webkit-background-clip:initial;background-clip:initial;animation:none!important}
+.comment-name.role-member{color:#d4d6dd;background:none;animation:none}
+.comment-name.role-developer{color:#fff;background:none;animation:none}
+.comment-name.role-admin{color:#fff;background:none;animation:none}
+.comment-name.role-moderator{color:#fff;background:none;animation:none}
+.comment-name.role-beta{color:#fff;background:none;animation:none}
+.comment-name.role-premium{color:#fff;background:none;animation:none}
+@keyframes roleGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* VERIFIED */
+.verified{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;line-height:1;vertical-align:middle}
+.verified .material-symbols-rounded{font-size:inherit;font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.v-developer{color:#F5223E}
+.v-admin{color:#20C878}
+.v-moderator{color:#24A9E8}
+.v-beta{color:#A855F7}
+.v-premium{color:#E5AD35}
+
+/* LEVEL MINECRAFT — UKURAN ASLI PROFILE */
+.level{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:1px 5px;
+    border-radius:30px;
+    color:#fff;
+    font-size:11px;
+    font-weight:800;
+    line-height:1.2;
+    white-space:nowrap;
+    background:linear-gradient(115deg,var(--c1),var(--c2),var(--c3),var(--c1));
+    background-size:250% 100%;
+    animation:levelGradient 3s ease-in-out infinite;
+    border:1px solid #ffffff45;
+    box-shadow:0 0 12px color-mix(in srgb,var(--glow) 30%,transparent);
+}
+.level img{
+    width:14px;
+    height:14px;
+    object-fit:contain;
+    image-rendering:pixelated;
+    transform:scale(1);
+}
+@keyframes levelGradient{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+/* ROLE — UKURAN ASLI PROFILE */
+.role-badge{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    padding:2px 6px;
+    border-radius:999px;
+    color:#fff;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.3px;
+    line-height:1.2;
+    border:1px solid rgba(255,255,255,.17);
+    background-size:250% 250%;
+    animation:badgeColorFlow 5s ease-in-out infinite;
+    isolation:isolate;
+    white-space:nowrap;
+}
+.role-badge::after{
+    content:"";
+    position:absolute;
+    top:-50%;
+    left:-45%;
+    width:25%;
+    height:200%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);
+    transform:rotate(25deg);
+    animation:badgeShine 3s linear infinite;
+    pointer-events:none;
+}
+@keyframes badgeColorFlow{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+@keyframes badgeShine{
+    0%{left:-50%}
+    45%,100%{left:140%}
+}
+.badge-developer{background-image:linear-gradient(115deg,#F5223E,#9f1239,#fb7185,#F5223E)}
+.badge-admin{background-image:linear-gradient(115deg,#20C878,#087f50,#5ee6a7,#20C878)}
+.badge-moderator{background-image:linear-gradient(115deg,#24A9E8,#155eaa,#67d4ff,#24A9E8)}
+.badge-beta{background-image:linear-gradient(115deg,#A855F7,#6b21a8,#d8a4ff,#A855F7)}
+.badge-premium{background-image:linear-gradient(115deg,#E5AD35,#95610c,#ffe08a,#E5AD35)}
+.badge-member{background:#343440;color:#D0D0DC;animation:none}
+.badge-member::after{display:none}
+
+.comment-id{color:#777c88;font-size:9px;font-weight:700}
+.comment-time{color:#686d79;font-size:10px}
+.comment-text{margin-top:12px;color:#e0e1e6;font-size:14px;line-height:1.55}
+.comment-mention{color:#58a6ff;font-weight:750;text-decoration:none;background:rgba(56,139,253,.12);border-radius:4px;padding:0 2px}
+
+.comment-actions{display:flex;align-items:center;gap:10px;margin-top:8px}
+.comment-action{padding:0;background:transparent;color:#3996f5;font-size:14px;font-weight:650}
+.comment-action:active{color:#fff}
+.reply-box{display:none;margin-top:9px;gap:7px;align-items:center}
+.reply-box.open{display:flex}
+.reply-input{min-width:0;flex:1;height:34px;padding:0 10px;border-radius:9px;border:1px solid rgba(255,255,255,.07);outline:none;background:#0f1116;color:#fff;font-size:11px}
+.reply-send{width:34px;height:34px;flex:none;border-radius:9px;background:#8b5cf6;font-size:12px}
+.reply-target{display:block;margin-top:7px;margin-bottom:2px;padding:8px 10px;border-left:3px solid #8b5cf6;border-radius:5px;background:rgba(139,92,246,.12);color:#aeb2c0;font-size:10px;line-height:1.45;overflow-wrap:anywhere}.reply-target strong{color:#d5c7ff;font-weight:750}.reply-target span{color:#858a98;font-weight:650}
+.reply-target strong{color:#c7c9d0}
+
+/* SETTINGS SHEET */
+.sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);opacity:0;pointer-events:none;z-index:100000;transition:opacity .25s}
+.sheet-backdrop.open{opacity:1;pointer-events:auto}
+.sheet-backdrop.in-player{position:absolute}
+.sheet{position:absolute;left:50%;bottom:0;width:min(100%,520px);max-height:85vh;overflow-y:auto;padding:16px;border-radius:20px 20px 0 0;background:#15171e;border:1px solid rgba(255,255,255,.08);transform:translate(-50%,100%);transition:transform .3s}
+.sheet-backdrop.open .sheet{transform:translate(-50%,0)}
+.sheet-handle{width:40px;height:4px;margin:0 auto 15px;border-radius:20px;background:#454954}
+.sheet-title{font-size:16px;font-weight:850}
+.sheet-label{margin-top:18px;margin-bottom:8px;color:#858a96;font-size:10px;font-weight:850;letter-spacing:1px}
+.sheet-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.sheet-option{height:38px;border-radius:10px;background:#171920;border:1px solid rgba(255,255,255,.07);color:#b8bbc4;font-size:12px;font-weight:750}
+.sheet-option.active{color:#fff;background:#8b5cf6;border-color:#8b5cf6}
+.auto-next-row{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px;border-radius:12px;background:#171920;border:1px solid rgba(255,255,255,.07)}
+.auto-next-title{font-size:12px;font-weight:750}
+.auto-next-desc{margin-top:3px;color:#777c87;font-size:10px;line-height:1.4}
+.auto-next-toggle{width:45px;height:25px;padding:3px;flex:none;border-radius:20px;background:#353842;transition:.2s}
+.auto-next-toggle span{display:block;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s}
+.auto-next-toggle.active{background:#8b5cf6}
+.auto-next-toggle.active span{transform:translateX(20px)}
+.sheet-close{width:100%;height:42px;margin-top:18px;border-radius:11px;background:#20232c;border:1px solid rgba(255,255,255,.07);font-size:12px;font-weight:800}
+
+/* TOAST */
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);padding:10px 14px;border-radius:11px;background:#20232c;border:1px solid rgba(255,255,255,.08);color:#fff;font-size:11px;opacity:0;pointer-events:none;z-index:200000;transition:opacity .25s,transform .25s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* FULLSCREEN */
+.player:fullscreen,.player:-webkit-full-screen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0}
+
+/* LANDSCAPE */
+@media(orientation:landscape) and (max-height:600px){
+  body.landscape-player-mode{overflow:hidden}
+  body.landscape-player-mode .app{max-width:none}
+  body.landscape-player-mode .content{display:none}
+  body.landscape-player-mode .player{
+    width:100vw;height:100vh;aspect-ratio:auto;border-radius:0
+  }
+}
+
+/* SMALL MOBILE */
+@media(max-width:430px){
+.content{padding:13px}
+.poster{width:72px;height:100px}
+.title{font-size:17px}
+.action{font-size:9px}
+.action-icon svg{width:19px;height:19px}
+.episode-grid{grid-template-columns:repeat(5,1fr)}
+.episode-nav{width:43px;height:43px}
+.episode-nav.prev{left:25%}
+.episode-nav.next{right:25%}
+}
+
+/* COMMENTS TOOLBAR + THREADS BOTTOM SHEET */
+.comment-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.comment-sort{display:flex;gap:8px;min-width:0}
+.sort-button{height:42px;padding:0 16px;border-radius:12px;background:#20232c;color:#d7d9e0;font-size:13px;font-weight:750;white-space:nowrap}
+.sort-button.active{background:#f5f5f7;color:#17181c}
+.comment-settings{padding:8px 2px;background:transparent;color:#d7d9e0;font-size:13px;font-weight:750;white-space:nowrap}
+.thread-backdrop{position:fixed;inset:0;z-index:180000;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.68);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s,visibility .22s}
+.thread-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}
+.thread-sheet{width:100%;max-width:900px;height:min(82dvh,760px);display:flex;flex-direction:column;padding:12px 0 max(12px,env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background:#151618;transform:translateY(35px);transition:transform .26s cubic-bezier(.2,.75,.25,1);overflow:hidden}
+.thread-backdrop.open .thread-sheet{transform:translateY(0)}
+.thread-handle{width:42px;height:5px;border-radius:20px;background:#555861;margin:2px auto 22px;flex:none;cursor:grab;touch-action:none;padding:12px 28px;background-clip:content-box;box-sizing:content-box}
+.thread-title{font-size:23px;letter-spacing:.2px;padding:0 20px 18px;flex:none}
+.thread-list{flex:1;overflow-y:auto;overscroll-behavior:contain;border-top:1px solid rgba(255,255,255,.06)}
+.thread-list .comment{min-height:0}
+.thread-composer{display:flex;align-items:center;gap:10px;padding:14px 18px 4px;margin:0 6px;border-top:1px solid #292c34;flex:none}
+.thread-composer .comment-avatar{width:48px;height:48px}
+.thread-input{min-width:0;flex:1;height:54px;padding:0 15px;border:1px solid #30343f;border-radius:17px;background:#0f1218;color:#fff;font-size:15px;outline:none}
+.thread-input::placeholder{color:#7b8190}
+.thread-input:focus{border-color:#52617c}
+.thread-send{width:66px;height:54px;flex:none;border-radius:18px;background:#3b4966;color:#dce5fa;font-size:20px}
+.thread-empty{padding:25px 20px;color:#9297a3;font-size:13px}
+@media(min-width:700px){.thread-sheet{border-left:1px solid #292c34;border-right:1px solid #292c34}}
+
+
+/* COMMENTS: keep comment form, list and sort controls */
+.comment-form,
+.comment-list{
+  display:flex;
+}
+
+
+/* COMMENT FORM: keep input, hide demo avatar */
+#currentCommentAvatar{display:none !important}
+
+/* ANDROID FULLSCREEN FALLBACK */
+body.landscape-player-mode{
+  overflow:hidden !important;
+}
+body.landscape-player-mode .content{
+  display:none !important;
+}
+.player.manual-fullscreen{
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100vh !important;
+  height:100dvh !important;
+  max-width:none !important;
+  aspect-ratio:auto !important;
+  border-radius:0 !important;
+  z-index:99999 !important;
+}
+.player.manual-fullscreen video{
+  width:100% !important;
+  height:100% !important;
+}
+
+
+/* KEEP CUSTOM CONTROLS VISIBLE IN FULLSCREEN */
+.player.manual-fullscreen .controls{
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  z-index:100 !important;
+  bottom:0 !important;
+  padding-bottom:env(safe-area-inset-bottom) !important;
+}
+.player.manual-fullscreen .control-row{
+  position:relative;
+  z-index:101;
+}
+
+
+/* SANKA DONGHUA EMBED */
+.player.sanka-embed-mode video {
+  display: none !important;
+}
+
+.player.sanka-embed-mode #sankaEmbedPlayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  z-index: 1;
+}
+
+.player.sanka-embed-mode .controls {
+  display: flex !important;
+  z-index: 10;
+}
+
+.player.sanka-embed-mode .player-settings {
+  display: grid !important;
+  z-index: 12;
+}
+
+.player.sanka-embed-mode .center-play,
+.player.sanka-embed-mode .tap-left,
+.player.sanka-embed-mode .tap-center,
+.player.sanka-embed-mode .tap-right {
+  display: none !important;
+}
+
+.player.sanka-embed-mode .player-title {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.player.sanka-embed-mode .episode-nav {
+  z-index: 12;
+}
+
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+<div class="app">
+
+<div class="player-wrap">
+<div class="player" id="player">
+
+<video id="video" playsinline webkit-playsinline preload="metadata"></video>
+
+<div class="player-top"></div>
+<div class="player-bottom"></div>
+
+<div class="player-title">
+<div>Memuat anime...</div>
+<div class="player-episode" id="playerEpisode">Memuat episode...</div>
+</div>
+
+<button class="player-settings" id="playerSettings" type="button">⋮</button>
+
+<div class="tap-left" id="tapLeft"></div>
+<div class="tap-center" id="tapCenter"></div>
+<div class="tap-right" id="tapRight"></div>
+
+<button class="episode-nav prev" id="prevEpisode" type="button" aria-label="Episode sebelumnya">
+<svg viewBox="0 0 24 24">
+<path d="M6 5h2v14H6z"/>
+<path d="M19 5v14L9 12z"/>
+</svg>
+</button>
+
+<button class="episode-nav next" id="nextEpisode" type="button" aria-label="Episode berikutnya">
+<svg viewBox="0 0 24 24">
+<path d="M16 5h2v14h-2z"/>
+<path d="M5 5v14l10-7z"/>
+</svg>
+</button>
+
+<button class="center-play" id="centerPlay" type="button">
+<span class="play-icon" id="centerIcon"></span>
+</button>
+
+<div class="speed-hold-indicator" id="speedHoldIndicator">2× SPEED</div>
+
+<div class="skip left" id="skipLeft">
+<span class="skip-arrow">‹</span>
+<span class="skip-number">10</span>
+</div>
+
+<div class="skip right" id="skipRight">
+<span class="skip-arrow">›</span>
+<span class="skip-number">10</span>
+</div>
+
+<div class="controls" id="controls">
+<div class="progress-area" id="progressArea">
+<div class="progress">
+<div class="progress-fill" id="progressFill"></div>
+<div class="progress-thumb" id="progressThumb"></div>
+</div>
+</div>
+
+<div class="control-row">
+<button class="control" id="playButton" type="button">
+<span class="play-icon" id="playIcon"></span>
+</button>
+
+<div class="time" id="time">00:00 / 00:00</div>
+
+<button class="control" id="pip" type="button">
+<span class="pip-icon"></span>
+</button>
+
+<button class="control" id="fullscreen" type="button">
+<span class="full-icon"></span>
+</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<main class="content">
+
+<div class="info-row">
+<div class="poster"></div>
+<div class="info">
+<div class="title">Memuat anime...</div>
+<div class="episode-meta">
+<span id="episodeMeta">Memuat episode...</span>
+<span class="dot">•</span>
+<span hidden></span>
+<span class="dot">•</span>
+<span hidden></span>
+</div>
+</div>
+</div>
+
+<div class="synopsis">
+<div class="synopsis-title">Sinopsis</div>
+<div class="synopsis-text" id="synopsisText">
+Memuat sinopsis anime...
+</div>
+<button class="more" id="moreButton" type="button">Selengkapnya <span>›</span></button>
+</div>
+
+<div class="actions">
+
+<button class="action" id="qualityButton" type="button">
+<span class="action-icon">
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="3"/>
+<path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 1.7-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V20h-2.4v-.21a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-1.7-1.7.06-.06A1.7 1.7 0 0 0 8.4 15a1.7 1.7 0 0 0-1.55-1H6v-2.4h.85a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88L8 8.66l1.7-1.7.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1-1.55V5h2.4v.81a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.7 1.7-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.55 1H21v2.4h-.05a1.7 1.7 0 0 0-1.55 1.6z"/>
+</svg>
+</span>
+<span id="qualityText">1080p</span>
+</button>
+
+<button class="action" id="downloadButton" type="button">
+<span class="action-icon">
+<svg viewBox="0 0 24 24">
+<path d="M12 3v12"/>
+<path d="m7 10 5 5 5-5"/>
+<path d="M5 19h14"/>
+</svg>
+</span>
+<span>Download</span>
+</button>
+
+<button class="action" id="reportButton" type="button">
+<span class="action-icon">
+<svg viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9"/>
+<path d="M12 11v5"/>
+<path d="M12 8h.01"/>
+</svg>
+</span>
+<span>Report</span>
+</button>
+
+<button class="action" id="shareButton" type="button">
+<span class="action-icon">
+<svg viewBox="0 0 24 24">
+<circle cx="18" cy="5" r="3"/>
+<circle cx="6" cy="12" r="3"/>
+<circle cx="18" cy="19" r="3"/>
+<path d="m8.7 10.7 6.6-4.4"/>
+<path d="m8.7 13.3 6.6 4.4"/>
+</svg>
+</span>
+<span>Share</span>
+</button>
+
+</div>
+
+<div class="section-header">
+<div class="section-title">Episode List</div>
+<button class="episode-menu" id="episodeMenu" type="button">☰</button>
+</div>
+
+<div class="episode-panel" id="episodePanel">
+<div class="episode-grid" id="episodeGrid"></div>
+</div>
+
+<div class="comments">
+<div class="comments-title">Komentar</div>
+<div class="comment-toolbar">
+  <div class="comment-sort">
+    <button class="sort-button active" type="button" data-sort="old">Terlama</button>
+    <button class="sort-button" type="button" data-sort="new">Terbaru</button>
+  </div>
+</div>
+
+<div class="comment-form">
+<div class="comment-avatar" id="currentCommentAvatar">US</div>
+<input class="comment-input" id="commentInput" maxlength="500" placeholder="Tulis komentar...">
+<button class="comment-send" id="commentSend" type="button">➤</button>
+</div>
+
+<div class="comment-list" id="commentList">
+</div>
+</div>
+
+</main>
+</div>
+
+<div class="sheet-backdrop" id="sheetBackdrop">
+<div class="sheet">
+<div class="sheet-handle"></div>
+<div class="sheet-title">Pengaturan Video</div>
+
+<div class="sheet-label">KUALITAS</div>
+<div class="sheet-options" id="qualityOptions">
+<span class="sheet-option active">Tidak tersedia</span>
+</div>
+<div class="sheet-label" id="serverLabel" hidden>SERVER</div>
+<div class="sheet-options" id="serverOptions">
+  <span class="sheet-option active">Belum tersedia</span>
+</div>
+
+<div class="sheet-label">KECEPATAN</div>
+<div class="sheet-options">
+<button class="sheet-option speed-option" data-speed=".5" type="button">0.5×</button>
+<button class="sheet-option speed-option" data-speed=".75" type="button">0.75×</button>
+<button class="sheet-option speed-option active" data-speed="1" type="button">1×</button>
+<button class="sheet-option speed-option" data-speed="1.25" type="button">1.25×</button>
+<button class="sheet-option speed-option" data-speed="1.5" type="button">1.5×</button>
+<button class="sheet-option speed-option" data-speed="2" type="button">2×</button>
+</div>
+
+<div class="sheet-label">AUTO NEXT</div>
+<div class="auto-next-row">
+<div>
+<div class="auto-next-title">Putar episode berikutnya otomatis</div>
+<div class="auto-next-desc">Episode berikutnya akan diputar setelah video selesai.</div>
+</div>
+<button class="auto-next-toggle active" id="autoNextToggle" type="button"><span></span></button>
+</div>
+
+<button class="sheet-close" id="sheetClose" type="button">TUTUP</button>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="thread-backdrop" id="threadBackdrop" aria-hidden="true">
+  <section class="thread-sheet" role="dialog" aria-modal="true" aria-labelledby="threadTitle">
+    <div class="thread-handle"></div>
+    <div class="thread-title" id="threadTitle">Reply</div>
+    <div class="thread-list" id="threadList"></div>
+    <form class="thread-composer" id="threadComposer">
+      <div class="comment-avatar" id="threadAvatar">US</div>
+      <input class="thread-input" id="threadInput" maxlength="500" placeholder="Tulis balasan..." autocomplete="off">
+      <button class="thread-send" type="submit" aria-label="Kirim balasan">➤</button>
+    </form>
+  </section>
+</div>
+
+<div class="report-backdrop" id="reportBackdrop" aria-hidden="true">
+<div class="report-dialog" id="reportDialog" role="dialog" aria-modal="true" aria-labelledby="reportDialogTitle">
+<div class="report-dialog-title" id="reportDialogTitle">Laporkan</div>
+<div class="report-dialog-desc" id="reportDialogDesc"></div>
+<div id="reportChoices"></div>
+<button class="report-cancel" id="reportCancel" type="button">BATAL</button>
+</div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+/* ELEMENT */
+const video=document.getElementById("video");
+const player=document.getElementById("player");
+const app=document.querySelector(".app");
+const playButton=document.getElementById("playButton");
+const playIcon=document.getElementById("playIcon");
+const centerPlay=document.getElementById("centerPlay");
+const centerIcon=document.getElementById("centerIcon");
+const progressArea=document.getElementById("progressArea");
+const progressFill=document.getElementById("progressFill");
+const progressThumb=document.getElementById("progressThumb");
+const time=document.getElementById("time");
+const pip=document.getElementById("pip");
+const fullscreen=document.getElementById("fullscreen");
+const qualityButton=document.getElementById("qualityButton");
+const qualityText=document.getElementById("qualityText");
+const sheetBackdrop=document.getElementById("sheetBackdrop");
+const sheetClose=document.getElementById("sheetClose");
+const toast=document.getElementById("toast");
+const episodeGrid=document.getElementById("episodeGrid");
+const episodePanel=document.getElementById("episodePanel");
+const autoNextToggle=document.getElementById("autoNextToggle");
+const tapLeft=document.getElementById("tapLeft");
+const tapCenter=document.getElementById("tapCenter");
+const tapRight=document.getElementById("tapRight");
+const prevEpisode=document.getElementById("prevEpisode");
+const nextEpisode=document.getElementById("nextEpisode");
+const speedHoldIndicator=document.getElementById("speedHoldIndicator");
+
+/* DATA */
+const episodes={};
+for(let i=1;i<=30;i++) episodes[i]="";
+
+let currentEpisode=9;
+let autoNext=localStorage.getItem("anilix_auto_next")!=="false";
+let selectedPlaybackRate=1;
+
+/* TOAST */
+let toastTimer=null;
+function showToast(message){
+clearTimeout(toastTimer);
+toast.textContent=message;
+toast.classList.add("show");
+toastTimer=setTimeout(()=>toast.classList.remove("show"),2200);
+}
+
+/* PLAYER UI */
+let playerUIVisible=true;
+let controlsTimer=null;
+
+function showPlayerUI(){
+playerUIVisible=true;
+player.classList.remove("ui-hidden");
+clearTimeout(controlsTimer);
+if(!video.paused&&!video.ended){
+controlsTimer=setTimeout(hidePlayerUI,3000);
+}
+}
+
+function hidePlayerUI(){
+if(video.paused||video.ended) return;
+playerUIVisible=false;
+clearTimeout(controlsTimer);
+player.classList.add("ui-hidden");
+}
+
+function togglePlayerUI(){
+if(playerUIVisible) hidePlayerUI();
+else showPlayerUI();
+}
+
+/* PLAY UI */
+function updatePlayUI(){
+const playing=!video.paused&&!video.ended;
+playIcon.classList.toggle("pause",playing);
+centerIcon.classList.toggle("pause",playing);
+
+if(!playing){
+clearTimeout(controlsTimer);
+playerUIVisible=true;
+player.classList.remove("ui-hidden");
+}
+}
+
+async function togglePlay(){
+try{
+if(video.paused) await video.play();
+else video.pause();
+}catch(error){
+showToast("Video belum tersedia.");
+}
+updatePlayUI();
+showPlayerUI();
+}
+
+playButton.addEventListener("click",event=>{
+event.stopPropagation();
+togglePlay();
+});
+
+centerPlay.addEventListener("click",event=>{
+event.stopPropagation();
+togglePlay();
+});
+
+video.addEventListener("play",()=>{
+updatePlayUI();
+showPlayerUI();
+});
+
+video.addEventListener("pause",()=>{
+updatePlayUI();
+showPlayerUI();
+});
+
+video.addEventListener("ended",()=>{
+updatePlayUI();
+showPlayerUI();
+});
+
+/* DOUBLE TAP SYSTEM */
+const TAP_DELAY=280;
+const tapTimers={left:null,center:null,right:null};
+const tapState={left:0,center:0,right:0};
+
+function showSkip(element){
+element.classList.remove("show");
+void element.offsetWidth;
+element.classList.add("show");
+}
+
+function doubleTapAction(zone){
+if(zone==="left"){
+if(!video.duration){
+togglePlayerUI();
+return;
+}
+video.currentTime=Math.max(0,video.currentTime-10);
+showSkip(document.getElementById("skipLeft"));
+showPlayerUI();
+return;
+}
+
+if(zone==="right"){
+if(!video.duration){
+togglePlayerUI();
+return;
+}
+video.currentTime=Math.min(video.duration,video.currentTime+10);
+showSkip(document.getElementById("skipRight"));
+showPlayerUI();
+return;
+}
+
+if(zone==="center") togglePlay();
+}
+
+function processTap(zone){
+tapState[zone]++;
+clearTimeout(tapTimers[zone]);
+
+if(tapState[zone]===2){
+tapState[zone]=0;
+doubleTapAction(zone);
+return;
+}
+
+tapTimers[zone]=setTimeout(()=>{
+if(tapState[zone]===1){
+tapState[zone]=0;
+togglePlayerUI();
+}
+},TAP_DELAY);
+}
+
+/* HOLD VIDEO = 2X */
+let holdTimer=null;
+let holdActive=false;
+let holdTriggered=false;
+let holdZone=null;
+
+function startSpeedHold(event,zone){
+if(event.pointerType==="mouse"&&event.button!==0) return;
+clearTimeout(holdTimer);
+holdActive=true;
+holdTriggered=false;
+holdZone=zone;
+
+try{
+event.currentTarget.setPointerCapture(event.pointerId);
+}catch{}
+
+holdTimer=setTimeout(()=>{
+if(!holdActive||video.paused||video.ended) return;
+holdTriggered=true;
+video.playbackRate=2;
+speedHoldIndicator.classList.add("show");
+},350);
+}
+
+function endSpeedHold(){
+clearTimeout(holdTimer);
+const wasTriggered=holdTriggered;
+const zone=holdZone;
+
+if(wasTriggered){
+video.playbackRate=selectedPlaybackRate;
+speedHoldIndicator.classList.remove("show");
+}
+
+holdActive=false;
+holdTriggered=false;
+holdZone=null;
+
+return wasTriggered?null:zone;
+}
+
+function cancelSpeedHold(){
+clearTimeout(holdTimer);
+if(holdTriggered){
+video.playbackRate=selectedPlaybackRate;
+speedHoldIndicator.classList.remove("show");
+}
+holdActive=false;
+holdTriggered=false;
+holdZone=null;
+}
+
+[
+[tapLeft,"left"],
+[tapCenter,"center"],
+[tapRight,"right"]
+].forEach(([zone,name])=>{
+zone.addEventListener("pointerdown",event=>startSpeedHold(event,name));
+zone.addEventListener("pointerup",()=>{
+const tapZone=endSpeedHold();
+if(tapZone) processTap(tapZone);
+});
+zone.addEventListener("pointercancel",cancelSpeedHold);
+});
+
+[tapLeft,tapCenter,tapRight].forEach(zone=>{
+zone.addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+});
+});
+
+/* SWIPE DOWN TO RETURN */
+let dragPointerId=null;
+let dragStartY=0;
+let dragStartX=0;
+let dragDistance=0;
+let dragStarted=false;
+let dragBlocked=false;
+let isLeavingPage=false;
+
+function isDragBlocked(target){
+if(!(target instanceof Element)) return true;
+return !!target.closest("button,input,textarea,select,a,.controls,.progress-area,.player-settings,.episode-nav,.sheet-backdrop");
+}
+
+app.addEventListener("pointerdown",event=>{
+if(event.pointerType==="mouse"&&event.button!==0) return;
+if(isLeavingPage) return;
+if(window.scrollY>0) return;
+
+dragPointerId=event.pointerId;
+dragStartY=event.clientY;
+dragStartX=event.clientX;
+dragDistance=0;
+dragStarted=false;
+dragBlocked=isDragBlocked(event.target);
+});
+
+document.addEventListener("pointermove",event=>{
+if(dragPointerId===null||event.pointerId!==dragPointerId) return;
+if(dragBlocked||isLeavingPage) return;
+
+const dx=event.clientX-dragStartX;
+const dy=event.clientY-dragStartY;
+
+if(!dragStarted){
+if(Math.abs(dx)>Math.abs(dy)*1.2) return;
+if(dy<8) return;
+
+dragStarted=true;
+cancelSpeedHold();
+
+Object.keys(tapTimers).forEach(key=>{
+clearTimeout(tapTimers[key]);
+tapState[key]=0;
+});
+}
+
+if(dy>0){
+event.preventDefault();
+dragDistance=dy;
+const distance=Math.min(dy,window.innerHeight);
+app.style.transition="none";
+app.style.transform=`translateY(${distance}px)`;
+}
+},{passive:false});
+
+function navigateBack(){
+if(history.length>1){
+history.back();
+}else{
+location.replace("index.html");
+}
+}
+
+function resetDrag(){
+app.style.transition="transform .28s cubic-bezier(.2,.75,.25,1)";
+app.style.transform="translateY(0)";
+setTimeout(()=>{
+if(!isLeavingPage) app.style.transition="";
+},300);
+}
+
+document.addEventListener("pointerup",event=>{
+if(dragPointerId===null||event.pointerId!==dragPointerId) return;
+
+const didDrag=dragStarted;
+dragPointerId=null;
+
+if(!didDrag){
+dragDistance=0;
+return;
+}
+
+if(dragDistance>130){
+isLeavingPage=true;
+app.style.transition="transform .28s cubic-bezier(.2,.75,.25,1)";
+app.style.transform=`translateY(${window.innerHeight}px)`;
+setTimeout(navigateBack,280);
+}else{
+resetDrag();
+}
+
+dragDistance=0;
+dragStarted=false;
+});
+
+document.addEventListener("pointercancel",event=>{
+if(dragPointerId===null) return;
+if(event.pointerId!==undefined&&event.pointerId!==dragPointerId) return;
+
+dragPointerId=null;
+if(dragStarted) resetDrag();
+dragStarted=false;
+dragDistance=0;
+});
+
+/* PROGRESS */
+let isSeeking=false;
+
+function updateProgress(){
+const current=video.currentTime||0;
+const duration=video.duration||0;
+time.textContent=formatTime(current)+" / "+formatTime(duration);
+
+const percent=duration>0?Math.max(0,Math.min(100,current/duration*100)):0;
+progressFill.style.width=percent+"%";
+progressThumb.style.left=percent+"%";
+
+if(duration>0&&!isSeeking){
+localStorage.setItem("anilix_progress_"+currentEpisode,String(current));
+}
+}
+
+video.addEventListener("timeupdate",updateProgress);
+
+video.addEventListener("loadedmetadata",()=>{
+const saved=Number(localStorage.getItem("anilix_progress_"+currentEpisode));
+if(Number.isFinite(saved)&&saved>5&&saved<video.duration-5){
+video.currentTime=saved;
+}
+updateProgress();
+});
+
+function formatTime(seconds){
+if(!Number.isFinite(seconds)) return "00:00";
+seconds=Math.max(0,Math.floor(seconds));
+
+const hours=Math.floor(seconds/3600);
+const minutes=Math.floor((seconds%3600)/60);
+const secs=seconds%60;
+
+if(hours>0) return String(hours)+":"+String(minutes).padStart(2,"0")+":"+String(secs).padStart(2,"0");
+return String(minutes).padStart(2,"0")+":"+String(secs).padStart(2,"0");
+}
+
+function seekFromPointer(event){
+if(!video.duration) return;
+const rect=progressArea.getBoundingClientRect();
+const percent=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+video.currentTime=video.duration*percent;
+
+const percentage=percent*100;
+progressFill.style.width=percentage+"%";
+progressThumb.style.left=percentage+"%";
+time.textContent=formatTime(video.currentTime)+" / "+formatTime(video.duration);
+}
+
+progressArea.addEventListener("pointerdown",event=>{
+if(!video.duration) return;
+event.preventDefault();
+event.stopPropagation();
+isSeeking=true;
+try{progressArea.setPointerCapture(event.pointerId)}catch{}
+seekFromPointer(event);
+showPlayerUI();
+});
+
+progressArea.addEventListener("pointermove",event=>{
+if(!isSeeking) return;
+event.preventDefault();
+seekFromPointer(event);
+});
+
+function finishSeeking(event){
+if(!isSeeking) return;
+seekFromPointer(event);
+isSeeking=false;
+updateProgress();
+}
+
+progressArea.addEventListener("pointerup",finishSeeking);
+progressArea.addEventListener("pointercancel",()=>{
+isSeeking=false;
+updateProgress();
+});
+
+/* PICTURE IN PICTURE */
+pip.addEventListener("click",async event=>{
+event.preventDefault();
+event.stopPropagation();
+
+try{
+if(document.pictureInPictureElement){
+await document.exitPictureInPicture();
+return;
+}
+if(document.pictureInPictureEnabled&&!video.disablePictureInPicture){
+await video.requestPictureInPicture();
+}else{
+showToast("PiP tidak didukung browser.");
+}
+}catch(error){
+showToast("PiP tidak tersedia.");
+}
+});
+
+/* FULLSCREEN */
+function isPlayerFullscreen(){
+  return player.classList.contains("manual-fullscreen");
+}
+
+async function enterFullscreen(){
+  player.classList.add("manual-fullscreen");
+  document.body.classList.add("landscape-player-mode");
+
+  try{
+    if(player.requestFullscreen){
+      await player.requestFullscreen({navigationUI:"hide"});
+    }else if(player.webkitRequestFullscreen){
+      player.webkitRequestFullscreen();
+    }
+  }catch(error){
+    showToast("Mode layar penuh alternatif diaktifkan.");
+  }
+
+  if(screen.orientation?.lock){
+    try{await screen.orientation.lock("landscape");}catch{}
+  }
+}
+
+async function exitFullscreen(){
+  try{
+    if(document.fullscreenElement && document.exitFullscreen){
+      await document.exitFullscreen();
+    }else if(document.webkitFullscreenElement && document.webkitExitFullscreen){
+      document.webkitExitFullscreen();
+    }
+  }catch(error){}
+
+  player.classList.remove("manual-fullscreen");
+  document.body.classList.remove("landscape-player-mode");
+
+  if(screen.orientation?.unlock){
+    try{screen.orientation.unlock();}catch{}
+  }
+}
+
+fullscreen.addEventListener("click",async event=>{
+  event.preventDefault();
+  event.stopPropagation();
+
+  if(isPlayerFullscreen()){
+    await exitFullscreen();
+  }else{
+    await enterFullscreen();
+  }
+});
+
+/* SETTINGS SHEET */
+const sheetOriginalParent=sheetBackdrop.parentNode;
+const sheetOriginalNextSibling=sheetBackdrop.nextSibling;
+
+function moveSheetIntoPlayer(){
+if(sheetBackdrop.parentNode!==player) player.appendChild(sheetBackdrop);
+sheetBackdrop.classList.add("in-player");
+}
+
+function restoreSheet(){
+sheetBackdrop.classList.remove("in-player");
+
+if(sheetBackdrop.parentNode!==sheetOriginalParent){
+if(sheetOriginalNextSibling&&sheetOriginalNextSibling.parentNode===sheetOriginalParent){
+sheetOriginalParent.insertBefore(sheetBackdrop,sheetOriginalNextSibling);
+}else{
+sheetOriginalParent.appendChild(sheetBackdrop);
+}
+}
+}
+
+function openSettings(){
+if(document.fullscreenElement) moveSheetIntoPlayer();
+else restoreSheet();
+sheetBackdrop.classList.add("open");
+showPlayerUI();
+}
+
+function closeSettings(){
+sheetBackdrop.classList.remove("open");
+restoreSheet();
+}
+
+document.getElementById("playerSettings").addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+openSettings();
+});
+
+qualityButton.addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+openSettings();
+});
+
+sheetClose.addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+closeSettings();
+});
+
+sheetBackdrop.addEventListener("click",event=>{
+if(event.target===sheetBackdrop) closeSettings();
+});
+
+sheetBackdrop.querySelector(".sheet").addEventListener("click",event=>{
+event.stopPropagation();
+});
+
+/* QUALITY */
+const qualityOptions = document.getElementById("qualityOptions");
+const serverOptions = document.getElementById("serverOptions");
+const serverLabel = document.getElementById("serverLabel");
+let currentAnimeEpisodeData = null;
+let currentAnimeQuality = "";
+
+qualityText.textContent = "Tidak tersedia";
+
+function setAvailableQualities(qualities) {
+  if (!qualityOptions) return;
+
+  const list = Array.isArray(qualities) ? qualities : [];
+  qualityOptions.replaceChildren();
+
+  if (!list.length) {
+    qualityText.textContent = "Tidak tersedia";
+    qualityOptions.innerHTML =
+      '<span class="sheet-option active">Tidak tersedia</span>';
+    if (serverOptions) serverOptions.replaceChildren();
+    if (serverLabel) serverLabel.hidden = true;
+    localStorage.removeItem("anilix_quality");
+    return;
+  }
+
+  const saved = localStorage.getItem("anilix_quality");
+  const selected = list.find(item =>
+    (typeof item === "string" ? item : item.title) === saved
+  ) || list[0];
+
+  currentAnimeQuality =
+    typeof selected === "string" ? selected : selected.title;
+
+  list.forEach(item => {
+    const label = typeof item === "string" ? item : item.title;
+    if (!label) return;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "sheet-option quality-option" +
+      (label === currentAnimeQuality ? " active" : "");
+    button.dataset.quality = label;
+    button.textContent = label;
+
+    button.addEventListener("click", () => {
+      currentAnimeQuality = label;
+      qualityOptions.querySelectorAll(".quality-option")
+        .forEach(el => el.classList.toggle("active", el === button));
+      qualityText.textContent = label;
+      localStorage.setItem("anilix_quality", label);
+      renderAnimeServers();
+    });
+
+    qualityOptions.appendChild(button);
+  });
+
+  qualityText.textContent = currentAnimeQuality;
+  renderAnimeServers();
+}
+
+function renderAnimeServers() {
+  if (!serverOptions || !currentAnimeEpisodeData) return;
+
+  const qualities = currentAnimeEpisodeData.server?.qualities || [];
+  const chosen = qualities.find(item =>
+    String(item.title || "").trim() === currentAnimeQuality.trim()
+  );
+  const servers = chosen?.serverList || [];
+
+  serverOptions.replaceChildren();
+  if (serverLabel) serverLabel.hidden = !servers.length;
+
+  if (!servers.length) {
+    serverOptions.innerHTML =
+      '<span class="sheet-option active">Server tidak tersedia</span>';
+    return;
+  }
+
+  servers.forEach((server, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "sheet-option server-option" +
+      (index === 0 ? " active" : "");
+    button.textContent =
+      String(server.title || "Server " + (index + 1)).trim();
+
+    button.addEventListener("click", () => {
+      serverOptions.querySelectorAll(".server-option")
+        .forEach(el => el.classList.toggle("active", el === button));
+      loadAnimeServer(server);
+    });
+
+    serverOptions.appendChild(button);
+  });
+
+  loadAnimeServer(servers[0]);
+}
+
+async function loadAnimeServer(server) {
+  if (!server?.serverId) {
+    showToast("Server video tidak tersedia.");
+    return;
+  }
+
+  try {
+    showToast("Memuat video...");
+
+    const result = await window.SankaAPI.getCatalog(
+      "/anime/server/" + encodeURIComponent(server.serverId)
+    );
+    const data = result.data || result;
+    const url = data.url;
+
+    if (!url) throw new Error("Video tidak tersedia");
+
+    const parsedUrl = new URL(url);
+    if (parsedUrl.protocol !== "https:") {
+      throw new Error("Video tidak tersedia");
+    }
+
+    let frame = document.getElementById("sankaEmbedPlayer");
+    if (!frame) {
+      frame = document.createElement("iframe");
+      frame.id = "sankaEmbedPlayer";
+      frame.title = "Pemutar Anime";
+      frame.allow = "autoplay; fullscreen; picture-in-picture";
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      player.insertBefore(frame, video.nextSibling);
+    }
+
+    player.classList.add("sanka-embed-mode");
+    frame.src = parsedUrl.href;
+    showToast("Pemutar video dimuat.");
+  } catch (_) {
+    showToast("Video gagal dimuat. Coba server lain.");
+  }
+}
+/* SPEED SETTINGS */
+document.querySelectorAll(".speed-option").forEach(button=>{
+button.addEventListener("click",()=>{
+document.querySelectorAll(".speed-option").forEach(item=>item.classList.remove("active"));
+button.classList.add("active");
+
+const speed=Number(button.dataset.speed);
+selectedPlaybackRate=speed;
+video.playbackRate=speed;
+
+localStorage.setItem("anilix_speed",String(speed));
+showToast("Kecepatan "+speed+"×");
+});
+});
+
+
+/* COMMENT SORT CONTROLS */
+document.querySelectorAll(".sort-button").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll(".sort-button").forEach(item=>item.classList.remove("active"));
+    button.classList.add("active");
+    const list=document.getElementById("commentList");
+    const roots=Array.from(list.children).filter(node=>(Number(node.dataset.level)||0)===0);
+    if(button.dataset.sort==="new") roots.reverse();
+    if(button.dataset.sort==="old") roots.sort((a,b)=>0);
+    roots.forEach(root=>{
+      const group=getThreadMembers(root);
+      group.forEach(node=>list.appendChild(node));
+    });
+  });
+});
+
+/* AUTO NEXT */
+function updateAutoNext(){
+autoNextToggle.classList.toggle("active",autoNext);
+}
+
+autoNextToggle.addEventListener("click",()=>{
+autoNext=!autoNext;
+localStorage.setItem("anilix_auto_next",String(autoNext));
+updateAutoNext();
+showToast(autoNext?"Auto Next aktif":"Auto Next nonaktif");
+});
+
+updateAutoNext();
+
+/* EPISODE NAVIGATION */
+function updateEpisodeNav(){
+prevEpisode.disabled=currentEpisode<=1;
+nextEpisode.disabled=currentEpisode>=30;
+}
+
+prevEpisode.addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+if(currentEpisode>1){
+loadEpisode(currentEpisode-1);
+showPlayerUI();
+}
+});
+
+nextEpisode.addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+if(currentEpisode<30){
+loadEpisode(currentEpisode+1);
+showPlayerUI();
+}
+});
+
+/* EPISODES */
+function renderEpisodes(){
+episodeGrid.innerHTML="";
+
+for(let i=1;i<=30;i++){
+const button=document.createElement("button");
+button.className="episode-button";
+button.type="button";
+if(i===currentEpisode) button.classList.add("active");
+button.textContent="Episode "+i;
+button.addEventListener("click",()=>loadEpisode(i));
+episodeGrid.appendChild(button);
+}
+
+updateEpisodeNav();
+}
+
+renderEpisodes();
+
+document.getElementById("episodeMenu").addEventListener("click",()=>{
+episodePanel.classList.toggle("open");
+});
+
+/* LOAD SOURCE */
+function loadSource(source,label){
+video.src=source;
+video.load();
+updatePlayUI();
+video.play().catch(()=>{});
+}
+
+/* LOAD EPISODE */
+function loadEpisode(number){
+number=Math.max(1,Math.min(30,Number(number)||1));
+currentEpisode=number;
+
+document.getElementById("playerEpisode").textContent="Episode "+number;
+document.getElementById("episodeMeta").textContent="Episode "+number;
+
+renderEpisodes();
+
+const source=episodes[number];
+
+if(source){
+loadSource(source,"Episode "+number+" siap diputar.");
+}else{
+video.pause();
+video.removeAttribute("src");
+video.load();
+
+progressFill.style.width="0%";
+progressThumb.style.left="0%";
+time.textContent="00:00 / 00:00";
+
+updatePlayUI();
+showToast("Episode "+number+" belum ada video.");
+}
+}
+
+/* DOWNLOAD */
+document.getElementById("downloadButton").addEventListener("click",()=>{
+const source=video.currentSrc||video.src||episodes[currentEpisode];
+
+if(!source){
+showToast("Video belum tersedia.");
+return;
+}
+
+const link=document.createElement("a");
+link.href=source;
+link.download="Yani-Neko-Episode-"+currentEpisode+".mp4";
+
+if(source.startsWith("blob:")){
+document.body.appendChild(link);
+link.click();
+link.remove();
+showToast("Download dimulai.");
+return;
+}
+
+link.target="_blank";
+link.rel="noopener";
+
+document.body.appendChild(link);
+link.click();
+link.remove();
+
+showToast("Download diproses.");
+});
+
+/* SINOPSIS */
+document.getElementById("moreButton").addEventListener("click",()=>{
+const text=document.getElementById("synopsisText");
+const open=text.classList.toggle("open");
+
+document.getElementById("moreButton").innerHTML=open
+?"Lebih sedikit <span>‹</span>"
+:"Selengkapnya <span>›</span>";
+});
+
+/* REPORT VIDEO */
+document.getElementById("reportButton").addEventListener("click",()=>{
+openReportDialog("video");
+});
+
+/* SHARE */
+document.getElementById("shareButton").addEventListener("click",async()=>{
+const animeTitle =
+  new URLSearchParams(location.search).get("title") ||
+  document.querySelector(".title")?.textContent.trim() ||
+  "Anime";
+
+const data={
+title:animeTitle+" — Episode "+currentEpisode,
+text:"Tonton "+animeTitle+" Episode "+currentEpisode+" di ANILIX.",
+url:location.href
+};
+
+try{
+if(navigator.share){
+await navigator.share(data);
+return;
+}
+
+if(navigator.clipboard){
+await navigator.clipboard.writeText(location.href);
+showToast("Link berhasil disalin.");
+return;
+}
+
+showToast("Link: "+location.href);
+}catch(error){
+if(error.name!=="AbortError") showToast("Gagal membagikan.");
+}
+});
+
+/* ==================================
+   PROFILE SYNC — ANILIX
+================================== */
+
+/* ROLE NORMALIZATION */
+const roleSettings={
+developer:{name:"Developer",nameClass:"role-developer",badgeClass:"badge-developer",verifiedClass:"v-developer"},
+admin:{name:"Admin",nameClass:"role-admin",badgeClass:"badge-admin",verifiedClass:"v-admin"},
+moderator:{name:"Moderator",nameClass:"role-moderator",badgeClass:"badge-moderator",verifiedClass:"v-moderator"},
+beta:{name:"Beta",nameClass:"role-beta",badgeClass:"badge-beta",verifiedClass:"v-beta"},
+premium:{name:"Premium",nameClass:"role-premium",badgeClass:"badge-premium",verifiedClass:"v-premium"},
+member:{name:"Member",nameClass:"role-member",badgeClass:"badge-member",verifiedClass:""}
+};
+
+function normalizeRole(value){
+let role=String(value||"member")
+.toLowerCase()
+.trim()
+.replace(/[\s_-]/g,"");
+
+const aliases={
+dev:"developer",
+administrator:"admin",
+mod:"moderator",
+betatester:"beta",
+user:"member"
+};
+
+role=aliases[role]||role;
+return roleSettings[role]?role:"member";
+}
+
+/* LEVEL RANK */
+function getLevelRank(level){
+const value=Math.max(1,Number(level)||1);
+
+const ranks=[
+{min:500000,item:"nether_star",colors:["#f4d35e","#d97706","#fff0a6"],glow:"#f4d35e"},
+{min:400000,item:"lava_bucket",colors:["#ff5b24","#c51d18","#ffb347"],glow:"#ff5722"},
+{min:300000,item:"netherite_ingot",colors:["#8d7b91","#403747","#c5a9ca"],glow:"#b08ab8"},
+{min:250000,item:"blaze_rod",colors:["#ffb12b","#c65b14","#ffe08a"],glow:"#ff9d24"},
+{min:200000,item:"amethyst_shard",colors:["#bd75ff","#6937a5","#e2b7ff"],glow:"#bd75ff"},
+{min:150000,item:"diamond",colors:["#36d9e9","#087d9b","#a5f7ff"],glow:"#36d9e9"},
+{min:100000,item:"emerald",colors:["#27d66f","#087d46","#9bffc0"],glow:"#27d66f"},
+{min:70000,item:"quartz",colors:["#eee8dc","#a9a39a","#fff"],glow:"#eee8dc"},
+{min:50000,item:"gold_ingot",colors:["#f5ca36","#a66b08","#fff0a0"],glow:"#f5ca36"},
+{min:30000,item:"redstone",colors:["#f04438","#9e1717","#ff9a83"],glow:"#f04438"},
+{min:20000,item:"lapis_lazuli",colors:["#4389f5","#183d99","#9bc6ff"],glow:"#4389f5"},
+{min:10000,item:"iron_ingot",colors:["#d9e0e8","#778391","#fff"],glow:"#d9e0e8"},
+{min:5000,item:"copper_ingot",colors:["#e68b52","#93421f","#ffc29a"],glow:"#e68b52"},
+{min:1500,item:"coal",colors:["#777985","#292b35","#b6b8c4"],glow:"#9295a5"},
+{min:500,item:"cobblestone",colors:["#92969b","#45484e","#c8cbd0"],glow:"#92969b"},
+{min:100,item:"oak_planks",colors:["#c58a4c","#78431f","#f0c18a"],glow:"#c58a4c"},
+{min:1,item:"dirt",colors:["#9b704d","#56351f","#d4a078"],glow:"#9b704d"}
+];
+
+return ranks.find(rank=>value>=rank.min)||ranks[ranks.length-1];
+}
+
+function levelHTML(level){
+const value=Math.max(1,Number(level)||1);
+const rank=getLevelRank(value);
+
+return `
+<span class="level" style="
+--c1:${rank.colors[0]};
+--c2:${rank.colors[1]};
+--c3:${rank.colors[2]};
+--glow:${rank.glow};
+">
+<img src="https://project-crafting.github.io/minecraft-auto-updated-textures-api/items/${rank.item}.png" alt="">
+Lv ${escapeHTML(value.toLocaleString("id-ID"))}
+</span>
+`;
+}
+
+/* GET PROFILE */
+function getCurrentProfile(){
+let saved={};
+
+try{
+saved=JSON.parse(localStorage.getItem("anilix_user"))||{};
+}catch(error){
+saved={};
+}
+
+const name=String(
+saved.name||
+saved.displayName||
+saved.username||
+saved.anilix_username||
+localStorage.getItem("anilix_username")||
+"User"
+);
+
+const roleKey=normalizeRole(saved.role);
+const role=roleSettings[roleKey];
+
+return {
+name,
+id:saved.id??saved.userId??saved.userID??"0",
+level:Math.max(1,Number(saved.level)||1),
+role:role.name,
+roleKey,
+roleClass:role.nameClass,
+badgeClass:role.badgeClass,
+verifiedClass:role.verifiedClass,
+verified:saved.verified===true&&roleKey!=="member",
+avatar:name.substring(0,2).toUpperCase()
+};
+}
+
+let currentUser=getCurrentProfile();
+
+/* HTML SAFE */
+function escapeHTML(value){
+return String(value)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+}
+
+/* COMMENT HEADER */
+function roleHeaderHTML(user){
+const verified=user.verified?`
+<span class="verified ${user.verifiedClass}" aria-label="Verified" title="Verified">
+<span class="material-symbols-rounded">verified</span>
+</span>
+`:"";
+
+return `
+<span class="comment-name ${user.roleClass}">${escapeHTML(user.name)}</span>
+${verified}
+<span class="comment-id">#${escapeHTML(String(user.id))}</span>
+${levelHTML(user.level)}
+<span class="role-badge ${user.badgeClass}">${escapeHTML(user.role)}</span>
+<span class="comment-time">baru saja</span>
+`;
+}
+
+/* AVATAR FROM INDEXEDDB */
+let avatarObjectURL=null;
+let avatarRequestNumber=0;
+let currentAvatarSource=null;
+
+function openAnilixDB(){
+return new Promise((resolve,reject)=>{
+if(!("indexedDB" in window)){
+reject(new Error("IndexedDB tidak tersedia"));
+return;
+}
+
+const request=indexedDB.open("ANILIX_STORAGE");
+
+request.onsuccess=()=>resolve(request.result);
+request.onerror=()=>reject(request.error);
+});
+}
+
+async function getProfileAvatar(){
+let db;
+
+try{
+db=await openAnilixDB();
+
+if(!db.objectStoreNames.contains("images")){
+db.close();
+return null;
+}
+
+return await new Promise((resolve,reject)=>{
+const transaction=db.transaction("images","readonly");
+const store=transaction.objectStore("images");
+const request=store.get("avatar");
+
+request.onsuccess=()=>resolve(request.result||null);
+request.onerror=()=>reject(request.error);
+
+transaction.oncomplete=()=>db.close();
+transaction.onerror=()=>reject(transaction.error);
+});
+}catch(error){
+if(db) db.close();
+return null;
+}
+}
+
+function setAvatarElement(element,source,initials){
+if(!element) return;
+
+element.innerHTML="";
+
+if(source){
+const img=document.createElement("img");
+img.src=source;
+img.alt="Avatar";
+img.onerror=()=>{
+element.innerHTML="";
+element.textContent=initials;
+};
+element.appendChild(img);
+}else{
+element.textContent=initials;
+}
+}
+
+function getLegacyAvatar(){
+const saved=(()=>{
+try{return JSON.parse(localStorage.getItem("anilix_user"))||{}}
+catch{return {}}
+})();
+
+const possible=[
+saved.photoURL,
+saved.photo,
+saved.avatar,
+localStorage.getItem("anilix_avatar")
+];
+
+return possible.find(value=>typeof value==="string"&&value.length>0)||null;
+}
+
+async function updateProfileAvatar(){
+const requestNumber=++avatarRequestNumber;
+const initials=currentUser.avatar;
+
+let source=null;
+const blob=await getProfileAvatar();
+
+if(requestNumber!==avatarRequestNumber) return;
+
+if(blob instanceof Blob){
+if(avatarObjectURL){
+URL.revokeObjectURL(avatarObjectURL);
+avatarObjectURL=null;
+}
+avatarObjectURL=URL.createObjectURL(blob);
+source=avatarObjectURL;
+}else{
+source=getLegacyAvatar();
+}
+
+if(requestNumber!==avatarRequestNumber) return;
+
+currentAvatarSource=source;
+
+setAvatarElement(
+document.getElementById("currentCommentAvatar"),
+source,
+initials
+);
+
+/* Perbarui avatar akun aktif pada komentar utama DAN seluruh reply bertingkat. */
+document.querySelectorAll("#commentList .comment").forEach(comment=>{
+if(String(comment.dataset.id)!==String(currentUser.id)) return;
+
+setAvatarElement(
+comment.querySelector(".comment-user-avatar"),
+currentAvatarSource,
+initials
+);
+});
+}
+
+/* UPDATE PROFILE */
+function updateCurrentProfile(){
+const oldId=String(currentUser.id);
+currentUser=getCurrentProfile();
+
+const avatar=document.getElementById("currentCommentAvatar");
+if(avatar) avatar.textContent=currentUser.avatar;
+
+document.querySelectorAll("#commentList .comment").forEach(comment=>{
+if(String(comment.dataset.id)!==oldId) return;
+
+const head=comment.querySelector(".comment-head");
+const userAvatar=comment.querySelector(".comment-user-avatar");
+
+if(head){
+head.innerHTML=roleHeaderHTML(currentUser);
+}
+
+if(userAvatar){
+userAvatar.textContent=currentUser.avatar;
+}
+
+comment.dataset.author=currentUser.name;
+comment.dataset.id=String(currentUser.id);
+});
+
+updateProfileAvatar();
+}
+
+/* PROFILE CHANGE LISTENERS */
+window.addEventListener("storage",event=>{
+if(
+event.key==="anilix_user"||
+event.key==="anilix_username"||
+event.key==="anilix_avatar"
+){
+updateCurrentProfile();
+}
+});
+
+window.addEventListener("pageshow",()=>{
+updateCurrentProfile();
+});
+
+document.addEventListener("visibilitychange",()=>{
+if(!document.hidden){
+updateCurrentProfile();
+}
+});
+
+/* SAME-TAB PROFILE MEDIA SYNC */
+let profileMediaChannel=null;
+
+if("BroadcastChannel" in window){
+profileMediaChannel=new BroadcastChannel("anilix_media_sync");
+
+profileMediaChannel.addEventListener("message",event=>{
+if(
+event.data==="media-updated"||
+event.data?.type==="media-updated"||
+event.data?.action==="media-updated"
+){
+updateProfileAvatar();
+}
+});
+}
+
+/* PROFILE NAVIGATION — AVATAR SENDIRI VS USER LAIN */
+function openUserProfile(userId){
+const id=String(userId??"").trim();
+
+if(id && id===String(currentUser.id)){
+window.location.href="profile.html";
+return;
+}
+
+if(id){
+window.location.href="user-profile.html?id="+encodeURIComponent(id);
+}
+}
+
+/* Avatar akun aktif selalu menuju halaman profile milik sendiri. */
+document.getElementById("currentCommentAvatar")?.addEventListener("click",()=>{
+window.location.href="profile.html";
+});
+
+/* Avatar/nama komentar menuju profile pemilik komentar. */
+document.getElementById("commentList")?.addEventListener("click",event=>{
+const target=event.target.closest(".comment-user-avatar, .comment-name");
+if(!target) return;
+
+const comment=target.closest(".comment");
+if(!comment) return;
+
+event.preventDefault();
+event.stopPropagation();
+openUserProfile(comment.dataset.id);
+});
+
+/* INITIAL PROFILE SYNC */
+updateCurrentProfile();
+
+/* Render @username sebagai mention yang terlihat jelas, bukan teks biasa. */
+function formatCommentText(value){
+  const safe=escapeHTML(String(value??""));
+  return safe.replace(/(^|\s)(@[\p{L}\p{N}_-]{1,32})/gu,'$1<span class="comment-mention">$2</span>');
+}
+
+/* COMMENT ELEMENT */
+function createCommentElement({user,text,level=0,target=null}){
+level=Math.min(3,Math.max(0,Number(level)||0));
+
+const comment=document.createElement("div");
+comment.className="comment reply-level-"+level;
+comment.dataset.level=String(level);
+comment.dataset.author=user.name;
+comment.dataset.id=String(user.id);
+
+const replyTarget=target
+  ? `<div class="reply-target">Membalas <strong>@${escapeHTML(target.dataset.author||"user")}</strong> <span>${escapeHTML(target.dataset.id?"#"+target.dataset.id:"")}</span></div>`
+  : "";
+
+comment.innerHTML=`
+<div class="comment-user-avatar">${escapeHTML(user.avatar||"YO")}</div>
+<div class="comment-body">
+<div class="comment-head">${roleHeaderHTML(user)}</div>
+${replyTarget}
+<div class="comment-text">${formatCommentText(text)}</div>
+<div class="comment-actions">
+<button class="comment-action reply-button" type="button">Reply</button>
+<button class="comment-action reply-count-button" type="button" hidden></button>
+</div>
+<div class="reply-box">
+<input class="reply-input" maxlength="500" placeholder="Balas @${escapeHTML(user.name)}...">
+<button class="reply-send" type="button">➤</button>
+</div>
+</div>
+`;
+
+/* Reply/komentar baru milik akun aktif langsung memakai foto profil yang sudah dimuat. */
+if(String(user.id)===String(currentUser.id)){
+setAvatarElement(
+comment.querySelector(".comment-user-avatar"),
+currentAvatarSource,
+user.avatar||"YO"
+);
+}
+
+setupReply(comment);
+setupCommentMenu(comment);
+comment.__replies=comment.__replies||[];
+updateReplyCount(comment);
+return comment;
+}
+
+/* REPLY SYSTEM — ONE POPUP, REPLIES NEVER BECOME MAIN COMMENTS */
+const threadBackdrop=document.getElementById("threadBackdrop");
+const threadList=document.getElementById("threadList");
+const threadInput=document.getElementById("threadInput");
+const threadAvatar=document.getElementById("threadAvatar");
+let activeThreadRoot=null;
+let activeThreadComment=null;
+
+function getThreadRoot(comment){
+  let node=comment;
+  while(node && Number(node.dataset.level)>0) node=node.__replyParent || node.parentElement?.closest?.('.comment');
+  return node || comment;
+}
+function updateReplyCount(root){
+  if(!root) return;
+  const count=(root.__replies||[]).length;
+  let button=root.querySelector('.reply-count-button');
+  if(!button){
+    button=document.createElement('button');
+    button.type='button';
+    button.className='comment-action reply-count-button';
+    root.querySelector('.comment-actions')?.appendChild(button);
+  }
+  button.hidden=count===0;
+  button.textContent=count+' Reply';
+  button.onclick=event=>{event.preventDefault();event.stopPropagation();openThreadSheet(root,root);};
+}
+function focusReplyTo(comment){
+  activeThreadComment=comment;
+  const name=comment.dataset.author||comment.querySelector('.comment-name')?.textContent?.trim()||'';
+  const mention='@'+name+' ';
+  threadInput.value=mention;
+  threadInput.placeholder='Tulis balasan...';
+  threadInput.focus();
+  threadInput.setSelectionRange(threadInput.value.length,threadInput.value.length);
+}
+function renderThread(root,focusComment=root){
+  activeThreadRoot=root;
+  activeThreadComment=focusComment;
+  threadList.innerHTML='';
+  const clones=[root,...(root.__replies||[]).map(reply=>reply.node)];
+  clones.forEach((source,index)=>{
+    const clone=source.cloneNode(true);
+    clone.__sourceComment=source;
+    clone.querySelectorAll('.reply-box,.reply-count-button').forEach(el=>el.remove());
+    /* cloneNode tidak menyalin event listener; buat ulang menu titik tiga. */
+    clone.querySelectorAll('.comment-more').forEach(el=>el.remove());
+    setupCommentMenu(clone);
+    const replyBtn=clone.querySelector('.reply-button');
+    if(replyBtn) replyBtn.onclick=event=>{
+      event.preventDefault();event.stopPropagation();
+      focusReplyTo(source);
+    };
+    threadList.appendChild(clone);
+  });
+  setAvatarElement(threadAvatar,currentAvatarSource,currentUser.avatar);
+  /* Membuka popup tidak otomatis menandai siapa pun. */
+  threadInput.value='';
+  threadInput.placeholder='Tulis balasan...';
+  threadBackdrop.classList.add('open');
+  threadBackdrop.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function openThreadSheet(comment,focusComment=comment){
+  const root=comment.dataset.level==='0'?comment:(comment.__replyRoot||comment);
+  renderThread(root,focusComment);
+}
+threadList.addEventListener('click',event=>{
+  const target=event.target.closest('.comment-user-avatar, .comment-name');
+  if(!target) return;
+  const source=target.closest('.comment')?.__sourceComment;
+  if(!source) return;
+  event.preventDefault();event.stopPropagation();openUserProfile(source.dataset.id);
+});
+function closeThreadSheet(){
+  threadBackdrop.classList.remove('open');
+  threadBackdrop.setAttribute('aria-hidden','true');
+  document.body.style.overflow='';
+  activeThreadRoot=null;activeThreadComment=null;
+  threadInput.value='';
+}
+function setupReply(comment){
+  const replyButton=comment.querySelector('.reply-button');
+  if(replyButton) replyButton.addEventListener('click',event=>{
+    event.preventDefault();event.stopPropagation();openThreadSheet(comment);
+  });
+}
+document.getElementById('threadComposer').addEventListener('submit',event=>{
+  event.preventDefault();
+  const text=threadInput.value.trim();
+  if(!text){showToast('Tulis balasan dulu.');return;}
+  if(!activeThreadRoot||!activeThreadComment)return;
+  const parent=activeThreadComment;
+  const reply=createCommentElement({
+    user:currentUser,
+    text,
+    level:Math.min(3,(Number(parent.dataset.level)||0)+1),
+    target:parent
+  });
+  reply.__replyRoot=activeThreadRoot;
+  reply.__replyParent=parent;
+  if(!Array.isArray(activeThreadRoot.__replies)) activeThreadRoot.__replies=[];
+  activeThreadRoot.__replies.push({node:reply,parent});
+  updateReplyCount(activeThreadRoot);
+  threadInput.value='';
+  renderThread(activeThreadRoot,reply);
+  showToast('Balasan berhasil dikirim.');
+});
+threadBackdrop.addEventListener('click',event=>{if(event.target===threadBackdrop)closeThreadSheet();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&threadBackdrop.classList.contains('open'))closeThreadSheet();});
+/* Tarik handle ke bawah: sheet mengikuti jari dan menutup dengan animasi. */
+const threadHandle=document.querySelector('.thread-handle');
+const threadSheet=document.querySelector('.thread-sheet');
+let threadDragStartY=null;
+let threadDragCurrentY=0;
+let threadDragging=false;
+threadHandle.addEventListener('pointerdown',event=>{
+  if(!threadBackdrop.classList.contains('open')) return;
+  threadDragStartY=event.clientY;
+  threadDragCurrentY=0;
+  threadDragging=true;
+  threadSheet.style.transition='none';
+  threadHandle.setPointerCapture?.(event.pointerId);
+});
+threadHandle.addEventListener('pointermove',event=>{
+  if(!threadDragging||threadDragStartY===null) return;
+  const delta=Math.max(0,event.clientY-threadDragStartY);
+  threadDragCurrentY=delta;
+  threadSheet.style.transform=`translateY(${delta}px)`;
+});
+function finishThreadDrag(){
+  if(!threadDragging) return;
+  threadDragging=false;
+  const shouldClose=threadDragCurrentY>85;
+  threadDragStartY=null;
+  threadSheet.style.transition='transform .26s cubic-bezier(.2,.75,.25,1)';
+  if(shouldClose){
+    threadSheet.style.transform='translateY(100%)';
+    window.setTimeout(()=>{
+      closeThreadSheet();
+      threadSheet.style.transform='';
+      threadSheet.style.transition='';
+    },240);
+  }else{
+    threadSheet.style.transform='translateY(0)';
+    window.setTimeout(()=>{threadSheet.style.transform='';threadSheet.style.transition='';},270);
+  }
+  threadDragCurrentY=0;
+}
+threadHandle.addEventListener('pointerup',finishThreadDrag);
+threadHandle.addEventListener('pointercancel',finishThreadDrag);
+
+
+/* COMMENT MENU + REPORT SYSTEM */
+const reportBackdrop=document.getElementById("reportBackdrop");
+const reportDialog=document.getElementById("reportDialog");
+const reportDialogTitle=document.getElementById("reportDialogTitle");
+const reportDialogDesc=document.getElementById("reportDialogDesc");
+const reportChoices=document.getElementById("reportChoices");
+let activeReportComment=null;
+
+const commentReportReasons=[
+"Spam",
+"Toxic / Pelecehan",
+"Spoiler",
+"Promosi",
+"Konten tidak pantas",
+"Penipuan",
+"Ancaman",
+"Lainnya"
+];
+
+const videoReportReasons=[
+"Vidio Eror",
+"Subtitle Eror",
+"Anime salah"
+];
+
+function closeReportDialog(){
+reportBackdrop.classList.remove("open");
+reportBackdrop.setAttribute("aria-hidden","true");
+activeReportComment=null;
+}
+
+function openReportDialog(type){
+const reasons=type==="video"?videoReportReasons:commentReportReasons;
+const title=type==="video"?"Laporkan Video":"Laporkan Komentar";
+reportDialogTitle.textContent=title;
+reportDialogDesc.textContent=type==="video"
+?"Pilih alasan laporan untuk episode ini."
+:"Pilih alasan yang paling sesuai dengan komentar ini.";
+reportChoices.innerHTML=reasons.map(reason=>`<button class="report-choice" type="button" data-report-reason="${escapeHTML(reason)}">${escapeHTML(reason)}</button>`).join("");
+reportChoices.querySelectorAll("[data-report-reason]").forEach(button=>{
+button.addEventListener("click",()=>submitReport(type,button.dataset.reportReason));
+});
+reportBackdrop.classList.add("open");
+reportBackdrop.setAttribute("aria-hidden","false");
+}
+
+function saveReport(record){
+let reports=[];
+try{reports=JSON.parse(localStorage.getItem("anilix_reports")||"[]");}catch(error){reports=[];}
+if(!Array.isArray(reports)) reports=[];
+reports.push({...record,createdAt:Date.now()});
+localStorage.setItem("anilix_reports",JSON.stringify(reports));
+}
+
+function submitReport(type,reason){
+const record={
+type,
+reason,
+reporterId:String(currentUser.id),
+reporterName:currentUser.name,
+anime:document.querySelector(".info .title")?.textContent.trim() || "Anime",
+episode:currentEpisode
+};
+if(type==="comment"&&activeReportComment){
+record.commentId=activeReportComment.dataset.commentId||activeReportComment.dataset.id||"";
+record.commentAuthor=activeReportComment.dataset.author||"";
+record.commentText=activeReportComment.querySelector(".comment-text")?.textContent||"";
+}
+saveReport(record);
+closeReportDialog();
+showToast("Laporan berhasil dikirim.");
+}
+
+function openCommentMenu(comment){
+comment=comment?.__sourceComment||comment;
+const isOwnComment=String(comment.dataset.id)===String(currentUser.id);
+activeReportComment=comment;
+reportDialogTitle.textContent="Menu Komentar";
+reportDialogDesc.textContent=isOwnComment?"Kelola komentar milikmu.":"Pilih tindakan untuk komentar ini.";
+reportChoices.innerHTML=isOwnComment
+?`<button class="report-choice danger" id="deleteCommentChoice" type="button">Hapus Komentar</button>`
+:`<button class="report-choice" id="reportCommentChoice" type="button">Laporkan</button>`;
+if(isOwnComment){
+document.getElementById("deleteCommentChoice").addEventListener("click",()=>{
+const target=activeReportComment;
+if(!target) return;
+
+const root=getThreadRoot(target);
+const isReply=Number(target.dataset.level)>0;
+
+closeReportDialog();
+
+if(isReply){
+  const replies=root.__replies||[];
+  root.__replies=replies.filter(item=>item.node!==target);
+  target.remove();
+  updateReplyCount(root);
+}else{
+  const replies=root.__replies||[];
+  const removedNodes=new Set([root,...replies.map(item=>item.node)]);
+  removedNodes.forEach(node=>node?.remove());
+  root.__replies=[];
+  updateCommentCount(-1);
+}
+
+if(activeThreadRoot===root) closeThreadSheet();
+showToast("Komentar berhasil dihapus.");
+});
+}else{
+document.getElementById("reportCommentChoice").addEventListener("click",()=>openReportDialog("comment"));
+}
+reportBackdrop.classList.add("open");
+reportBackdrop.setAttribute("aria-hidden","false");
+}
+
+function setupCommentMenu(comment){
+if(!comment||comment.querySelector(".comment-more")) return;
+const button=document.createElement("button");
+button.className="comment-more";
+button.type="button";
+button.setAttribute("aria-label","Menu komentar");
+button.setAttribute("title","Menu komentar");
+button.textContent="⋮";
+button.addEventListener("click",event=>{
+event.preventDefault();
+event.stopPropagation();
+openCommentMenu(comment);
+});
+comment.appendChild(button);
+}
+
+reportBackdrop.addEventListener("click",event=>{
+if(event.target===reportBackdrop) closeReportDialog();
+});
+document.getElementById("reportCancel").addEventListener("click",closeReportDialog);
+reportDialog.addEventListener("click",event=>event.stopPropagation());
+document.addEventListener("keydown",event=>{
+if(event.key==="Escape"&&reportBackdrop.classList.contains("open")) closeReportDialog();
+});
+
+/* COMMENT COUNT */
+function updateCommentCount(amount){
+const count=document.getElementById("commentCount");
+if(!count) return;
+count.textContent=String(Number(count.textContent)+amount);
+}
+
+/* SEND COMMENT */
+function sendComment(){
+const input=document.getElementById("commentInput");
+const text=input.value.trim();
+
+if(!text){
+showToast("Tulis komentar dulu.");
+return;
+}
+
+const comment=createCommentElement({
+user:currentUser,
+text,
+level:0,
+target:null
+});
+
+document.getElementById("commentList").prepend(comment);
+updateCommentCount(1);
+
+input.value="";
+updateProfileAvatar();
+showToast("Komentar berhasil dikirim.");
+}
+
+document.getElementById("commentSend").addEventListener("click",sendComment);
+
+document.getElementById("commentInput").addEventListener("keydown",event=>{
+if(event.key==="Enter"){
+event.preventDefault();
+sendComment();
+}
+});
+
+/* INITIAL REPLY BUTTONS */
+document.querySelectorAll("#commentList > .comment").forEach(comment=>{
+setupReply(comment);
+setupCommentMenu(comment);
+comment.__replies=comment.__replies||[];
+updateReplyCount(comment);
+});
+
+/* AUTO NEXT */
+video.addEventListener("ended",()=>{
+if(!autoNext){
+showToast("Episode selesai.");
+return;
+}
+
+if(currentEpisode<30){
+const next=currentEpisode+1;
+showToast("Memutar Episode "+next);
+setTimeout(()=>loadEpisode(next),800);
+}else{
+showToast("Sudah episode terakhir.");
+}
+});
+
+/* SAVED SETTINGS */
+const savedQuality=localStorage.getItem("anilix_quality");
+
+if(savedQuality){
+const option=document.querySelector(`[data-quality="${savedQuality}"]`);
+
+if(option){
+document.querySelectorAll(".quality-option").forEach(item=>item.classList.remove("active"));
+option.classList.add("active");
+qualityText.textContent=savedQuality;
+}
+}
+
+const savedSpeed=Number(localStorage.getItem("anilix_speed"));
+
+if(Number.isFinite(savedSpeed)&&savedSpeed>0){
+selectedPlaybackRate=savedSpeed;
+video.playbackRate=savedSpeed;
+
+const option=document.querySelector(`[data-speed="${savedSpeed}"]`);
+
+if(option){
+document.querySelectorAll(".speed-option").forEach(item=>item.classList.remove("active"));
+option.classList.add("active");
+}
+}
+
+/* FULLSCREEN CHANGE */
+async function handlePlayerFullscreenChange(){
+  const active = Boolean(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement
+  );
+
+  if(active){
+    player.classList.add("manual-fullscreen");
+    document.body.classList.add("landscape-player-mode");
+    if(sheetBackdrop.classList.contains("open")) moveSheetIntoPlayer();
+  }else{
+    player.classList.remove("manual-fullscreen");
+    document.body.classList.remove("landscape-player-mode");
+    if(sheetBackdrop.classList.contains("open")) restoreSheet();
+    if(screen.orientation?.unlock){
+      try{screen.orientation.unlock();}catch{}
+    }
+  }
+
+  showPlayerUI();
+}
+
+document.addEventListener("fullscreenchange",handlePlayerFullscreenChange);
+document.addEventListener("webkitfullscreenchange",handlePlayerFullscreenChange);
+
+/* VIDEO ERROR */
+video.addEventListener("error",()=>{
+if(video.src) showToast("Video gagal dimuat atau format tidak didukung.");
+});
+
+/* INITIAL */
+playerUIVisible=true;
+player.classList.remove("ui-hidden");
+updatePlayUI();
+updateAutoNext();
+updateEpisodeNav();
+updateProgress();
+
+/* SANKA API INTEGRATION */
+let sankaEpisodeItems = [];
+let sankaAnimeTitle = "";
+const sankaParams = new URLSearchParams(location.search);
+const sankaAnimeId = sankaParams.get("id");
+const sankaInitialEpisodeId = sankaParams.get("episodeId");
+const sankaAnimeType = sankaParams.get("type") || "anime";
+
+async function initSankaWatch() {
+  if (!sankaAnimeId) {
+    showToast("ID anime tidak ditemukan.");
+    return;
+  }
+
+  try {
+    const result = sankaAnimeType === "donghua"
+      ? await window.SankaAPI.getCatalog(
+          "/anime/donghua/detail/" + encodeURIComponent(sankaAnimeId)
+        )
+      : await window.SankaAPI.getAnime(sankaAnimeId);
+
+    const payload = result?.data || result;
+
+    const data = sankaAnimeType === "donghua"
+      ? {
+          title: payload.title || "Donghua",
+          poster: payload.poster || "",
+          synopsis: {
+            paragraphs: payload.synopsis ? [payload.synopsis] : []
+          },
+          episodeList: (Array.isArray(payload.episodes_list)
+            ? payload.episodes_list
+            : []
+          ).map(item => ({
+            eps: parseInt(item.episode_number, 10) ||
+              parseInt((item.episode || "").match(/\d+/)?.[0], 10) || 0,
+            episodeId: item.slug || "",
+            title: item.episode || "",
+            date: item.release_date || ""
+          })).filter(item => item.eps > 0)
+        }
+      : payload;
+    sankaAnimeTitle = data.title || "Anime";
+    sankaEpisodeItems = Array.isArray(data.episodeList)
+      ? [...data.episodeList].sort(
+          (a,b) => Number(a.eps || 0) - Number(b.eps || 0)
+        )
+      : [];
+
+    document.title = sankaAnimeTitle + " - ANILIX";
+
+    document.querySelectorAll(".player-title > div:first-child, .info .title")
+      .forEach(el => el.textContent = sankaAnimeTitle);
+
+    const poster = document.querySelector(".poster");
+    if (poster && data.poster) {
+      poster.style.backgroundImage = `url("${data.poster}")`;
+      poster.style.backgroundSize = "cover";
+      poster.style.backgroundPosition = "center";
+    }
+
+    const synopsis = document.getElementById("synopsisText");
+    if (synopsis) {
+      const paragraphs = data.synopsis?.paragraphs || [];
+      synopsis.textContent = paragraphs.join("\n") || "Sinopsis belum tersedia.";
+    }
+
+    const meta = document.querySelector(".episode-meta");
+    if (meta) {
+      const spans = meta.querySelectorAll("span");
+      if (spans[0]) spans[0].textContent = "Episode";
+      for (let i = 1; i < spans.length; i++) spans[i].hidden = true;
+    }
+
+    const initialItem = sankaEpisodeItems.find(
+      item => item.episodeId === sankaInitialEpisodeId
+    );
+    const requestedNumber = Number(sankaParams.get("episode"));
+    currentEpisode = initialItem
+      ? Number(initialItem.eps)
+      : (requestedNumber || Number(sankaEpisodeItems[0]?.eps) || 1);
+
+    renderEpisodes();
+    updateEpisodeNav();
+    await loadEpisode(currentEpisode);
+    document.body.classList.add("sanka-ready");
+
+  } catch (error) {
+    console.error("Sanka API:", error);
+    showToast("Gagal mengambil data anime dari Sanka.");
+  }
+}
+
+renderEpisodes = function() {
+  episodeGrid.replaceChildren();
+
+  sankaEpisodeItems.forEach(item => {
+    const number = Number(item.eps);
+    const button = document.createElement("button");
+    button.className = "episode-button";
+    button.type = "button";
+    button.textContent = "Episode " + number;
+
+    if (number === currentEpisode) button.classList.add("active");
+
+    button.addEventListener("click", () => loadEpisode(number));
+    episodeGrid.appendChild(button);
+  });
+
+  updateEpisodeNav();
+};
+
+updateEpisodeNav = function() {
+  const numbers = sankaEpisodeItems.map(item => Number(item.eps));
+  const min = numbers.length ? Math.min(...numbers) : 1;
+  const max = numbers.length ? Math.max(...numbers) : 0;
+
+  prevEpisode.disabled = currentEpisode <= min;
+  nextEpisode.disabled = currentEpisode >= max || !max;
+};
+
+loadEpisode = async function(number) {
+  const item = sankaEpisodeItems.find(
+    entry => Number(entry.eps) === Number(number)
+  );
+
+  if (!item) {
+    showToast("Episode tidak tersedia.");
+    return;
+  }
+
+  currentEpisode = Number(item.eps);
+  document.getElementById("playerEpisode").textContent =
+    "Episode " + currentEpisode;
+  document.getElementById("episodeMeta").textContent =
+    "Episode " + currentEpisode;
+
+  renderEpisodes();
+
+  const params = new URLSearchParams(location.search);
+  params.set("episode", currentEpisode);
+  if (item.episodeId) params.set("episodeId", item.episodeId);
+  history.replaceState(null, "", location.pathname + "?" + params.toString());
+
+  video.pause();
+  video.removeAttribute("src");
+  video.load();
+
+  progressFill.style.width = "0%";
+  progressThumb.style.left = "0%";
+  time.textContent = "00:00 / 00:00";
+  updatePlayUI();
+
+  try {
+    if (!item.episodeId) {
+      throw new Error("ID episode tidak tersedia");
+    }
+
+    if (sankaAnimeType === "donghua") {
+      const result = await window.SankaAPI.getCatalog(
+        "/anime/donghua/episode/" + encodeURIComponent(item.episodeId)
+      );
+
+      const episode = result.data || result;
+      const embedUrl = episode.streaming?.main_url?.url;
+
+      if (!embedUrl) {
+        throw new Error("URL pemutar utama tidak tersedia");
+      }
+
+      const parsedUrl = new URL(embedUrl);
+      if (parsedUrl.protocol !== "https:") {
+        throw new Error("URL pemutar tidak aman");
+      }
+
+      let frame = document.getElementById("sankaEmbedPlayer");
+
+      if (!frame) {
+        frame = document.createElement("iframe");
+        frame.id = "sankaEmbedPlayer";
+        frame.title = "Pemutar Donghua";
+        frame.allow = "autoplay; fullscreen; picture-in-picture";
+        frame.allowFullscreen = true;
+        frame.referrerPolicy = "strict-origin-when-cross-origin";
+        player.insertBefore(frame, video.nextSibling);
+      }
+
+      player.classList.add("sanka-embed-mode");
+      frame.src = parsedUrl.href;
+
+      const title = episode.episode || item.title ||
+        "Episode " + currentEpisode;
+      document.getElementById("playerEpisode").textContent = title;
+
+      showToast("Pemutar Donghua dimuat.");
+    } else {
+      player.classList.remove("sanka-embed-mode");
+
+      const oldFrame = document.getElementById("sankaEmbedPlayer");
+      if (oldFrame) oldFrame.remove();
+
+      const result = await window.SankaAPI.getEpisode(item.episodeId);
+      const episode = result.data || result;
+      const title = episode.title || item.title ||
+        "Episode " + currentEpisode;
+
+      document.getElementById("playerEpisode").textContent = title;
+      currentAnimeEpisodeData = episode;
+        const qualities = episode.server?.qualities || [];
+        setAvailableQualities(qualities);
+      showToast(qualities.length
+        ? qualities.length + " kualitas ditemukan."
+        : "Daftar kualitas belum tersedia dari API.");
+    }
+  } catch (error) {
+    console.error("Sanka episode:", error);
+    showToast("Gagal memuat episode: " + error.message);
+  }
+
+  updateEpisodeNav();
+};
+
+initSankaWatch();
+
+</script>
+
+
+<script>
+document.querySelectorAll("#commentList > .comment").forEach(comment => {
+  comment.remove();
+});
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

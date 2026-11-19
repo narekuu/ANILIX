@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#090711">
+<title>Pengaturan — ANILIX</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+    --bg:#090711;
+    --card:#15131f;
+    --card2:#1c1929;
+    --purple:#8958ed;
+    --purple2:#a47aff;
+    --text:#f5f2ff;
+    --muted:#858092;
+    --border:rgba(255,255,255,.07);
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,Arial,sans-serif;
+    min-height:100vh;
+    padding-bottom:35px;
+}
+
+button,input{font:inherit}
+button{border:none;cursor:pointer;color:inherit}
+
+.header{
+    height:75px;
+    display:flex;
+    align-items:center;
+    gap:17px;
+    padding:0 23px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(9,7,17,.95);
+    backdrop-filter:blur(15px);
+}
+
+.back{
+    width:34px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:none;
+    color:#e7e1f5;
+}
+
+.back svg{width:25px;height:25px}
+.header h2{font-size:21px;font-weight:750}
+
+.container{
+    width:100%;
+    max-width:700px;
+    margin:auto;
+    padding:12px 20px 35px;
+}
+
+/* PROFILE */
+
+.profile-card{
+    position:relative;
+    overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:25px;
+    background:var(--card);
+    margin-bottom:28px;
+}
+
+.banner{
+    height:175px;
+    position:relative;
+    background:
+        linear-gradient(0deg,rgba(9,7,17,.65),rgba(9,7,17,.12)),
+        linear-gradient(135deg,#28213d,#171426 55%,#35264d);
+    background-size:cover;
+    background-position:center;
+    cursor:pointer;
+}
+
+.banner::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(0deg,rgba(10,9,17,.45),transparent);
+    pointer-events:none;
+}
+
+.banner-edit{
+    position:absolute;
+    right:14px;
+    top:14px;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:10px 13px;
+    border-radius:12px;
+    background:rgba(0,0,0,.48);
+    border:1px solid rgba(255,255,255,.15);
+    font-size:12px;
+    font-weight:700;
+    backdrop-filter:blur(10px);
+}
+
+.banner-edit svg{width:15px;height:15px}
+
+.profile-info{
+    padding:0 20px 21px;
+    position:relative;
+}
+
+.avatar-wrap{
+    width:105px;
+    height:105px;
+    margin-top:-54px;
+    position:relative;
+    z-index:3;
+    cursor:pointer;
+}
+
+.avatar{
+    width:105px;
+    height:105px;
+    border-radius:50%;
+    object-fit:cover;
+    background:linear-gradient(135deg,#40315d,#171426);
+    border:5px solid var(--card);
+}
+
+.avatar-edit{
+    position:absolute;
+    right:0;
+    bottom:3px;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:var(--purple);
+    border:3px solid var(--card);
+}
+
+.avatar-edit svg{width:15px;height:15px}
+
+.profile-heading{margin-top:15px}
+.profile-heading h3{
+    font-size:19px;
+    font-weight:800;
+    overflow-wrap:anywhere;
+}
+
+.profile-heading p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:6px;
+}
+
+.username-area{margin-top:22px}
+
+.field-label{
+    display:block;
+    color:#a49db5;
+    font-size:12px;
+    margin:0 0 8px 3px;
+}
+
+.username-input{
+    width:100%;
+    height:53px;
+    border:1px solid rgba(255,255,255,.13);
+    outline:none;
+    border-radius:14px;
+    padding:0 16px;
+    color:white;
+    background:#100e19;
+    font-size:15px;
+    font-weight:650;
+}
+
+.username-input:focus{border-color:var(--purple)}
+
+.username-counter{
+    text-align:right;
+    color:var(--muted);
+    font-size:11px;
+    margin:6px 5px 0 0;
+}
+
+.save-btn{
+    width:100%;
+    height:53px;
+    margin-top:13px;
+    border-radius:30px;
+    background:linear-gradient(110deg,#7541d5,#9865f5);
+    color:white;
+    font-weight:800;
+    font-size:15px;
+    transition:.2s;
+}
+
+.save-btn:active{transform:scale(.98)}
+.save-btn:disabled{opacity:.6;cursor:wait}
+
+/* SECTION */
+
+.section{margin-top:27px}
+
+.section-title{
+    color:var(--purple2);
+    font-size:13px;
+    font-weight:800;
+    margin:0 0 13px 3px;
+    letter-spacing:.7px;
+}
+
+.setting-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:19px;
+    overflow:hidden;
+}
+
+.setting-row{
+    min-height:76px;
+    padding:16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid var(--border);
+}
+
+.setting-row:last-child{border-bottom:none}
+
+.setting-text{min-width:0}
+
+.setting-text h4{
+    font-size:14px;
+    font-weight:650;
+}
+
+.setting-text p{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:6px;
+    line-height:1.5;
+}
+
+/* QUALITY */
+
+.quality-options{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+    padding:15px;
+}
+
+.quality-btn{
+    height:43px;
+    border-radius:12px;
+    background:#211d2d;
+    border:1px solid rgba(255,255,255,.06);
+    color:#aaa4b8;
+    font-size:13px;
+    font-weight:750;
+    transition:.2s;
+}
+
+.quality-btn.active{
+    background:rgba(137,88,237,.17);
+    border:1px solid var(--purple);
+    color:#b99aff;
+}
+
+/* SWITCH */
+
+.switch{
+    width:53px;
+    height:30px;
+    flex-shrink:0;
+    border-radius:30px;
+    background:#373340;
+    padding:4px;
+    transition:.2s;
+}
+
+.switch span{
+    display:block;
+    width:22px;
+    height:22px;
+    background:#aaa5b3;
+    border-radius:50%;
+    transition:.2s;
+}
+
+.switch.active{background:rgba(137,88,237,.45)}
+
+.switch.active span{
+    transform:translateX(23px);
+    background:var(--purple2);
+}
+
+/* ACTION */
+
+.action-row{
+    min-height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:15px 17px;
+    border-bottom:1px solid var(--border);
+}
+
+.action-row:last-child{border-bottom:none}
+
+.action-btn{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:10px 14px;
+    border-radius:11px;
+    background:rgba(137,88,237,.13);
+    border:1px solid rgba(137,88,237,.25);
+    color:#b99aff;
+    font-size:12px;
+    font-weight:750;
+    white-space:nowrap;
+}
+
+.action-btn svg{width:15px;height:15px}
+.action-btn:active{transform:scale(.96)}
+
+.admin-link{
+    color:#b99aff;
+    font-size:13px;
+    margin-top:7px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+}
+
+.admin-link svg{width:15px;height:15px}
+
+/* APPLICATION INFO */
+
+.application-info{
+    padding:17px;
+    border-bottom:1px solid var(--border);
+}
+
+.application-info:last-child{
+    border-bottom:none;
+}
+
+.application-label{
+    color:var(--muted);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.8px;
+    margin-bottom:7px;
+}
+
+.application-name{
+    font-size:15px;
+    font-weight:750;
+    color:var(--text);
+}
+
+.application-email{
+    color:#b99aff;
+    font-size:13px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-top:1px;
+}
+
+.application-email svg{
+    width:16px;
+    height:16px;
+    flex-shrink:0;
+}
+
+.application-email:active{
+    opacity:.7;
+}
+
+/* LOGOUT */
+
+.logout-btn{
+    width:100%;
+    height:53px;
+    border-radius:15px;
+    margin-top:27px;
+    color:#c5aaff;
+    background:rgba(137,88,237,.11);
+    border:1px solid rgba(137,88,237,.25);
+    font-weight:800;
+    font-size:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+}
+
+.logout-btn svg{width:18px;height:18px}
+.logout-btn:active{transform:scale(.98)}
+
+.footer{
+    text-align:center;
+    color:#555164;
+    font-size:11px;
+    margin-top:25px;
+}
+
+.file-input{display:none}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:28px;
+    transform:translate(-50%,20px);
+    padding:12px 19px;
+    border-radius:13px;
+    background:#282335;
+    color:white;
+    font-size:13px;
+    font-weight:650;
+    opacity:0;
+    pointer-events:none;
+    transition:.25s;
+    z-index:100;
+    white-space:nowrap;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* MODAL */
+
+.modal-bg{
+    position:fixed;
+    inset:0;
+    z-index:90;
+    background:rgba(0,0,0,.75);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+}
+
+.modal-bg.show{display:flex}
+
+.modal{
+    width:100%;
+    max-width:350px;
+    background:#1b1827;
+    border:1px solid var(--border);
+    border-radius:21px;
+    padding:23px;
+    text-align:center;
+}
+
+.modal h3{font-size:18px;margin-bottom:9px}
+
+.modal p{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.6;
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:22px;
+}
+
+.modal-actions button{
+    flex:1;
+    height:43px;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:750;
+}
+
+.cancel-btn{background:#302b3c}
+.confirm-btn{background:#8050df}
+
+@media(max-width:380px){
+    .container{padding-left:15px;padding-right:15px}
+    .quality-options{gap:6px}
+    .quality-btn{font-size:12px}
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<header class="header">
+    <button class="back" onclick="goBack()" aria-label="Kembali">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </button>
+    <h2>Pengaturan</h2>
+</header>
+
+<main class="container">
+
+    <section class="profile-card">
+
+        <div class="banner" id="bannerPreview" onclick="document.getElementById('bannerFile').click()">
+            <button class="banner-edit" type="button"
+                onclick="event.stopPropagation();document.getElementById('bannerFile').click()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="m21 15-5-5L5 21"/>
+                </svg>
+                Ganti Banner
+            </button>
+        </div>
+
+        <input class="file-input" type="file" id="bannerFile" accept="image/*">
+
+        <div class="profile-info">
+
+            <div class="avatar-wrap" onclick="document.getElementById('avatarFile').click()">
+                <img class="avatar" id="avatarPreview" alt="Foto profil">
+                <div class="avatar-edit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 7h3l2-3h6l2 3h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                </div>
+            </div>
+
+            <input class="file-input" type="file" id="avatarFile" accept="image/*">
+
+            <div class="profile-heading">
+                <h3 id="profileName">KaellKyouka 玲</h3>
+                <p>Pengaturan akun ANILIX</p>
+            </div>
+
+            <div class="username-area">
+                <label class="field-label" for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    class="username-input"
+                    maxlength="20"
+                    placeholder="Masukkan username"
+                    oninput="updateUsernameCounter()"
+                >
+                <div class="username-counter" id="usernameCounter">0/20</div>
+                <button class="save-btn" onclick="saveProfile()">Simpan</button>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section">
+        <h3 class="section-title">PEMUTARAN</h3>
+
+        <div class="setting-card">
+
+            <div class="setting-row">
+                <div class="setting-text">
+                    <h4>Kualitas Video</h4>
+                    <p>Pilih kualitas video saat menonton anime</p>
+                </div>
+            </div>
+
+            <div class="quality-options">
+                <button class="quality-btn" data-quality="1080p" onclick="setQuality('1080p')">1080p</button>
+                <button class="quality-btn" data-quality="720p" onclick="setQuality('720p')">720p</button>
+                <button class="quality-btn" data-quality="480p" onclick="setQuality('480p')">480p</button>
+                <button class="quality-btn" data-quality="360p" onclick="setQuality('360p')">360p</button>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-text">
+                    <h4>Lewati Intro 90 Detik</h4>
+                    <p>Otomatis melewati bagian intro anime</p>
+                </div>
+                <button class="switch" id="skipIntro" onclick="toggleSetting('skipIntro')">
+                    <span></span>
+                </button>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-text">
+                    <h4>Autoplay Episode</h4>
+                    <p>Putar episode selanjutnya secara otomatis</p>
+                </div>
+                <button class="switch" id="autoplay" onclick="toggleSetting('autoplay')">
+                    <span></span>
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="section">
+        <h3 class="section-title">DOWNLOAD</h3>
+
+        <div class="setting-card">
+            <div class="action-row">
+                <div class="setting-text">
+                    <h4>Download</h4>
+                    <p>Lihat daftar anime yang sudah diunduh</p>
+                </div>
+
+                <button class="action-btn" onclick="openDownloads()">
+                    Buka
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M13 6l6 6-6 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h3 class="section-title">PENYIMPANAN</h3>
+
+        <div class="setting-card">
+            <div class="action-row">
+                <div class="setting-text">
+                    <h4>Bersihkan Cache</h4>
+                    <p>Hapus file sementara untuk mengosongkan penyimpanan</p>
+                </div>
+
+                <button class="action-btn" onclick="clearCache()">
+                    Bersihkan
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- APLIKASI -->
+
+    <section class="section">
+        <h3 class="section-title">APLIKASI</h3>
+
+        <div class="setting-card">
+
+            <div class="application-info">
+                <div class="application-label">DEVELOPER</div>
+                <div class="application-name">NAREKUU</div>
+            </div>
+
+            <div class="application-info">
+                <div class="application-label">ADMIN</div>
+
+                <a class="application-email" href="mailto:anilixid@gmail.com">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/>
+                        <path d="m3 7 9 6 9-6"/>
+                    </svg>
+                    anilixid@gmail.com
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <button class="logout-btn" onclick="showLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 17l5-5-5-5"/>
+            <path d="M15 12H3"/>
+            <path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/>
+        </svg>
+        Logout
+    </button>
+
+    <div class="footer">ANILIX • Pengaturan Aplikasi</div>
+
+</main>
+
+<div class="modal-bg" id="logoutModal">
+    <div class="modal">
+        <h3>Logout?</h3>
+        <p>Apakah kamu yakin ingin keluar dari akun ANILIX?</p>
+
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="hideLogout()">Batal</button>
+            <button class="confirm-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULT_AVATAR =
+"data:image/svg+xml," + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+<rect width="120" height="120" rx="60" fill="#29213d"/>
+<circle cx="60" cy="44" r="22" fill="#8c789e"/>
+<path d="M20 115c3-30 19-45 40-45s37 15 40 45" fill="#8c789e"/>
+</svg>
+`);
+
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
+const MAX_USERNAME_LENGTH = 20;
+
+let pendingAvatar = null;
+let pendingBanner = null;
+let avatarURL = null;
+let bannerURL = null;
+let db = null;
+
+/* DATABASE */
+
+function openDatabase(){
+    return new Promise((resolve,reject)=>{
+
+        if(db){
+            resolve(db);
+            return;
+        }
+
+        if(!("indexedDB" in window)){
+            reject(new Error("IndexedDB tidak tersedia"));
+            return;
+        }
+
+        const request = indexedDB.open("ANILIX_STORAGE",1);
+
+        request.onupgradeneeded = function(){
+            const database = request.result;
+
+            if(!database.objectStoreNames.contains("images")){
+                database.createObjectStore("images");
+            }
+        };
+
+        request.onsuccess = ()=>{
+            db = request.result;
+            resolve(db);
+        };
+
+        request.onerror = ()=>reject(request.error);
+    });
+}
+
+function saveImage(key,file){
+    return new Promise((resolve,reject)=>{
+
+        const transaction = db.transaction("images","readwrite");
+
+        transaction.objectStore("images").put(file,key);
+
+        transaction.oncomplete = ()=>resolve();
+        transaction.onerror = ()=>reject(transaction.error);
+        transaction.onabort = ()=>reject(transaction.error);
+    });
+}
+
+function getImage(key){
+    return new Promise((resolve,reject)=>{
+
+        const transaction = db.transaction("images","readonly");
+        const request = transaction.objectStore("images").get(key);
+
+        request.onsuccess = ()=>resolve(request.result || null);
+        request.onerror = ()=>reject(request.error);
+    });
+}
+
+/* TOAST */
+
+function toast(message){
+    const el = document.getElementById("toast");
+
+    el.textContent = message;
+    el.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer = setTimeout(()=>{
+        el.classList.remove("show");
+    },2200);
+}
+
+/* BACK */
+
+function goBack(){
+    location.href = "/";
+}
+
+/* USER */
+
+function getUser(){
+    try{
+        return JSON.parse(localStorage.getItem("anilix_user")) || {};
+    }catch(e){
+        return {};
+    }
+}
+
+/* FILE VALIDATION */
+
+function validateImageFile(file){
+
+    if(!file.type.startsWith("image/")){
+        toast("Pilih file gambar atau GIF");
+        return false;
+    }
+
+    if(file.size > MAX_FILE_SIZE){
+        toast("Ukuran file maksimal 25 MB");
+        return false;
+    }
+
+    return true;
+}
+
+/* AVATAR */
+
+document.getElementById("avatarFile").addEventListener("change",function(){
+
+    const file = this.files[0];
+
+    if(!file) return;
+
+    if(!validateImageFile(file)){
+        this.value = "";
+        return;
+    }
+
+    pendingAvatar = file;
+
+    if(avatarURL) URL.revokeObjectURL(avatarURL);
+
+    avatarURL = URL.createObjectURL(file);
+
+    document.getElementById("avatarPreview").src = avatarURL;
+
+    toast("Foto profil dipilih");
+});
+
+/* BANNER */
+
+document.getElementById("bannerFile").addEventListener("change",function(){
+
+    const file = this.files[0];
+
+    if(!file) return;
+
+    if(!validateImageFile(file)){
+        this.value = "";
+        return;
+    }
+
+    pendingBanner = file;
+
+    if(bannerURL) URL.revokeObjectURL(bannerURL);
+
+    bannerURL = URL.createObjectURL(file);
+
+    document.getElementById("bannerPreview").style.backgroundImage =
+        `linear-gradient(0deg,rgba(9,7,17,.35),rgba(9,7,17,.05)),url("${bannerURL}")`;
+
+    toast("Banner dipilih");
+});
+
+/* USERNAME COUNTER */
+
+function updateUsernameCounter(){
+
+    const input = document.getElementById("username");
+
+    if(input.value.length > MAX_USERNAME_LENGTH){
+        input.value = input.value.slice(0,MAX_USERNAME_LENGTH);
+    }
+
+    document.getElementById("usernameCounter").textContent =
+        input.value.length + "/" + MAX_USERNAME_LENGTH;
+}
+
+/* SAVE PROFILE */
+
+async function saveProfile(){
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    if(!username){
+        toast("Username tidak boleh kosong");
+        return;
+    }
+
+    if(username.length > MAX_USERNAME_LENGTH){
+        toast("Username maksimal 20 karakter");
+        return;
+    }
+
+    const saveButton = document.querySelector(".save-btn");
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Menyimpan...";
+
+    try{
+
+        await openDatabase();
+
+        const user = getUser();
+
+        user.name = username;
+        user.displayName = username;
+        user.username = username;
+
+        if(pendingAvatar){
+            await saveImage("avatar",pendingAvatar);
+        }
+
+        if(pendingBanner){
+            await saveImage("banner",pendingBanner);
+        }
+
+        localStorage.removeItem("anilix_avatar");
+        localStorage.removeItem("anilix_banner");
+
+        delete user.photo;
+        delete user.avatar;
+        delete user.photoURL;
+        delete user.banner;
+
+        localStorage.setItem("anilix_user",JSON.stringify(user));
+
+        pendingAvatar = null;
+        pendingBanner = null;
+
+        document.getElementById("profileName").textContent = username;
+
+        toast("Profil berhasil disimpan");
+
+    }catch(error){
+
+        console.error(error);
+
+        toast("Gagal menyimpan. Coba gambar yang lebih kecil.");
+
+    }finally{
+
+        saveButton.disabled = false;
+        saveButton.textContent = "Simpan";
+
+    }
+}
+
+/* QUALITY */
+
+function setQuality(quality){
+
+    localStorage.setItem("anilix_quality",quality);
+
+    document.querySelectorAll(".quality-btn").forEach(btn=>{
+        btn.classList.toggle(
+            "active",
+            btn.dataset.quality === quality
+        );
+    });
+
+    toast("Kualitas video: " + quality);
+}
+
+/* SWITCH */
+
+function toggleSetting(id){
+
+    const button = document.getElementById(id);
+
+    const active = !button.classList.contains("active");
+
+    button.classList.toggle("active",active);
+
+    localStorage.setItem("anilix_" + id,active);
+
+    toast(active
+        ? "Pengaturan diaktifkan"
+        : "Pengaturan dinonaktifkan"
+    );
+}
+
+function loadToggle(id){
+
+    const saved = localStorage.getItem("anilix_" + id);
+
+    const active = saved === "true";
+
+    document.getElementById(id).classList.toggle("active",active);
+}
+
+/* DOWNLOAD */
+
+function openDownloads(){
+    location.href = "/";
+}
+
+/* CACHE */
+
+async function clearCache(){
+
+    const confirmed = confirm(
+        "Bersihkan cache ANILIX? Data profil dan pengaturan tidak akan dihapus."
+    );
+
+    if(!confirmed) return;
+
+    try{
+
+        if("caches" in window){
+            const names = await caches.keys();
+
+            await Promise.all(
+                names.map(name=>caches.delete(name))
+            );
+        }
+
+        toast("Cache berhasil dibersihkan");
+
+    }catch(error){
+
+        console.error(error);
+        toast("Cache tidak dapat dibersihkan");
+
+    }
+}
+
+/* LOGOUT */
+
+function showLogout(){
+    document.getElementById("logoutModal").classList.add("show");
+}
+
+function hideLogout(){
+    document.getElementById("logoutModal").classList.remove("show");
+}
+
+function logout(){
+
+    hideLogout();
+
+    sessionStorage.clear();
+
+    location.href = "login.html";
+}
+
+/* LOAD PROFILE */
+
+async function loadProfile(){
+
+    const user = getUser();
+
+    const username =
+        user.name ||
+        user.displayName ||
+        user.username ||
+        "ANILIX";
+
+    document.getElementById("username").value =
+        username.slice(0,MAX_USERNAME_LENGTH);
+
+    document.getElementById("profileName").textContent =
+        username.slice(0,MAX_USERNAME_LENGTH);
+
+    updateUsernameCounter();
+
+    try{
+
+        await openDatabase();
+
+        const avatar = await getImage("avatar");
+        const banner = await getImage("banner");
+
+        if(avatar){
+
+            if(avatarURL) URL.revokeObjectURL(avatarURL);
+
+            avatarURL = URL.createObjectURL(avatar);
+
+            document.getElementById("avatarPreview").src = avatarURL;
+
+        }else{
+
+            document.getElementById("avatarPreview").src = DEFAULT_AVATAR;
+
+        }
+
+        if(banner){
+
+            if(bannerURL) URL.revokeObjectURL(bannerURL);
+
+            bannerURL = URL.createObjectURL(banner);
+
+            document.getElementById("bannerPreview").style.backgroundImage =
+                `linear-gradient(0deg,rgba(9,7,17,.35),rgba(9,7,17,.05)),url("${bannerURL}")`;
+
+        }
+
+    }catch(error){
+
+        console.error(error);
+
+        document.getElementById("avatarPreview").src = DEFAULT_AVATAR;
+
+        toast("Tidak dapat membuka penyimpanan gambar");
+
+    }
+}
+
+/* LOAD QUALITY */
+
+function loadQuality(){
+
+    const quality =
+        localStorage.getItem("anilix_quality") || "720p";
+
+    document.querySelectorAll(".quality-btn").forEach(btn=>{
+        btn.classList.toggle(
+            "active",
+            btn.dataset.quality === quality
+        );
+    });
+}
+
+/* STORAGE SYNC */
+
+window.addEventListener("storage",function(event){
+
+    if(event.key === "anilix_user"){
+        loadProfile();
+    }
+
+});
+
+/* INIT */
+
+loadProfile();
+loadQuality();
+loadToggle("skipIntro");
+loadToggle("autoplay");
+
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

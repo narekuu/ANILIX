@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "enabled": true,
+  "system": "watch_time",
+  "reward": {
+    "amount": 100,
+    "interval_seconds": 300,
+    "description": "100 EXP setiap 5 menit menonton valid"
+  },
+  "level": {
+    "exp_required": 2150,
+    "carry_over_exp": true,
+    "formula": "floor(total_exp / 2150)",
+    "next_level_formula": "(current_level + 1) * 2150"
+  },
+  "watch_validation": {
+    "enabled": true,
+    "minimum_watch_seconds": 300,
+    "require_video_playing": true,
+    "require_video_progress": true,
+    "reject_paused_time": true,
+    "reject_buffering_time": true,
+    "reject_skipped_time": true,
+    "reject_seeking": true,
+    "reject_duplicate_rewards": true,
+    "require_unique_session": true,
+    "maximum_reward_per_session": 1000000,
+    "reward_only_after_valid_interval": true
+  },
+  "anti_abuse": {
+    "enabled": true,
+    "minimum_progress_ratio": 0.9,
+    "detect_fast_forward": true,
+    "detect_repeated_requests": true,
+    "detect_timestamp_manipulation": true,
+    "detect_session_replay": true,
+    "server_validation_required": true,
+    "client_exp_submission_allowed": false
+  },
+  "eligible_content": [
+    "anime",
+    "donghua",
+    "movie"
+  ],
+  "excluded_activity": [
+    "paused",
+    "buffering",
+    "seeking",
+    "fast_forward",
+    "repeated_request",
+    "invalid_session",
+    "duplicate_interval"
+  ],
+  "storage": {
+    "total_exp_field": "total_exp",
+    "level_field": "level",
+    "watch_time_field": "valid_watch_seconds",
+    "reward_history_field": "exp_history"
+  }
+}

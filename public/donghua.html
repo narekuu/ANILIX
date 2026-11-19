@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090711">
+<title>Donghua — ANILIX</title>
+<link rel="stylesheet" href="css/catalog.css">
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+<body data-page="donghua">
+<main class="app">
+<section class="page-heading">
+ <h1 id="pageTitle">Donghua</h1>
+ <p id="pageSubtitle">Jelajahi koleksi donghua pilihan.</p>
+</section>
+<section class="filter-area">
+ <span class="filter-label">Status</span>
+ <div class="filter-tabs" id="statusFilters"></div>
+</section>
+<div class="collection-info">
+ <h2>Daftar Donghua</h2>
+ <span class="result-count" id="resultCount">0 koleksi</span>
+</div>
+<div class="poster-grid" id="posterGrid"></div>
+<div class="loading" id="loading"><span class="spinner"></span> Memuat koleksi...</div>
+<div class="empty-state" id="emptyState">Belum ada koleksi yang tersedia.</div>
+<div id="scrollSentinel"></div>
+</main>
+<nav class="bottom-nav">
+ <a href="/" class="nav-item"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/></svg>Home</a>
+ <a href="jadwal.html" class="nav-item"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>Jadwal</a>
+ <a href="favorit.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg>Favorit</a>
+ <a href="riwayat.html" class="nav-item"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>Riwayat</a>
+ <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+</nav>
+<script src="js/api.js"></script>
+<script src="js/catalog.js"></script>
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

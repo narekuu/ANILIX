@@ -1,0 +1,1485 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090711">
+<title>Chat Teman — ANILIX</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,500,1,0">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+ --bg:#090711;
+ --panel:#1b1e28;
+ --purple:#a875ff;
+ --purple2:#7543d6;
+ --muted:#9aa3b5;
+ --white:#f8f5ff;
+ --border:rgba(190,150,255,.12);
+
+ /* PENGATURAN BUBBLE REPLY */
+ --reply-outer-width:460px;
+ --reply-outer-min-height:0px;
+ --reply-outer-padding:12px 13px;
+ --reply-outer-radius:22px;
+ --reply-outer-font-size:16px;
+ --reply-outer-line-height:1.5;
+ --reply-outer-gap:9px;
+
+ /* PENGATURAN CARD REPLY DALAM */
+ --reply-inner-width:100%;
+ --reply-inner-height:auto;
+ --reply-inner-padding:9px 12px;
+ --reply-inner-radius:13px;
+ --reply-inner-gap:2px;
+ --reply-inner-name-size:14px;
+ --reply-inner-font-size:15px;
+ --reply-inner-line-height:1.4;
+ --reply-inner-max-lines:4;
+
+ /* VERIFIED */
+ --verified-size:15px;
+ --verified-gap:5px;
+ --verified-top:3px;
+ --verified-bottom:auto;
+ --verified-left:2px;
+ --verified-right:auto;
+}
+
+*{
+ box-sizing:border-box;
+ margin:0;
+ padding:0;
+ -webkit-tap-highlight-color:transparent;
+}
+
+body{
+ min-height:100vh;
+ background:var(--bg);
+ color:var(--white);
+ font-family:Inter,Arial,sans-serif;
+}
+
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+.app{
+ width:100%;
+ max-width:720px;
+ height:100vh;
+ height:100dvh;
+ margin:auto;
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
+}
+
+/* HEADER */
+
+.header{
+ height:72px;
+ flex-shrink:0;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ padding:0 16px;
+ background:rgba(9,7,17,.97);
+ border-bottom:1px solid #ffffff0c;
+ z-index:10;
+}
+
+.back{
+ width:35px;
+ height:40px;
+ border:0;
+ background:none;
+ color:white;
+ display:grid;
+ place-items:center;
+}
+
+.back .material-symbols-rounded{font-size:25px}
+
+.profile{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ min-width:0;
+ flex:1;
+}
+
+.avatar{
+ width:43px;
+ height:43px;
+ flex-shrink:0;
+ border-radius:50%;
+ background:#292238;
+ border:2px solid #596078;
+ overflow:hidden;
+ display:grid;
+ place-items:center;
+ font-size:17px;
+ font-weight:800;
+}
+
+.avatar img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+.profile-info{min-width:0}
+
+.profile-name{
+ display:flex;
+ align-items:center;
+ gap:var(--verified-gap);
+ font-size:15px;
+ font-weight:800;
+ white-space:nowrap;
+ overflow:visible;
+}
+
+.profile-status{
+ margin-top:4px;
+ font-size:11px;
+ color:#9299aa;
+}
+
+/* VERIFIED */
+
+.verified{
+ position:relative;
+ top:var(--verified-top);
+ bottom:var(--verified-bottom);
+ left:var(--verified-left);
+ right:var(--verified-right);
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ width:var(--verified-size);
+ height:var(--verified-size);
+ flex-shrink:0;
+ font-size:var(--verified-size);
+ line-height:1;
+}
+
+.verified .material-symbols-rounded{
+ font-size:inherit;
+ font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24;
+}
+
+.v-developer{color:#F5223E}
+.v-admin{color:#20C878}
+.v-moderator{color:#24A9E8}
+.v-beta{color:#A855F7}
+.v-premium{color:#E5AD35}
+
+/* CHAT AREA */
+
+.chat-area{
+ flex:1;
+ min-height:0;
+ overflow-y:auto;
+ padding:20px 15px 24px;
+ display:flex;
+ flex-direction:column;
+ gap:15px;
+ scroll-behavior:smooth;
+ overscroll-behavior:contain;
+}
+
+.chat-area::-webkit-scrollbar{width:4px}
+.chat-area::-webkit-scrollbar-thumb{
+ background:#40334f;
+ border-radius:10px;
+}
+
+.date-divider{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ margin:5px 0 10px;
+ flex-shrink:0;
+}
+
+.date-divider span{
+ background:#1c1727;
+ border:1px solid var(--border);
+ color:#a99cbd;
+ border-radius:20px;
+ padding:7px 14px;
+ font-size:10px;
+ font-weight:700;
+}
+
+/* MESSAGE ROW */
+
+.message-row{
+ display:flex;
+ align-items:flex-end;
+ gap:8px;
+ width:fit-content;
+ max-width:100%;
+ min-width:0;
+ position:relative;
+ flex-shrink:0;
+ touch-action:pan-y;
+ user-select:none;
+ -webkit-user-select:none;
+}
+
+.message-row.mine{
+ align-self:flex-end;
+ flex-direction:row-reverse;
+}
+
+.message-row.theirs{align-self:flex-start}
+
+/* MESSAGE AVATAR */
+
+.message-avatar{
+ width:27px;
+ height:27px;
+ flex-shrink:0;
+ border-radius:50%;
+ background:#292238;
+ overflow:hidden;
+ display:grid;
+ place-items:center;
+ font-size:10px;
+ font-weight:800;
+ color:white;
+}
+
+.message-avatar img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+/* MESSAGE CONTENT */
+
+.message-content{
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+ width:max-content;
+ max-width:calc(100vw - 75px);
+ min-width:0;
+ flex:0 1 auto;
+ align-items:flex-start;
+}
+
+.message-row.mine .message-content{align-items:flex-end}
+.message-row.theirs .message-content{align-items:flex-start}
+
+/* =================================
+   BUBBLE CHAT
+================================= */
+
+.bubble{
+ display:flex;
+ flex-direction:column;
+ width:fit-content;
+ height:auto;
+ min-width:0;
+ min-height:0;
+ max-width:calc(100vw - 90px);
+ flex:none;
+ padding:10px 13px;
+ margin:0;
+ border-radius:16px;
+ font-family:Inter,Arial,sans-serif;
+ font-size:13px;
+ line-height:1.55;
+ text-align:left;
+ overflow-wrap:anywhere;
+ word-break:break-word;
+ white-space:normal;
+ box-sizing:border-box;
+ cursor:pointer;
+ transition:transform .16s,opacity .16s;
+}
+
+/* Bubble yang memiliki reply */
+.bubble:has(.reply-quote){
+ width:min(var(--reply-outer-width),calc(100vw - 90px));
+ max-width:min(var(--reply-outer-width),calc(100vw - 90px));
+ min-height:var(--reply-outer-min-height);
+ height:auto;
+ padding:var(--reply-outer-padding);
+ border-radius:var(--reply-outer-radius);
+ font-size:var(--reply-outer-font-size);
+ line-height:var(--reply-outer-line-height);
+}
+
+/* Warna asli tetap */
+.theirs .bubble{
+ background:#1d202b;
+ border:1px solid #ffffff0b;
+ color:#f1edf8;
+ border-bottom-left-radius:5px;
+}
+
+.mine .bubble{
+ background:linear-gradient(135deg,#7543d6,#9860ed);
+ color:white;
+ border-bottom-right-radius:5px;
+}
+
+/* =================================
+   REPLY CARD DALAM BUBBLE
+================================= */
+
+.reply-quote{
+ display:flex;
+ flex-direction:column;
+
+ width:100%;
+ max-width:100%;
+ min-width:0;
+ height:auto;
+ min-height:0;
+ flex-shrink:1;
+
+ padding:var(--reply-inner-padding);
+ margin:0 0 var(--reply-outer-gap);
+
+ border-left:3px solid #bd91ff;
+ background:#ffffff0c;
+ border-radius:var(--reply-inner-radius);
+
+ text-align:left;
+ overflow:hidden;
+ cursor:pointer;
+ box-sizing:border-box;
+
+ transition:background .2s,transform .2s;
+}
+
+.reply-quote:active{
+ background:#ffffff19;
+ transform:scale(.985);
+}
+
+/* Nama pengirim reply */
+.reply-quote strong{
+ display:block;
+ flex-shrink:0;
+ color:#d6b8ff;
+ font-size:var(--reply-inner-name-size);
+ font-weight:700;
+ line-height:1.4;
+ margin-bottom:var(--reply-inner-gap);
+}
+
+/* Isi pesan yang dibalas */
+.reply-quote span{
+ display:-webkit-box;
+ width:100%;
+ min-width:0;
+ color:#c1bdca;
+ font-size:var(--reply-inner-font-size);
+ line-height:var(--reply-inner-line-height);
+ white-space:normal;
+ overflow-wrap:anywhere;
+ word-break:break-word;
+ -webkit-line-clamp:var(--reply-inner-max-lines);
+ -webkit-box-orient:vertical;
+ overflow:hidden;
+}
+
+/* TEXT PESAN DI DALAM BUBBLE */
+
+.bubble-text{
+ display:block;
+ min-width:0;
+ width:100%;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ word-break:break-word;
+}
+
+/* =================================
+   JAM DAN STATUS DI DALAM BUBBLE
+================================= */
+
+.message-meta{
+ display:flex;
+ align-items:center;
+ justify-content:flex-end;
+ gap:5px;
+ width:100%;
+ padding:0 2px;
+ margin-top:7px;
+ font-size:9px;
+ color:#85899b;
+ line-height:1.3;
+}
+
+.mine .message-meta{
+ justify-content:flex-end;
+ color:#e0d3ff;
+}
+
+.theirs .message-meta{
+ color:#85899b;
+}
+
+.read-status{
+ color:#777b89;
+ font-size:14px;
+}
+
+.read-status.is-read{color:#a875ff}
+
+/* MESSAGE HIGHLIGHT */
+
+.message-row.jump-highlight .bubble{
+ animation:messageHighlight 1.8s ease;
+}
+
+@keyframes messageHighlight{
+ 0%{box-shadow:0 0 0 0 rgba(190,145,255,0)}
+ 20%{
+  box-shadow:0 0 0 4px rgba(190,145,255,.65),0 0 25px rgba(168,117,255,.5);
+ }
+ 75%{
+  box-shadow:0 0 0 4px rgba(190,145,255,.35),0 0 18px rgba(168,117,255,.3);
+ }
+ 100%{box-shadow:0 0 0 0 rgba(190,145,255,0)}
+}
+
+/* REPLY COMPOSER */
+
+.reply-preview{
+ display:none;
+ align-items:center;
+ gap:10px;
+ padding:9px 12px;
+ margin-bottom:9px;
+ background:#211a30;
+ border:1px solid #a875ff35;
+ border-radius:12px;
+}
+
+.reply-preview.show{display:flex}
+
+.reply-preview-info{
+ flex:1;
+ min-width:0;
+}
+
+.reply-preview-info strong{
+ display:block;
+ font-size:11px;
+ color:#cba9ff;
+ margin-bottom:3px;
+}
+
+.reply-preview-info span{
+ display:block;
+ font-size:10px;
+ color:#a9a2b7;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+
+.cancel-reply{
+ width:30px;
+ height:30px;
+ border:0;
+ background:none;
+ color:#b9a9ca;
+ display:grid;
+ place-items:center;
+}
+
+/* EMPTY */
+
+.empty-chat{
+ margin:auto;
+ text-align:center;
+ padding:35px 20px;
+ color:#85899b;
+}
+
+.empty-chat .material-symbols-rounded{
+ font-size:43px;
+ color:#a875ff;
+}
+
+.empty-chat strong{
+ display:block;
+ color:#eee8f8;
+ margin-top:12px;
+ font-size:14px;
+}
+
+.empty-chat p{
+ font-size:11px;
+ line-height:1.7;
+ margin-top:7px;
+}
+
+/* INPUT */
+
+.input-area{
+ flex-shrink:0;
+ padding:12px 13px calc(12px + env(safe-area-inset-bottom));
+ background:#100d19;
+ border-top:1px solid #ffffff0c;
+}
+
+.input-wrapper{
+ display:flex;
+ align-items:flex-end;
+ gap:9px;
+ padding:7px 8px 7px 16px;
+ background:#20212c;
+ border:1px solid #ffffff10;
+ border-radius:25px;
+}
+
+.message-input{
+ flex:1;
+ min-width:0;
+ max-height:120px;
+ min-height:39px;
+ resize:none;
+ outline:none;
+ border:0;
+ background:none;
+ color:white;
+ padding:10px 0;
+ font-size:13px;
+ line-height:1.5;
+}
+
+.message-input::placeholder{color:#82899c}
+
+.send-btn{
+ width:39px;
+ height:39px;
+ flex-shrink:0;
+ border:0;
+ border-radius:50%;
+ background:linear-gradient(135deg,#7543d6,#a875ff);
+ color:white;
+ display:grid;
+ place-items:center;
+}
+
+.send-btn .material-symbols-rounded{font-size:21px}
+.send-btn:active{transform:scale(.94)}
+
+/* LONG PRESS MENU */
+
+.message-menu{
+ position:fixed;
+ z-index:100;
+ inset:0;
+ display:none;
+ align-items:flex-end;
+ justify-content:center;
+ background:#0009;
+ backdrop-filter:blur(4px);
+}
+
+.message-menu.show{display:flex}
+
+.menu-sheet{
+ width:100%;
+ max-width:720px;
+ background:#1b1925;
+ border:1px solid #ffffff12;
+ border-radius:20px 20px 0 0;
+ padding:13px 16px calc(18px + env(safe-area-inset-bottom));
+ animation:menuUp .18s ease;
+}
+
+@keyframes menuUp{
+ from{transform:translateY(30px);opacity:0}
+ to{transform:translateY(0);opacity:1}
+}
+
+.menu-handle{
+ width:38px;
+ height:4px;
+ border-radius:10px;
+ background:#635b70;
+ margin:0 auto 16px;
+}
+
+.menu-message-preview{
+ padding:12px;
+ border-radius:12px;
+ background:#ffffff08;
+ color:#c6bfd2;
+ font-size:11px;
+ line-height:1.5;
+ margin-bottom:12px;
+ overflow-wrap:anywhere;
+ max-height:65px;
+ overflow:hidden;
+}
+
+.menu-actions{display:flex;flex-direction:column}
+
+.menu-action{
+ width:100%;
+ height:48px;
+ display:flex;
+ align-items:center;
+ gap:13px;
+ padding:0 12px;
+ border:0;
+ background:none;
+ color:#f3eff8;
+ text-align:left;
+ font-size:13px;
+ font-weight:600;
+ border-radius:10px;
+}
+
+.menu-action:active{background:#ffffff0b}
+
+.menu-action .material-symbols-rounded{
+ font-size:21px;
+ color:#bd9af0;
+}
+
+.menu-action.delete{color:#ff777e}
+.menu-action.delete .material-symbols-rounded{color:#ff777e}
+
+/* TOAST */
+
+.toast{
+ position:fixed;
+ z-index:200;
+ left:50%;
+ bottom:25px;
+ transform:translate(-50%,20px);
+ padding:11px 17px;
+ border-radius:12px;
+ background:#211a30;
+ border:1px solid rgba(190,150,255,.25);
+ color:#fff;
+ font-size:11px;
+ font-weight:600;
+ opacity:0;
+ visibility:hidden;
+ transition:.25s;
+ box-shadow:0 8px 25px #0007;
+ white-space:nowrap;
+}
+
+.toast.show{
+ opacity:1;
+ visibility:visible;
+ transform:translate(-50%,0);
+}
+
+/* SWIPE */
+
+.message-row.swiping .bubble{transition:none}
+
+/* RESPONSIVE */
+
+@media(max-width:390px){
+ .header{
+  height:65px;
+  padding:0 11px;
+ }
+
+ .avatar{
+  width:39px;
+  height:39px;
+ }
+
+ .profile-name{font-size:14px}
+
+ .chat-area{padding:17px 11px}
+
+ .message-row{max-width:100%}
+
+ .message-content{max-width:calc(100vw - 70px)}
+
+ .bubble{
+  max-width:calc(100vw - 85px);
+ }
+
+ .bubble:has(.reply-quote){
+  width:min(var(--reply-outer-width),calc(100vw - 85px));
+  max-width:min(var(--reply-outer-width),calc(100vw - 85px));
+ }
+
+ .reply-quote{
+  max-width:100%;
+ }
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<main class="app">
+
+<header class="header">
+ <button class="back" id="backButton" aria-label="Kembali">
+  <span class="material-symbols-rounded">arrow_back_ios</span>
+ </button>
+
+ <a class="profile" id="profileLink" href="#">
+  <div class="avatar" id="headerAvatar">U</div>
+  <div class="profile-info">
+   <div class="profile-name">
+    <span id="friendName">Memuat...</span>
+    <span id="verifiedIcon"></span>
+   </div>
+   <div class="profile-status">Chat pribadi</div>
+  </div>
+ </a>
+</header>
+
+<section class="chat-area" id="chatArea">
+ <div class="empty-chat">
+  <span class="material-symbols-rounded">forum</span>
+  <strong>Memuat percakapan...</strong>
+ </div>
+</section>
+
+<footer class="input-area">
+
+ <div class="reply-preview" id="replyPreview">
+  <div class="reply-preview-info">
+   <strong id="replyName">Membalas pesan</strong>
+   <span id="replyText"></span>
+  </div>
+  <button class="cancel-reply" id="cancelReply">
+   <span class="material-symbols-rounded">close</span>
+  </button>
+ </div>
+
+ <form id="messageForm">
+  <div class="input-wrapper">
+   <textarea id="messageInput" class="message-input" rows="1"
+    maxlength="2000" placeholder="Tulis pesan..."
+    autocomplete="off" enterkeyhint="enter"></textarea>
+
+   <button class="send-btn" type="submit" aria-label="Kirim pesan">
+    <span class="material-symbols-rounded">send</span>
+   </button>
+  </div>
+ </form>
+
+</footer>
+</main>
+
+<div class="message-menu" id="messageMenu">
+ <div class="menu-sheet">
+  <div class="menu-handle"></div>
+  <div class="menu-message-preview" id="menuMessagePreview"></div>
+
+  <div class="menu-actions">
+   <button class="menu-action" data-menu-action="reply">
+    <span class="material-symbols-rounded">reply</span>
+    Balas
+   </button>
+   <button class="menu-action" data-menu-action="copy">
+    <span class="material-symbols-rounded">content_copy</span>
+    Salin
+   </button>
+   <button class="menu-action delete" id="deleteMessageButton" data-menu-action="delete">
+    <span class="material-symbols-rounded">delete</span>
+    Hapus
+   </button>
+  </div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+const $=id=>document.getElementById(id);
+
+function read(key,fallback=null){
+ try{
+  const value=localStorage.getItem(key);
+  return value===null?fallback:JSON.parse(value);
+ }catch{return fallback}
+}
+
+function cleanId(id){
+ return String(id??"").replace(/^#/,"").trim();
+}
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function getParams(name){
+ return new URLSearchParams(location.search).get(name);
+}
+
+function showToast(message){
+ const toast=$("toast");
+ toast.textContent=message;
+ toast.classList.add("show");
+ clearTimeout(window.toastTimer);
+ window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2200);
+}
+
+/* USER DATA */
+
+const storedCurrent=
+ read("anilix_user",null)||
+ read("anilix_current_user",null)||
+ {};
+
+const currentId=cleanId(
+ storedCurrent.id||
+ storedCurrent.userId||
+ "guest"
+);
+
+const targetId=cleanId(
+ getParams("id")||
+ ""
+);
+
+function getUsers(){
+ const list=read("anilix_users",[]);
+ return Array.isArray(list)?list:[];
+}
+
+function getUser(id){
+ id=cleanId(id);
+
+
+ const found=getUsers().find(u=>cleanId(u.id||u.userId)===id);
+ if(found)return {...found,id};
+
+ const saved=read("anilix_user_"+id,null);
+ if(saved)return {...saved,id};
+
+ if(id===currentId)return storedCurrent;
+ return null;
+}
+
+if(!targetId){
+ document.body.innerHTML='<div style="color:white;padding:30px;text-align:center">User ID tidak ditemukan.</div>';
+ throw new Error("Target user ID tidak ditemukan");
+}
+
+const current=getUser(currentId)||storedCurrent;
+const friend=getUser(targetId);
+
+if(!friend){
+ document.body.innerHTML='<div style="color:white;padding:30px;text-align:center">Pengguna tidak ditemukan. Periksa User ID.</div>';
+ throw new Error("Friend not found");
+}
+
+/* ROLE + VERIFIED */
+
+const roleSettings={
+ developer:{name:"Developer",verified:"v-developer"},
+ admin:{name:"Admin",verified:"v-admin"},
+ moderator:{name:"Moderator",verified:"v-moderator"},
+ beta:{name:"Beta Tester",verified:"v-beta"},
+ premium:{name:"Premium",verified:"v-premium"},
+ member:{name:"Member",verified:""}
+};
+
+function getRoleKey(role){
+ const normalized=String(role||"member").toLowerCase().trim().replace(/[\s_-]+/g,"");
+ const aliases={
+  developer:"developer",dev:"developer",admin:"admin",
+  administrator:"admin",moderator:"moderator",mod:"moderator",
+  beta:"beta",betatester:"beta",premium:"premium",
+  member:"member",user:"member"
+ };
+ return aliases[normalized]||"member";
+}
+
+function isVerified(user){
+ const role=getRoleKey(user.role);
+ return !!user.verified&&role!=="member";
+}
+
+function verifiedMarkup(user){
+ if(!isVerified(user))return "";
+ const role=getRoleKey(user.role);
+ const colorClass=roleSettings[role].verified;
+ return `<span class="verified ${colorClass}"><span class="material-symbols-rounded">verified</span></span>`;
+}
+
+/* AVATAR */
+
+function avatarHTML(user){
+ const name=user.name||user.displayName||user.username||"U";
+ const avatar=user.photoURL||user.photo||user.avatar||"";
+ if(avatar)return `<img src="${escapeHTML(avatar)}" alt="">`;
+ return escapeHTML(name.charAt(0).toUpperCase());
+}
+
+/* HEADER */
+
+const friendName=friend.name||friend.displayName||friend.username||"Pengguna";
+
+$("friendName").textContent=friendName;
+$("headerAvatar").innerHTML=avatarHTML(friend);
+$("verifiedIcon").innerHTML=verifiedMarkup(friend);
+
+$("profileLink").href=
+ "user-profile.html?id="+encodeURIComponent(targetId)+"&from=chat-teman.html";
+
+/* INDEXED DB AVATAR */
+
+async function loadHeaderAvatar(){
+ try{
+  const request=indexedDB.open("ANILIX_STORAGE",1);
+  const db=await new Promise((resolve,reject)=>{
+   request.onsuccess=()=>resolve(request.result);
+   request.onerror=()=>reject(request.error);
+  });
+
+  if(!db.objectStoreNames.contains("images")){
+   db.close();
+   return;
+  }
+
+  const tx=db.transaction("images","readonly");
+  const req=tx.objectStore("images").get("avatar_"+targetId);
+
+  const blob=await new Promise(resolve=>{
+   req.onsuccess=()=>resolve(req.result||null);
+   req.onerror=()=>resolve(null);
+  });
+
+  db.close();
+
+  if(blob){
+   const url=URL.createObjectURL(blob);
+   $("headerAvatar").innerHTML=`<img src="${url}" alt="">`;
+  }
+ }catch(error){
+  console.warn("Avatar tidak dapat dimuat:",error);
+ }
+}
+
+/* CHAT STORAGE */
+
+const pair=[currentId,targetId].sort();
+const chatKey="anilix_chat_"+""+pair.join("_");
+
+let messages=read(chatKey,[]);
+if(!Array.isArray(messages))messages=[];
+
+
+function saveMessages(){
+ try{
+  localStorage.setItem(chatKey,JSON.stringify(messages));
+ }catch(error){
+  console.error("Gagal menyimpan pesan:",error);
+  showToast("Penyimpanan pesan gagal");
+ }
+}
+
+/* DATE & TIME */
+
+function formatTime(timestamp){
+ return new Date(timestamp).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"});
+}
+
+function formatDate(timestamp){
+ const date=new Date(timestamp);
+ const today=new Date();
+
+ if(date.toDateString()===today.toDateString())return "Hari ini";
+
+ const yesterday=new Date();
+ yesterday.setDate(today.getDate()-1);
+
+ if(date.toDateString()===yesterday.toDateString())return "Kemarin";
+
+ return date.toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"});
+}
+
+/* REPLY SYSTEM */
+
+let replyTarget=null;
+
+function setReply(message){
+ replyTarget=message;
+
+ const mine=cleanId(message.sender)===currentId;
+
+ $("replyName").textContent=mine
+  ?"Membalas pesan sendiri"
+  :"Membalas "+friendName;
+
+ $("replyText").textContent=message.text;
+ $("replyPreview").classList.add("show");
+ $("messageInput").focus();
+}
+
+function cancelReply(){
+ replyTarget=null;
+ $("replyPreview").classList.remove("show");
+}
+
+$("cancelReply").onclick=cancelReply;
+
+/* JUMP TO MESSAGE */
+
+function jumpToMessage(messageId){
+ const target=messages.find(m=>String(m.id)===String(messageId));
+
+ if(!target){
+  showToast("Pesan asli tidak ditemukan");
+  return;
+ }
+
+ const targetElement=Array.from(document.querySelectorAll(".message-row"))
+  .find(row=>String(row.dataset.messageId)===String(messageId));
+
+ if(!targetElement){
+  showToast("Pesan tidak ditemukan");
+  return;
+ }
+
+ const area=$("chatArea");
+ const areaRect=area.getBoundingClientRect();
+ const targetRect=targetElement.getBoundingClientRect();
+
+ const scrollPosition=area.scrollTop+
+  (targetRect.top-areaRect.top)-
+  (area.clientHeight/2)+(targetRect.height/2);
+
+ area.scrollTo({top:scrollPosition,behavior:"smooth"});
+
+ targetElement.classList.remove("jump-highlight");
+ void targetElement.offsetWidth;
+ targetElement.classList.add("jump-highlight");
+
+ clearTimeout(window.highlightTimer);
+
+ window.highlightTimer=setTimeout(()=>{
+  targetElement.classList.remove("jump-highlight");
+ },2000);
+}
+
+/* RENDER CHAT */
+
+function renderChat(){
+ const area=$("chatArea");
+
+ if(messages.length===0){
+  area.innerHTML=`
+   <div class="empty-chat">
+    <span class="material-symbols-rounded">forum</span>
+    <strong>Belum ada percakapan</strong>
+    <p>Mulai percakapan dengan ${escapeHTML(friendName)}. Kirim pesan pertamamu sekarang!</p>
+   </div>`;
+  return;
+ }
+
+ let html="";
+ let previousDate="";
+
+ messages.forEach(message=>{
+  const mine=cleanId(message.sender)===currentId;
+  const date=formatDate(message.time);
+  const sender=mine?current:friend;
+  const avatar=avatarHTML(sender);
+
+  if(date!==previousDate){
+   html+=`
+    <div class="date-divider">
+     <span>${escapeHTML(date)}</span>
+    </div>`;
+   previousDate=date;
+  }
+
+  let quote="";
+
+  if(message.replyTo){
+   const quoted=messages.find(
+    m=>String(m.id)===String(message.replyTo.id)
+   );
+
+   const quotedName=
+    cleanId(message.replyTo.sender)===currentId
+     ?(current.name||"Kamu")
+     :friendName;
+
+   quote=`
+    <div class="reply-quote"
+     data-reply-target-id="${escapeHTML(message.replyTo.id)}">
+
+     <strong>${escapeHTML(quotedName)}</strong>
+
+     <span>${escapeHTML(
+      quoted?.text||
+      message.replyTo.text||
+      "Pesan tidak tersedia"
+     )}</span>
+
+    </div>`;
+  }
+
+  html+=`
+   <div class="message-row ${mine?"mine":"theirs"}"
+    data-message-id="${escapeHTML(message.id)}">
+
+    <div class="message-avatar">${avatar}</div>
+
+    <div class="message-content">
+
+     <div class="bubble"
+      data-bubble-id="${escapeHTML(message.id)}">
+
+      ${quote}
+
+      <div class="bubble-text">${escapeHTML(message.text)}</div>
+
+      <div class="message-meta">
+       <span>${formatTime(message.time)}</span>
+
+       ${mine?`
+        <span class="material-symbols-rounded read-status ${message.read===true?"is-read":""}">
+         done_all
+        </span>
+       `:""}
+      </div>
+
+     </div>
+
+    </div>
+   </div>`;
+ });
+
+ area.innerHTML=html;
+ area.scrollTop=area.scrollHeight;
+
+ attachMessageInteractions();
+ attachReplyQuoteInteractions();
+}
+
+/* REPLY QUOTE INTERACTION */
+
+function attachReplyQuoteInteractions(){
+ document.querySelectorAll(".reply-quote").forEach(quote=>{
+  quote.addEventListener("click",e=>{
+   e.stopPropagation();
+
+   const targetId=quote.dataset.replyTargetId;
+   if(!targetId)return;
+
+   jumpToMessage(targetId);
+  });
+ });
+}
+
+/* SEND MESSAGE */
+
+function sendMessage(text){
+ text=String(text||"").trim();
+ if(!text)return;
+
+ const message={
+  id:Date.now()+"_"+Math.random().toString(36).slice(2,8),
+  sender:currentId,
+  text,
+  time:Date.now(),
+  read:false
+ };
+
+ if(replyTarget){
+  message.replyTo={
+   id:replyTarget.id,
+   sender:replyTarget.sender,
+   text:replyTarget.text
+  };
+ }
+
+ messages.push(message);
+ saveMessages();
+ cancelReply();
+ renderChat();
+}
+
+$("messageForm").addEventListener("submit",e=>{
+ e.preventDefault();
+
+ const input=$("messageInput");
+ const text=input.value;
+
+ if(!text.trim())return;
+
+ sendMessage(text);
+
+ input.value="";
+ input.style.height="auto";
+ input.focus();
+});
+
+/* TEXTAREA AUTO HEIGHT */
+
+$("messageInput").addEventListener("input",function(){
+ this.style.height="auto";
+ this.style.height=Math.min(this.scrollHeight,120)+"px";
+});
+
+/* MESSAGE MENU */
+
+let selectedMessage=null;
+
+function openMessageMenu(message){
+ selectedMessage=message;
+
+ $("menuMessagePreview").textContent=message.text;
+
+ const mine=cleanId(message.sender)===currentId;
+
+ $("deleteMessageButton").style.display=mine?"flex":"none";
+ $("messageMenu").classList.add("show");
+}
+
+function closeMessageMenu(){
+ $("messageMenu").classList.remove("show");
+ selectedMessage=null;
+}
+
+$("messageMenu").addEventListener("click",e=>{
+ if(e.target===$("messageMenu"))closeMessageMenu();
+});
+
+/* MENU ACTIONS */
+
+document.querySelectorAll("[data-menu-action]").forEach(button=>{
+ button.addEventListener("click",async()=>{
+  if(!selectedMessage)return;
+
+  const action=button.dataset.menuAction;
+  const message=selectedMessage;
+
+  if(action==="reply"){
+   setReply(message);
+   closeMessageMenu();
+
+  }else if(action==="copy"){
+   try{
+    if(navigator.clipboard&&window.isSecureContext){
+     await navigator.clipboard.writeText(message.text);
+    }else{
+     const temp=document.createElement("textarea");
+     temp.value=message.text;
+     temp.style.position="fixed";
+     temp.style.opacity="0";
+
+     document.body.appendChild(temp);
+     temp.select();
+     document.execCommand("copy");
+     temp.remove();
+    }
+
+    closeMessageMenu();
+    showToast("Pesan berhasil disalin");
+
+   }catch(error){
+    closeMessageMenu();
+    showToast("Tidak dapat menyalin pesan");
+   }
+
+  }else if(action==="delete"){
+   const mine=cleanId(message.sender)===currentId;
+
+   if(!mine){
+    closeMessageMenu();
+    return;
+   }
+
+   messages=messages.filter(
+    m=>String(m.id)!==String(message.id)
+   );
+
+   saveMessages();
+   closeMessageMenu();
+   renderChat();
+   showToast("Pesan berhasil dihapus");
+  }
+ });
+});
+
+/* SWIPE + LONG PRESS */
+
+function attachMessageInteractions(){
+ document.querySelectorAll(".message-row").forEach(row=>{
+  const id=row.dataset.messageId;
+
+  const message=messages.find(
+   m=>String(m.id)===String(id)
+  );
+
+  if(!message)return;
+
+  let startX=0;
+  let startY=0;
+  let longTimer=null;
+  let longPressed=false;
+  let dragging=false;
+
+  const bubble=row.querySelector(".bubble");
+
+  function clearLongTimer(){
+   if(longTimer){
+    clearTimeout(longTimer);
+    longTimer=null;
+   }
+  }
+
+  row.addEventListener("pointerdown",e=>{
+   if(e.button!==undefined&&e.button!==0)return;
+   if(e.target.closest(".reply-quote"))return;
+
+   startX=e.clientX;
+   startY=e.clientY;
+   longPressed=false;
+   dragging=false;
+
+   clearLongTimer();
+
+   longTimer=setTimeout(()=>{
+    longPressed=true;
+    row.classList.remove("swiping");
+    bubble.style.transform="scale(.97)";
+
+    if(navigator.vibrate)navigator.vibrate(20);
+
+    setTimeout(()=>bubble.style.transform="",120);
+
+    openMessageMenu(message);
+   },550);
+  });
+
+  row.addEventListener("pointermove",e=>{
+   if(!longTimer&&!dragging)return;
+
+   const dx=e.clientX-startX;
+   const dy=e.clientY-startY;
+
+   if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>10){
+    clearLongTimer();
+    return;
+   }
+
+   if(Math.abs(dx)>8){
+    clearLongTimer();
+    dragging=true;
+
+    row.classList.add("swiping");
+
+    const mine=cleanId(message.sender)===currentId;
+    const allowed=mine?Math.min(0,dx):Math.max(0,dx);
+
+    bubble.style.transform=`translateX(${allowed*.45}px)`;
+   }
+  });
+
+  row.addEventListener("pointerup",e=>{
+   clearLongTimer();
+
+   if(longPressed){
+    longPressed=false;
+    return;
+   }
+
+   if(dragging){
+    const dx=e.clientX-startX;
+    const mine=cleanId(message.sender)===currentId;
+
+    bubble.style.transform="";
+    row.classList.remove("swiping");
+
+    const shouldReply=mine?dx<-65:dx>65;
+
+    if(shouldReply){
+     setReply(message);
+
+     if(navigator.vibrate)navigator.vibrate(15);
+    }
+
+    dragging=false;
+    return;
+   }
+  });
+
+  row.addEventListener("pointercancel",()=>{
+   clearLongTimer();
+
+   bubble.style.transform="";
+   row.classList.remove("swiping");
+
+   dragging=false;
+  });
+
+  row.addEventListener("contextmenu",e=>{
+   e.preventDefault();
+
+   if(e.target.closest(".reply-quote"))return;
+
+   clearLongTimer();
+   openMessageMenu(message);
+  });
+ });
+}
+
+/* BACK BUTTON */
+
+$("backButton").onclick=()=>{
+ if(history.length>1)history.back();
+ else location.href="teman.html";
+};
+
+/* STORAGE SYNC */
+
+window.addEventListener("storage",e=>{
+ if(
+  !e.key||
+  e.key===chatKey||
+  e.key==="anilix_users"||
+  e.key==="anilix_user_"+targetId
+ ){
+  messages=read(chatKey,[]);
+
+  if(!Array.isArray(messages))messages=[];
+
+  renderChat();
+ }
+});
+
+/* INITIALIZE */
+
+loadHeaderAvatar();
+renderChat();
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>

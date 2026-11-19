@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080611">
+<title>ANILIX Premium</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+    --bg:#080611;
+    --panel:#100c20;
+    --purple:#9b70ff;
+    --muted:#9188aa;
+    --line:rgba(164,120,255,.16);
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 50% 0%,#241448 0%,transparent 38%),
+        var(--bg);
+    font-family:Inter,Arial,sans-serif;
+    color:#fff;
+    padding:18px 15px 45px;
+}
+
+button{font:inherit;cursor:pointer;border:none}
+
+.container{
+    width:100%;
+    max-width:440px;
+    margin:auto;
+    animation:pageEnter .55s ease both;
+}
+
+@keyframes pageEnter{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+.back-area{
+    display:flex;
+    align-items:center;
+    margin-bottom:24px;
+}
+
+.back-button{
+    width:42px;
+    height:42px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#d6c5fa;
+    background:rgba(255,255,255,.035);
+    transition:.2s;
+}
+
+.back-button:active{transform:scale(.92)}
+.back-button svg{width:19px;height:19px}
+
+.page-heading{margin-left:13px}
+.page-heading h1{font-size:17px;font-weight:850}
+.page-heading p{font-size:10px;color:var(--muted);margin-top:4px}
+
+.section{margin-top:29px}
+.section-title{font-size:17px;font-weight:850;margin-bottom:5px}
+.section-desc{
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.6;
+    margin-bottom:15px;
+}
+
+/* NOTICE */
+
+.notice{
+    display:none;
+    padding:12px 14px;
+    margin-bottom:15px;
+    border:1px solid #b58a3c55;
+    border-radius:12px;
+    background:#b58a3c12;
+    color:#f1d49a;
+    font-size:11px;
+    line-height:1.6;
+}
+
+.notice.show{display:block}
+
+/* PROFILE */
+
+.profile-card{
+    padding:18px;
+    border:1px solid var(--line);
+    border-radius:19px;
+    background:linear-gradient(145deg,#21153d,#100c20);
+    box-shadow:0 12px 35px #0003;
+    animation:cardEnter .65s ease both;
+}
+
+@keyframes cardEnter{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+.profile-top{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.avatar{
+    width:48px;
+    height:48px;
+    flex-shrink:0;
+    border-radius:50%;
+    overflow:hidden;
+    background:linear-gradient(135deg,#a77aff,#443078);
+    display:grid;
+    place-items:center;
+    font-size:20px;
+    font-weight:800;
+    position:relative;
+}
+
+.avatar img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.profile-name{font-size:14px;font-weight:800}
+.profile-username{color:var(--muted);font-size:11px;margin-top:4px}
+
+/* ROLE */
+
+.premium-tag{
+    margin-left:auto;
+    padding:7px 11px;
+    border-radius:30px;
+    color:#fff;
+    background:linear-gradient(
+        120deg,
+        var(--role-c1,#e5ad35),
+        var(--role-c2,#d49a26),
+        var(--role-c3,#a9781d),
+        var(--role-c4,#f0c354)
+    );
+    border:1px solid #f0c35488;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.7px;
+    white-space:nowrap;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 0 12px #d49a2640;
+    isolation:isolate;
+}
+
+.premium-tag.gradient-animated{
+    background-size:250% 250%;
+    animation:roleGradient var(--gradient-duration,5s) ease infinite;
+}
+
+.premium-tag.shine-animated::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    background:linear-gradient(
+        110deg,
+        transparent 25%,
+        #ffffff66 50%,
+        transparent 75%
+    );
+    transform:translateX(-120%);
+    animation:roleShine var(--shine-duration,3s) infinite;
+}
+
+@keyframes roleGradient{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+}
+
+@keyframes roleShine{
+    100%{transform:translateX(120%)}
+}
+
+.profile-info{
+    border-top:1px solid var(--line);
+    margin-top:16px;
+    padding-top:14px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.info-label{
+    color:var(--muted);
+    font-size:9px;
+    letter-spacing:1px;
+    margin-bottom:6px;
+}
+
+.info-value{font-size:11px;font-weight:700}
+
+/* PREMIUM TIME */
+
+.time-card{
+    padding:20px;
+    border-radius:18px;
+    background:
+        radial-gradient(circle at 100% 0%,#7545ba33,transparent 55%),
+        linear-gradient(135deg,#27164b,#120d25);
+    border:1px solid #8053c955;
+    position:relative;
+    overflow:hidden;
+}
+
+.time-card::after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:#8b52ff;
+    filter:blur(65px);
+    opacity:.18;
+    right:-30px;
+    bottom:-40px;
+    pointer-events:none;
+}
+
+.time-label{
+    font-size:10px;
+    color:#b6a4dc;
+    letter-spacing:2px;
+    position:relative;
+    z-index:1;
+}
+
+.time-number{
+    font-size:31px;
+    font-weight:900;
+    margin:11px 0 5px;
+    color:#d6c2ff;
+    position:relative;
+    z-index:1;
+}
+
+.time-date{
+    font-size:11px;
+    color:#a49ab9;
+    position:relative;
+    z-index:1;
+}
+
+/* NIXGEM */
+
+.gem-icon{
+    width:23px;
+    height:23px;
+    flex-shrink:0;
+    filter:drop-shadow(0 0 6px #8b52ff99);
+}
+
+.time-balance{
+    position:relative;
+    z-index:1;
+    margin-top:18px;
+    padding-top:15px;
+    border-top:1px solid #ffffff18;
+}
+
+.time-balance-info{display:flex;align-items:center;gap:10px}
+.time-balance .gem-icon{width:32px;height:32px}
+
+.balance-label{
+    color:#a99ac5;
+    font-size:9px;
+    letter-spacing:1.3px;
+}
+
+.balance-number{
+    margin-top:4px;
+    font-size:17px;
+    font-weight:900;
+    color:#d6c2ff;
+}
+
+/* PACKAGES */
+
+.package-list{display:flex;flex-direction:column;gap:12px}
+
+.package-card{
+    position:relative;
+    padding:17px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:linear-gradient(145deg,#171127,#0d0a18);
+    transition:.25s;
+    overflow:hidden;
+    animation:cardEnter .55s ease both;
+}
+
+.package-card:active{transform:scale(.985)}
+
+@media(hover:hover){
+    .package-card:hover{
+        transform:translateY(-3px);
+        border-color:#a477ff88;
+        box-shadow:0 10px 25px #0004;
+    }
+}
+
+.package-card.recommended{
+    border:1px solid #a477ff;
+    background:
+        radial-gradient(circle at 100% 0%,#6339a833,transparent 55%),
+        linear-gradient(145deg,#211539,#100c20);
+    box-shadow:0 0 25px #7845ce20;
+}
+
+.package-card.expensive{
+    border-color:#a78345;
+    background:
+        radial-gradient(circle at 100% 0%,#a7834525,transparent 55%),
+        linear-gradient(145deg,#241c18,#100c17);
+}
+
+.package-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.package-name{font-size:15px;font-weight:850}
+
+.package-label{
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:1px;
+    padding:6px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+}
+
+.label-cheap{
+    color:#9de7bd;
+    background:#43b87920;
+    border:1px solid #43b87955;
+}
+
+.label-recommend{
+    color:#d9c3ff;
+    background:#8c55e52b;
+    border:1px solid #a477ff66;
+}
+
+.label-expensive{
+    color:#f3d69c;
+    background:#b58a3c20;
+    border:1px solid #b58a3c66;
+}
+
+.package-price{
+    font-size:25px;
+    font-weight:900;
+    margin-top:13px;
+    letter-spacing:-.5px;
+}
+
+.package-duration{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:5px;
+}
+
+.package-divider{height:1px;background:var(--line);margin:15px 0}
+
+.reward-label{
+    color:#877ba2;
+    font-size:9px;
+    letter-spacing:1.3px;
+    margin-bottom:9px;
+}
+
+.package-reward{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+    font-size:12px;
+    font-weight:800;
+    color:#d2baff;
+}
+
+.package-reward .bonus{color:#a5e8c2}
+
+.buy-button{
+    width:100%;
+    padding:12px;
+    margin-top:16px;
+    border-radius:10px;
+    background:#25183e;
+    border:1px solid #8255c955;
+    color:#d9c5ff;
+    font-size:11px;
+    font-weight:850;
+    transition:.2s;
+}
+
+.buy-button:active{transform:scale(.97);filter:brightness(1.2)}
+
+.recommended .buy-button{
+    background:linear-gradient(90deg,#7543c7,#9564ed);
+    color:white;
+    border:none;
+}
+
+.expensive .buy-button{
+    background:linear-gradient(90deg,#765522,#a17a36);
+    color:white;
+    border:none;
+}
+
+.buy-button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+/* BENEFITS */
+
+.benefit-card{
+    padding:9px 16px;
+    background:#110d1e;
+    border:1px solid var(--line);
+    border-radius:17px;
+}
+
+.benefit{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+}
+
+.benefit:last-child{border:none}
+
+.benefit-icon{
+    width:36px;
+    height:36px;
+    border-radius:11px;
+    background:#7947c522;
+    display:grid;
+    place-items:center;
+    color:#c1a4ff;
+    flex-shrink:0;
+}
+
+.benefit-icon svg{
+    width:18px;
+    height:18px;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+
+.benefit-name{font-size:11px;font-weight:800}
+
+.benefit-desc{
+    font-size:9px;
+    color:var(--muted);
+    margin-top:4px;
+    line-height:1.5;
+}
+
+.check{
+    margin-left:auto;
+    width:17px;
+    height:17px;
+    color:#8ee4b0;
+    flex-shrink:0;
+}
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    margin-top:35px;
+    color:#5f5673;
+    font-size:9px;
+    letter-spacing:2px;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:#000b;
+    backdrop-filter:blur(8px);
+}
+
+.modal.show{display:flex;animation:fadeIn .2s ease}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.modal-box{
+    width:100%;
+    max-width:360px;
+    padding:23px;
+    border-radius:20px;
+    border:1px solid #9869e866;
+    background:#171027;
+    box-shadow:0 20px 70px #000a;
+    animation:modalIn .25s ease;
+}
+
+@keyframes modalIn{
+    from{transform:translateY(12px);opacity:0}
+    to{transform:translateY(0);opacity:1}
+}
+
+.modal-title{font-size:18px;font-weight:900}
+
+.modal-desc{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:7px;
+    line-height:1.6;
+}
+
+.modal-summary{
+    margin-top:18px;
+    padding:14px;
+    border-radius:12px;
+    background:#0e0a19;
+    border:1px solid var(--line);
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:11px;
+    margin:10px 0;
+}
+
+.summary-row span:first-child{color:var(--muted)}
+.summary-row strong{text-align:right}
+
+.modal-actions{display:flex;gap:9px;margin-top:18px}
+
+.modal-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    font-size:11px;
+    font-weight:800;
+}
+
+.cancel-button{background:#292137;color:#c4b7dc}
+.confirm-button{background:linear-gradient(90deg,#7543c7,#9564ed);color:white}
+.confirm-button:disabled{opacity:.5;cursor:not-allowed}
+
+.loading{
+    opacity:.65;
+    pointer-events:none;
+}
+
+@media(min-width:600px){body{padding-top:25px}}
+
+@media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+        animation-duration:.01ms!important;
+        animation-iteration-count:1!important;
+        transition-duration:.01ms!important;
+    }
+}
+</style>
+<link rel="stylesheet" href="../css/page-transition.css">
+</head>
+
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+<defs>
+    <linearGradient id="gemOuter" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#e1caff"/>
+        <stop offset="45%" stop-color="#8850ff"/>
+        <stop offset="100%" stop-color="#304cff"/>
+    </linearGradient>
+    <linearGradient id="gemInner" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#49318e"/>
+        <stop offset="100%" stop-color="#111b56"/>
+    </linearGradient>
+    <linearGradient id="gemSymbol" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#bca3ff"/>
+    </linearGradient>
+    <g id="gem-shape">
+        <polygon points="50,3 92,26 92,74 50,97 8,74 8,26"
+            fill="url(#gemOuter)" stroke="#d5baff" stroke-width="1.5"/>
+        <polygon points="50,12 83,30 83,70 50,88 17,70 17,30"
+            fill="url(#gemInner)" stroke="#b99aff" stroke-width="1.5"/>
+        <path d="M50 12 L50 50 L17 30Z" fill="#bd9aff" opacity=".4"/>
+        <path d="M50 12 L83 30 L50 50Z" fill="#fff" opacity=".2"/>
+        <path d="M50 50 L83 30 L83 70Z" fill="#516cff" opacity=".4"/>
+        <path d="M50 50 L50 88 L17 70Z" fill="#7349e9" opacity=".4"/>
+        <path d="M32 68 V32 L68 68 V32"
+            fill="none" stroke="url(#gemSymbol)" stroke-width="8"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+</defs>
+</svg>
+
+<div class="container">
+
+    <div class="back-area">
+        <button class="back-button" id="backButton" aria-label="Kembali">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5"/>
+                <path d="M12 19L5 12L12 5"/>
+            </svg>
+        </button>
+
+        <div class="page-heading">
+            <h1>ANILIX Premium</h1>
+            <p>Membership </p>
+        </div>
+    </div>
+
+    <div class="notice" id="systemNotice" role="status"></div>
+
+    <!-- PROFILE -->
+    <div class="profile-card">
+        <div class="profile-top">
+            <div class="avatar">
+                <span class="avatar-fallback" id="avatarFallback">?</span>
+                <img id="profileAvatar" alt="Foto Profil" hidden>
+            </div>
+
+            <div>
+                <div class="profile-name" id="profileName">Memuat profil...</div>
+                <div class="profile-username" id="profileUsername">@...</div>
+            </div>
+
+            <div class="premium-tag" id="premiumRole">Premium</div>
+        </div>
+
+        <div class="profile-info">
+            <div>
+                <div class="info-label">EMAIL</div>
+                <div class="info-value" id="profileEmail">Memuat...</div>
+            </div>
+            <div>
+                <div class="info-label">STATUS</div>
+                <div class="info-value" id="premiumStatus">Memuat...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREMIUM TIME -->
+    <section class="section">
+        <div class="time-card">
+            <div class="time-label">SISA WAKTU PREMIUM</div>
+            <div class="time-number" id="premiumRemaining">Memuat...</div>
+            <div class="time-date" id="premiumExpiry">Memeriksa status akun...</div>
+
+            <div class="time-balance">
+                <div class="time-balance-info">
+                    <svg class="gem-icon" viewBox="0 0 100 100">
+                        <use href="#gem-shape"/>
+                    </svg>
+                    <div>
+                        <div class="balance-label">SALDO NIXGEM</div>
+                        <div class="balance-number" id="nixgemBalance">Memuat...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PACKAGES -->
+    <section class="section">
+        <div class="section-title">Paket Termurah</div>
+        <div class="section-desc">Pilih durasi Premium sesuai kebutuhanmu.</div>
+        <div class="package-list" id="cheapPackages"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">Paket Standar</div>
+        <div class="section-desc">Pilihan untuk menikmati Premium lebih lama.</div>
+        <div class="package-list" id="standardPackages"></div>
+    </section>
+
+    <section class="section">
+        <div class="section-title">Paket Sultan</div>
+        <div class="section-desc">Untuk pengguna yang ingin masa Premium paling panjang.</div>
+        <div class="package-list" id="sultanPackages"></div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section class="section">
+        <div class="section-title">Premium Benefits</div>
+        <div class="section-desc">Keuntungan yang kamu dapatkan selama Premium aktif.</div>
+
+        <div class="benefit-card">
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3L20 7V12C20 17 16.5 20 12 22C7.5 20 4 17 4 12V7L12 3Z"/>
+                        <path d="M9 12L11 14L15.5 9.5"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="benefit-name">Bebas Iklan</div>
+                    <div class="benefit-desc">Menonton tanpa gangguan iklan ANILIX.</div>
+                </div>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12L10 17L20 7"/>
+                </svg>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/>
+                        <path d="M10 9L15 12L10 15Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="benefit-name">Kualitas Streaming Premium</div>
+                    <div class="benefit-desc">Akses pilihan kualitas video yang didukung.</div>
+                </div>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12L10 17L20 7"/>
+                </svg>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 2L4 14H11L10 22L20 9H13L13 2Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="benefit-name">Bonus EXP +50%</div>
+                    <div class="benefit-desc">Tambahan EXP dari hasil menonton.</div>
+                </div>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12L10 17L20 7"/>
+                </svg>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L14.8 8.2L21.5 9L16.5 13.6L17.8 20.3L12 17L6.2 20.3L7.5 13.6L2.5 9L9.2 8.2L12 2Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="benefit-name">Bonus NixGem</div>
+                    <div class="benefit-desc">NixGem dari pembelian paket minimal 1 bulan.</div>
+                </div>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12L10 17L20 7"/>
+                </svg>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="8" r="4"/>
+                        <path d="M5 21C5 17 8 14 12 14C16 14 19 17 19 21"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="benefit-name">Premium Profile</div>
+                    <div class="benefit-desc">Tampilan khusus pada profil pengguna.</div>
+                </div>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12L10 17L20 7"/>
+                </svg>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2L14.5 5.5L19 5L18.5 9.5L22 12L18.5 14.5L19 19L14.5 18.5L12 22L9.5 18.5L5 19L5.5 14.5L2 12L5.5 9.5L5 5L9.5 5.5L12 2Z"/>
+                        <path d="M9 12L11 14L15 10"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="benefit-name">Premium Badge</div>
+                    <div class="benefit-desc">Lencana khusus akun Premium.</div>
+                </div>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12L10 17L20 7"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">POWERED BY ANILIX</div>
+</div>
+
+<!-- PURCHASE MODAL -->
+<div class="modal" id="purchaseModal">
+    <div class="modal-box">
+        <div class="modal-title">Konfirmasi Paket</div>
+        <div class="modal-desc">Periksa kembali paket ANILIX Premium yang ingin kamu beli.</div>
+
+        <div class="modal-summary">
+            <div class="summary-row">
+                <span>Paket</span>
+                <strong id="selectedName">-</strong>
+            </div>
+            <div class="summary-row">
+                <span>Harga</span>
+                <strong id="selectedPrice">-</strong>
+            </div>
+            <div class="summary-row">
+                <span>Bonus</span>
+                <strong id="selectedReward">-</strong>
+            </div>
+        </div>
+
+        <div class="modal-desc" id="checkoutMessage">
+            Transaksi akan dibuat melalui server ANILIX.
+        </div>
+
+        <div class="modal-actions">
+            <button class="cancel-button" id="cancelPurchase">BATAL</button>
+            <button class="confirm-button" id="confirmPurchase">LANJUTKAN</button>
+        </div>
+    </div>
+</div>
+
+<script>
+"use strict";
+
+/*
+|--------------------------------------------------------------------------
+| ANILIX PREMIUM API
+|--------------------------------------------------------------------------
+| API ini merupakan kontrak integrasi.
+| Backend harus dibuat sebelum fitur akun dan checkout dapat digunakan.
+*/
+
+const API_BASE = "/api";
+
+const state = {
+    packages: [],
+    selectedPackage: null,
+    user: null,
+    busy: false
+};
+
+const $ = id => document.getElementById(id);
+
+const modal = $("purchaseModal");
+
+function rupiah(value){
+    return "Rp" + Number(value).toLocaleString("id-ID");
+}
+
+function showNotice(message){
+    const notice = $("systemNotice");
+    notice.textContent = message;
+    notice.classList.add("show");
+}
+
+function hideNotice(){
+    $("systemNotice").classList.remove("show");
+}
+
+async function apiRequest(path, options = {}){
+    const response = await fetch(API_BASE + path,{
+        credentials:"include",
+        headers:{
+            "Content-Type":"application/json",
+            ...options.headers
+        },
+        ...options
+    });
+
+    const data = await response.json().catch(()=>({}));
+
+    if(!response.ok){
+        throw new Error(data.message || "Permintaan ke server gagal.");
+    }
+
+    return data;
+}
+
+/* ROLE CONFIG */
+
+async function loadPremiumRole(){
+    const badge = $("premiumRole");
+
+    try{
+        const response = await fetch("../json/roles.json");
+
+        if(!response.ok) throw new Error("Role config tidak ditemukan.");
+
+        const config = await response.json();
+        const role = config.roles?.premium;
+
+        if(!role) throw new Error("Role Premium tidak ditemukan.");
+
+        badge.textContent = role.name || "Premium";
+
+        (role.color || []).forEach((color,index)=>{
+            badge.style.setProperty(`--role-c${index+1}`,color);
+        });
+
+        const effects = config.badge_effects || {};
+
+        badge.style.setProperty(
+            "--gradient-duration",
+            `${(effects.gradient_duration || 5000)/1000}s`
+        );
+
+        badge.style.setProperty(
+            "--shine-duration",
+            `${(effects.shine_duration || 3000)/1000}s`
+        );
+
+        if(role.animated && effects.gradient_animation !== false){
+            badge.classList.add("gradient-animated");
+        }
+
+        if(role.animated && effects.shine_animation !== false){
+            badge.classList.add("shine-animated");
+        }
+
+    }catch(error){
+        console.error("Role config:",error);
+        badge.textContent = "Premium";
+    }
+}
+
+/* PROFILE */
+
+function renderProfile(user){
+    state.user = user;
+
+    $("profileName").textContent = user.name || "Pengguna ANILIX";
+    $("profileUsername").textContent = "@" + (user.username || "user");
+    $("profileEmail").textContent = user.email || "Tidak tersedia";
+
+    const avatar = $("profileAvatar");
+    const fallback = $("avatarFallback");
+
+    fallback.textContent = (user.name || "A").charAt(0).toUpperCase();
+
+    if(user.avatar){
+        avatar.src = user.avatar;
+        avatar.hidden = false;
+        avatar.onerror = ()=>{
+            avatar.hidden = true;
+        };
+    }else{
+        avatar.hidden = true;
+    }
+
+    const active = Boolean(user.premium?.active);
+
+    $("premiumStatus").textContent = active ? "Aktif" : "Tidak Aktif";
+    $("premiumStatus").style.color = active ? "#9de7bd" : "#c59e9e";
+
+    if(active && user.premium?.expiresAt){
+        const expiry = new Date(user.premium.expiresAt);
+        const remaining = Math.max(0,expiry.getTime() - Date.now());
+
+        const days = Math.floor(remaining / 86400000);
+        const hours = Math.floor((remaining % 86400000) / 3600000);
+
+        $("premiumRemaining").textContent =
+            days > 0 ? `${days} Hari Lagi` : `${hours} Jam Lagi`;
+
+        $("premiumExpiry").textContent =
+            "Berakhir pada " + expiry.toLocaleString("id-ID",{
+                dateStyle:"long",
+                timeStyle:"short"
+            });
+    }else{
+        $("premiumRemaining").textContent = "Tidak Aktif";
+        $("premiumExpiry").textContent = "Belum memiliki langganan Premium aktif.";
+    }
+}
+
+async function loadProfile(){
+    try{
+        const data = await apiRequest("/me");
+
+        if(!data.user){
+            throw new Error("Data akun tidak ditemukan.");
+        }
+
+        renderProfile(data.user);
+
+    }catch(error){
+        $("profileName").textContent = "Belum terhubung";
+        $("profileUsername").textContent = "@unknown";
+        $("profileEmail").textContent = "Tidak tersedia";
+        $("premiumStatus").textContent = "Tidak diketahui";
+        $("premiumRemaining").textContent = "—";
+        $("premiumExpiry").textContent = "Data Premium belum tersedia.";
+
+        showNotice("Profil belum dapat dimuat. Pastikan kamu sudah login dan backend ANILIX tersedia.");
+        console.error("Profile:",error);
+    }
+}
+
+/* NIXGEM */
+
+async function loadNixGem(){
+    try{
+        const data = await apiRequest("/nixgem/balance");
+
+        if(typeof data.balance !== "number"){
+            throw new Error("Format saldo tidak valid.");
+        }
+
+        $("nixgemBalance").textContent =
+            data.balance.toLocaleString("id-ID") + " NG";
+
+    }catch(error){
+        $("nixgemBalance").textContent = "Tidak tersedia";
+        console.error("NixGem:",error);
+    }
+}
+
+/* PACKAGES */
+
+function escapeHTML(value){
+    return String(value).replace(/[&<>"']/g,char=>({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+    })[char]);
+}
+
+function createPackageCard(pkg){
+    const card = document.createElement("div");
+
+    const classes = ["package-card"];
+
+    if(pkg.highlight === "recommended") classes.push("recommended");
+    if(pkg.highlight === "expensive") classes.push("expensive");
+
+    card.className = classes.join(" ");
+
+    const label = pkg.label ? `
+        <span class="package-label ${
+            pkg.highlight === "recommended" ? "label-recommend" :
+            pkg.highlight === "expensive" ? "label-expensive" :
+            "label-cheap"
+        }">${escapeHTML(pkg.label)}</span>
+    ` : "";
+
+    const reward = Number(pkg.baseGem || 0);
+    const bonus = Number(pkg.bonusGem || 0);
+
+    const rewardHTML = reward > 0 ? `
+        <svg class="gem-icon" viewBox="0 0 100 100">
+            <use href="#gem-shape"/>
+        </svg>
+        ${reward.toLocaleString("id-ID")} NG
+        ${bonus > 0 ? `<span class="bonus">+ ${bonus.toLocaleString("id-ID")} BONUS</span>` : ""}
+    ` : "Akses Premium dasar";
+
+    card.innerHTML = `
+        <div class="package-top">
+            <div class="package-name">${escapeHTML(pkg.name)}</div>
+            ${label}
+        </div>
+
+        <div class="package-price">${rupiah(pkg.price)}</div>
+        <div class="package-duration">${escapeHTML(pkg.description || "Akses Premium")}</div>
+
+        <div class="package-divider"></div>
+
+        <div class="reward-label">${reward > 0 ? "BONUS NIXGEM" : "KEUNTUNGAN"}</div>
+
+        <div class="package-reward">${rewardHTML}</div>
+
+        <button class="buy-button" type="button">BELI PAKET</button>
+    `;
+
+    card.querySelector(".buy-button").addEventListener("click",()=>{
+        openPurchase(pkg);
+    });
+
+    return card;
+}
+
+function renderPackages(packages){
+    $("cheapPackages").replaceChildren();
+    $("standardPackages").replaceChildren();
+    $("sultanPackages").replaceChildren();
+
+    const targets = {
+        cheap:$("cheapPackages"),
+        standard:$("standardPackages"),
+        sultan:$("sultanPackages")
+    };
+
+    packages.forEach(pkg=>{
+        const target = targets[pkg.group];
+
+        if(target){
+            target.appendChild(createPackageCard(pkg));
+        }
+    });
+}
+
+async function loadPackages(){
+    try{
+        const data = await apiRequest("/premium/packages");
+
+        if(!Array.isArray(data.packages)){
+            throw new Error("Format paket tidak valid.");
+        }
+
+        state.packages = data.packages;
+        renderPackages(data.packages);
+
+    }catch(error){
+        /*
+         * Harga dan hadiah berikut merupakan konfigurasi awal.
+         * Untuk transaksi sungguhan, backend wajib menjadi sumber
+         * harga dan reward yang otoritatif.
+         */
+
+        const fallbackPackages = [
+            {id:"premium_7d",name:"7 Hari",price:3000,group:"cheap",label:"TERMURAH",description:"Akses Premium selama 7 hari",baseGem:0,bonusGem:0},
+            {id:"premium_1m",name:"1 Bulan",price:10000,group:"cheap",description:"Akses Premium selama 1 bulan",baseGem:1000,bonusGem:0},
+            {id:"premium_3m",name:"3 Bulan",price:27000,group:"cheap",description:"Akses Premium selama 3 bulan",baseGem:3000,bonusGem:500},
+            {id:"premium_6m",name:"6 Bulan",price:50000,group:"cheap",description:"Akses Premium selama 6 bulan",baseGem:6000,bonusGem:1500},
+            {id:"premium_1y",name:"1 Tahun",price:85000,group:"standard",label:"REKOMENDASI",highlight:"recommended",description:"Akses Premium selama 1 tahun",baseGem:15000,bonusGem:5000},
+            {id:"premium_2y",name:"2 Tahun",price:150000,group:"standard",description:"Akses Premium selama 2 tahun",baseGem:30000,bonusGem:12000},
+            {id:"premium_3y",name:"3 Tahun",price:210000,group:"sultan",description:"Akses Premium selama 3 tahun",baseGem:50000,bonusGem:20000},
+            {id:"premium_4y",name:"4 Tahun",price:260000,group:"sultan",description:"Akses Premium selama 4 tahun",baseGem:75000,bonusGem:30000},
+            {id:"premium_5y",name:"5 Tahun",price:300000,group:"sultan",label:"TERMAHAL",highlight:"expensive",description:"Akses Premium selama 5 tahun",baseGem:100000,bonusGem:50000}
+        ];
+
+        state.packages = fallbackPackages;
+        renderPackages(fallbackPackages);
+
+        console.warn("Backend paket belum tersedia:",error);
+    }
+}
+
+/* CHECKOUT */
+
+function openPurchase(pkg){
+    state.selectedPackage = pkg;
+
+    $("selectedName").textContent = pkg.name;
+    $("selectedPrice").textContent = rupiah(pkg.price);
+
+    const rewards = [];
+
+    if(pkg.baseGem > 0){
+        rewards.push(Number(pkg.baseGem).toLocaleString("id-ID") + " NG");
+    }
+
+    if(pkg.bonusGem > 0){
+        rewards.push(Number(pkg.bonusGem).toLocaleString("id-ID") + " BONUS");
+    }
+
+    $("selectedReward").textContent =
+        rewards.length ? rewards.join(" + ") : "Tidak ada bonus";
+
+    $("checkoutMessage").textContent =
+        "Transaksi akan dibuat melalui server ANILIX. Pembayaran hanya dapat dilanjutkan setelah backend tersedia.";
+
+    $("confirmPurchase").disabled = false;
+    $("confirmPurchase").textContent = "LANJUTKAN";
+
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+    if(state.busy) return;
+
+    modal.classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+async function checkout(){
+    if(state.busy || !state.selectedPackage) return;
+
+    state.busy = true;
+
+    const button = $("confirmPurchase");
+
+    button.disabled = true;
+    button.textContent = "MEMPROSES...";
+
+    try{
+        const data = await apiRequest("/premium/checkout",{
+            method:"POST",
+            body:JSON.stringify({
+                packageId:state.selectedPackage.id
+            })
+        });
+
+        if(!data.paymentUrl){
+            throw new Error("Server tidak memberikan alamat pembayaran.");
+        }
+
+        window.location.href = data.paymentUrl;
+
+    }catch(error){
+        $("checkoutMessage").textContent =
+            error.message || "Checkout gagal. Silakan coba lagi.";
+
+        button.textContent = "COBA LAGI";
+        console.error("Checkout:",error);
+
+    }finally{
+        state.busy = false;
+        button.disabled = false;
+
+        if(button.textContent === "MEMPROSES..."){
+            button.textContent = "LANJUTKAN";
+        }
+    }
+}
+
+/* EVENTS */
+
+$("backButton").addEventListener("click",()=>{
+    if(history.length > 1){
+        history.back();
+    }else{
+        window.location.href = "/";
+    }
+});
+
+$("cancelPurchase").addEventListener("click",closeModal);
+$("confirmPurchase").addEventListener("click",checkout);
+
+modal.addEventListener("click",event=>{
+    if(event.target === modal) closeModal();
+});
+
+document.addEventListener("keydown",event=>{
+    if(event.key === "Escape" && modal.classList.contains("show")){
+        closeModal();
+    }
+});
+
+/* INIT */
+
+async function initPremium(){
+    await Promise.all([
+        loadPremiumRole(),
+        loadProfile(),
+        loadNixGem(),
+        loadPackages()
+    ]);
+}
+
+initPremium();
+</script>
+
+
+<script src="../js/page-transition.js" defer></script>
+<script src="../js/skeleton-loading.js" defer></script>
+<script src="../js/poster-loading.js" defer></script>
+</body>
+</html>
