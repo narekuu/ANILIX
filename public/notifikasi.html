@@ -7,94 +7,362 @@
 <meta name="theme-color" content="#08070c">
 <title>Notifikasi — ANILIX</title>
 
+<link rel="stylesheet" href="../css/page-transition.css">
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+
 :root{
   --bg:#08070c;
   --card:#111018;
   --purple:#8b5cf6;
+  --purple2:#a78bfa;
   --text:#f7f7fa;
   --muted:#9693a2;
   --line:rgba(255,255,255,.07);
+  --danger:#f87171;
 }
+
 body{
   min-height:100vh;
-  background:radial-gradient(circle at 50% -10%,rgba(139,92,246,.16),transparent 38%),var(--bg);
+  background:
+    radial-gradient(circle at 50% -10%,rgba(139,92,246,.16),transparent 38%),
+    var(--bg);
   color:var(--text);
   font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
+
 button{font:inherit;cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+
 .header{
   height:62px;
   position:sticky;
   top:0;
-  z-index:10;
+  z-index:20;
   display:flex;
   align-items:center;
   padding:0 15px;
-  background:rgba(8,7,12,.86);
+  background:rgba(8,7,12,.88);
   backdrop-filter:blur(18px);
   border-bottom:1px solid var(--line);
 }
+
 .back{
-  width:40px;height:40px;
-  display:grid;place-items:center;
-  border:0;border-radius:12px;
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:12px;
   background:rgba(255,255,255,.06);
   color:white;
 }
+
 .back svg{width:21px;height:21px}
-.header-title{margin-left:12px;font-size:15px;font-weight:800}
-.container{
-  width:min(100%,700px);
-  margin:auto;
-  padding:22px 15px 45px;
+
+.header-title{
+  margin-left:12px;
+  font-size:15px;
+  font-weight:800;
 }
-.heading{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:7px;
-}
-.heading h1{font-size:25px;font-weight:850}
-.heading span{
-  color:var(--purple);
-  font-size:11px;
-  font-weight:750;
+
+.header-badge{
+  margin-left:auto;
+  color:#c9b7ff;
+  font-size:10px;
+  font-weight:800;
   padding:7px 10px;
   border-radius:8px;
   background:rgba(139,92,246,.12);
   border:1px solid rgba(139,92,246,.2);
 }
-.subtitle{color:var(--muted);font-size:12px}
-.notice-card{
-  margin-top:23px;
-  padding:17px;
-  border-radius:17px;
-  background:linear-gradient(135deg,rgba(139,92,246,.13),rgba(17,16,24,.95) 65%);
-  border:1px solid rgba(139,92,246,.2);
+
+.container{
+  width:min(100%,700px);
+  margin:auto;
+  padding:22px 15px 45px;
+}
+
+.section-head{
+  margin-bottom:13px;
   display:flex;
   align-items:center;
-  gap:13px;
+  justify-content:space-between;
 }
-.notice-icon{
-  width:46px;height:46px;
-  flex-shrink:0;
-  display:grid;place-items:center;
-  border-radius:14px;
-  background:rgba(139,92,246,.18);
-  color:#c5adff;
-}
-.notice-icon svg{width:23px;height:23px}
-.notice-text{min-width:0}
-.notice-text strong{display:block;font-size:13px;margin-bottom:5px}
-.notice-text p{font-size:11px;color:#aaa6b5;line-height:1.5}
+
 .section-title{
-  margin-top:28px;
-  margin-bottom:12px;
   font-size:14px;
   font-weight:800;
 }
+
+.read-all{
+  border:0;
+  background:none;
+  color:var(--purple2);
+  font-size:11px;
+  font-weight:700;
+}
+
+.notification-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.notification{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(17,16,24,.85);
+  transition:.2s;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:pan-y;
+}
+
+.notification.unread{
+  background:linear-gradient(110deg,rgba(139,92,246,.09),rgba(17,16,24,.9) 65%);
+  border-color:rgba(139,92,246,.19);
+}
+
+.notification.selected{
+  border-color:var(--purple);
+  background:rgba(139,92,246,.13);
+}
+
+.notif-icon{
+  width:43px;
+  height:43px;
+  flex-shrink:0;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:rgba(139,92,246,.14);
+  color:#c5adff;
+}
+
+.notif-icon svg{width:21px;height:21px}
+
+.notif-icon.friend{
+  background:rgba(74,222,128,.10);
+  color:#86efac;
+}
+
+.notif-icon.system{
+  background:rgba(139,92,246,.14);
+  color:#c4b5fd;
+}
+
+.notif-icon.anime{
+  background:rgba(56,189,248,.11);
+  color:#7dd3fc;
+}
+
+.notif-icon.donghua{
+  background:rgba(45,212,191,.11);
+  color:#5eead4;
+}
+
+.notif-icon.security,
+.notif-icon.premium{
+  background:rgba(251,191,36,.10);
+  color:#fcd34d;
+}
+
+.notif-icon.custom{
+  background:rgba(192,132,252,.12);
+  color:#d8b4fe;
+}
+
+.notif-icon.friend-avatar{
+  width:43px;
+  height:43px;
+  min-width:43px;
+  border-radius:50%;
+  overflow:hidden;
+  background:linear-gradient(135deg,#302344,#6d48a5);
+  border:1px solid rgba(167,139,250,.35);
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+}
+
+.notif-icon.friend-avatar img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  border-radius:50%;
+}
+
+.notif-content{
+  flex:1;
+  min-width:0;
+}
+
+.notif-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:8px;
+}
+
+.notif-title{
+  font-size:12px;
+  font-weight:800;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+
+.notif-time{
+  flex-shrink:0;
+  color:#777383;
+  font-size:10px;
+}
+
+.notif-message{
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+  margin-top:5px;
+  overflow-wrap:anywhere;
+}
+
+.notif-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:10px;
+}
+
+.unread-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--purple2);
+  flex-shrink:0;
+}
+
+.notif-details{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:9px;
+}
+
+.detail-tag{
+  padding:5px 8px;
+  border-radius:7px;
+  background:rgba(255,255,255,.055);
+  color:#c6c1d1;
+  font-size:9px;
+  font-weight:700;
+}
+
+.detail-tag.episode{
+  color:#a5dfff;
+  background:rgba(56,189,248,.10);
+}
+
+.detail-tag.donghua{
+  color:#5eead4;
+  background:rgba(45,212,191,.10);
+}
+
+.detail-tag.active{
+  color:#86efac;
+  background:rgba(74,222,128,.10);
+}
+
+.detail-tag.premium{
+  color:#fcd34d;
+  background:rgba(251,191,36,.10);
+}
+
+.detail-tag.custom{
+  color:#d8b4fe;
+  background:rgba(192,132,252,.10);
+}
+
+.friend-actions{
+  display:flex;
+  gap:7px;
+  margin-top:12px;
+}
+
+.action-btn{
+  padding:8px 13px;
+  border-radius:9px;
+  border:1px solid var(--line);
+  font-size:10px;
+  font-weight:800;
+}
+
+.accept-btn{
+  color:white;
+  background:var(--purple);
+  border-color:var(--purple);
+}
+
+.reject-btn{
+  color:#c5c1ce;
+  background:rgba(255,255,255,.055);
+}
+
+.friend-status{
+  display:inline-flex;
+  margin-top:10px;
+  padding:6px 9px;
+  border-radius:7px;
+  font-size:10px;
+  font-weight:800;
+}
+
+.friend-status.accepted{
+  color:#86efac;
+  background:rgba(74,222,128,.10);
+}
+
+.friend-status.rejected{
+  color:#fca5a5;
+  background:rgba(248,113,113,.10);
+}
+
+.select-check{
+  display:none;
+  width:21px;
+  height:21px;
+  flex-shrink:0;
+  border:1.5px solid #777383;
+  border-radius:7px;
+  align-items:center;
+  justify-content:center;
+  margin-top:2px;
+  color:white;
+}
+
+.select-check svg{width:13px;height:13px}
+
+.selection-mode .select-check{display:flex}
+
+.notification.selected .select-check{
+  background:var(--purple);
+  border-color:var(--purple);
+}
+
+.selection-mode .unread-dot{display:none}
+
+.selection-mode .friend-actions{
+  pointer-events:none;
+  opacity:.4;
+}
+
 .empty{
   min-height:310px;
   display:flex;
@@ -107,41 +375,204 @@ button{font:inherit;cursor:pointer}
   border-radius:18px;
   background:rgba(17,16,24,.65);
 }
+
 .empty-icon{
-  width:76px;height:76px;
-  display:grid;place-items:center;
+  width:76px;
+  height:76px;
+  display:grid;
+  place-items:center;
   border-radius:25px;
   background:rgba(139,92,246,.12);
   color:#b99cff;
   margin-bottom:17px;
 }
+
 .empty-icon svg{width:34px;height:34px}
-.empty h2{font-size:17px;margin-bottom:8px}
+
+.empty h2{
+  font-size:17px;
+  margin-bottom:8px;
+}
+
 .empty p{
   max-width:260px;
   color:var(--muted);
   font-size:12px;
   line-height:1.7;
 }
-.coming{
-  margin-top:17px;
-  padding:8px 13px;
-  border-radius:9px;
-  color:#c9b7ff;
-  background:rgba(139,92,246,.13);
-  border:1px solid rgba(139,92,246,.22);
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:1px;
+
+.selection-toolbar{
+  display:none;
+  position:sticky;
+  bottom:12px;
+  z-index:15;
+  margin-top:15px;
+  padding:12px;
+  border:1px solid rgba(139,92,246,.3);
+  border-radius:16px;
+  background:rgba(23,21,33,.96);
+  backdrop-filter:blur(20px);
+  box-shadow:0 10px 35px rgba(0,0,0,.35);
 }
-.footer{
-  margin-top:25px;
-  text-align:center;
-  color:#625e6b;
-  font-size:10px;
+
+.selection-toolbar.show{display:block}
+
+.toolbar-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+}
+
+.selected-count{
+  font-size:12px;
+  font-weight:800;
+}
+
+.select-all{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--purple2);
+  font-size:11px;
+  font-weight:700;
+  border:0;
+  background:none;
+}
+
+.toolbar-actions{
+  display:flex;
+  gap:9px;
+}
+
+.toolbar-btn{
+  flex:1;
+  padding:11px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:800;
+  border:1px solid var(--line);
+}
+
+.delete-btn{
+  color:white;
+  background:#dc4545;
+  border-color:#dc4545;
+}
+
+.cancel-btn{
+  color:#ddd9e8;
+  background:rgba(255,255,255,.06);
+}
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px);
+}
+
+.modal-overlay.show{display:flex}
+
+.modal{
+  width:min(100%,360px);
+  padding:23px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.09);
+  background:#15131e;
+  box-shadow:0 20px 60px rgba(0,0,0,.45);
+  animation:modalIn .2s ease;
+}
+
+@keyframes modalIn{
+  from{opacity:0;transform:translateY(10px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.modal-icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  color:#fca5a5;
+  background:rgba(248,113,113,.12);
+  margin-bottom:16px;
+}
+
+.modal-icon svg{width:23px;height:23px}
+
+.modal h3{
+  font-size:16px;
+  margin-bottom:8px;
+}
+
+.modal p{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.modal-actions{
+  display:flex;
+  gap:9px;
+  margin-top:22px;
+}
+
+.modal-btn{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  font-size:11px;
+  font-weight:800;
+}
+
+.modal-cancel{
+  color:white;
+  background:rgba(255,255,255,.06);
+}
+
+.modal-confirm{
+  color:white;
+  background:#dc4545;
+  border-color:#dc4545;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  z-index:200;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  padding:12px 17px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;
+  background:#201c2c;
+  color:white;
+  font-size:11px;
+  font-weight:700;
+  transition:.25s;
+  white-space:nowrap;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+@media(min-width:600px){
+  .container{padding-top:28px}
+  .notification{padding:17px}
 }
 </style>
-<link rel="stylesheet" href="../css/page-transition.css">
 </head>
 
 <body>
@@ -152,52 +583,994 @@ button{font:inherit;cursor:pointer}
       <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
+
   <div class="header-title">Notifikasi</div>
+  <span class="header-badge" id="unreadBadge">0 BARU</span>
 </header>
 
 <main class="container">
 
-  <div class="heading">
-    <h1>Notifikasi</h1>
-    <span>COMING SOON</span>
+  <div class="section-head">
+    <h2 class="section-title">Terbaru</h2>
+    <button class="read-all" id="readAllBtn">Tandai semua dibaca</button>
   </div>
 
-  <p class="subtitle">Semua informasi terbaru dari ANILIX.</p>
+  <section class="notification-list" id="notificationList"></section>
 
-  <div class="notice-card">
-    <div class="notice-icon">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-        <path d="M10 21h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="notice-text">
-      <strong>Pusat Notifikasi ANILIX</strong>
-      <p>Informasi update anime, aktivitas akun, dan pengumuman akan tersedia di sini.</p>
-    </div>
-  </div>
-
-  <h2 class="section-title">Terbaru</h2>
-
-  <section class="empty">
+  <section class="empty" id="emptyState">
     <div class="empty-icon">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
         <path d="M10 21h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
+
     <h2>Belum Ada Notifikasi</h2>
-    <p>Fitur notifikasi sedang dalam tahap pengembangan. Nantikan kehadirannya di ANILIX!</p>
-    <div class="coming">COMING SOON</div>
+    <p>Semua informasi terbaru dari ANILIX akan muncul di sini.</p>
   </section>
 
-  <div class="footer">ANILIX · Your Anime Experience</div>
+  <div class="selection-toolbar" id="selectionToolbar">
+    <div class="toolbar-top">
+      <span class="selected-count" id="selectedCount">0 dipilih</span>
+      <button class="select-all" id="selectAllBtn">
+        <span id="selectAllText">Pilih Semua</span>
+      </button>
+    </div>
+
+    <div class="toolbar-actions">
+      <button class="toolbar-btn delete-btn" id="deleteBtn">Hapus Pilihan</button>
+      <button class="toolbar-btn cancel-btn" id="cancelBtn">Batal</button>
+    </div>
+  </div>
 
 </main>
 
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <h3>Hapus Notifikasi?</h3>
+    <p id="deleteDescription">Notifikasi yang dipilih akan dihapus.</p>
+
+    <div class="modal-actions">
+      <button class="modal-btn modal-cancel" id="modalCancel">Batal</button>
+      <button class="modal-btn modal-confirm" id="modalConfirm">Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================
+   STORAGE
+===================================== */
+
+const STORAGE_KEY="anilix_notifications_v1";
+
+/*
+  RESET TOTAL NOTIFIKASI LAMA.
+
+  Seluruh notifikasi di localStorage dengan
+  key ini akan dihapus satu kali setiap halaman
+  dimuat. Tidak ada data contoh yang dibuat.
+*/
+
+localStorage.removeItem(STORAGE_KEY);
+
+let notifications=[];
+
+const list=document.getElementById("notificationList");
+const empty=document.getElementById("emptyState");
+const toolbar=document.getElementById("selectionToolbar");
+const modal=document.getElementById("deleteModal");
+
+let selectionMode=false;
+let selectedIds=new Set();
+let longPressTimer=null;
+let longPressTriggered=false;
+let toastTimer=null;
+
+function saveNotifications(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(notifications));
+}
+
+function createId(){
+  return globalThis.crypto?.randomUUID?.() ||
+    "anilix_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+}
+
+/* =====================================
+   ICONS
+===================================== */
+
+const icons={
+  system:`<svg viewBox="0 0 24 24" fill="none">
+    <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M10 21h4" stroke="currentColor" stroke-width="1.7"/>
+  </svg>`,
+
+  anime:`<svg viewBox="0 0 24 24" fill="none">
+    <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.7"/>
+    <path d="m10 8 6 4-6 4V8Z" stroke="currentColor" stroke-width="1.7"/>
+  </svg>`,
+
+  donghua:`<svg viewBox="0 0 24 24" fill="none">
+    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    <path d="M4 6h13M8 8.5h7M8 12h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>`,
+
+  security:`<svg viewBox="0 0 24 24" fill="none">
+    <path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6l8-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    <rect x="9" y="10" width="6" height="5" rx="1" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M10.5 10V8.5a1.5 1.5 0 0 1 3 0V10" stroke="currentColor" stroke-width="1.5"/>
+  </svg>`,
+
+  premium:`<svg viewBox="0 0 24 24" fill="none">
+    <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" stroke="currentColor" stroke-width="1.6"/>
+  </svg>`,
+
+  custom:`<svg viewBox="0 0 24 24" fill="none">
+    <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1m0-12.8-2.1 2.1m-8.6 8.6-2.1 2.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/>
+  </svg>`
+};
+
+/* =====================================
+   HELPERS
+===================================== */
+
+function escapeHTML(value){
+  return String(value??"").replace(/[&<>"']/g,char=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
+function formatTime(timestamp){
+  const date=new Date(timestamp);
+  const diff=Math.max(0,Date.now()-date.getTime());
+
+  const minutes=Math.floor(diff/60000);
+  const hours=Math.floor(diff/3600000);
+  const days=Math.floor(diff/86400000);
+
+  if(minutes<1)return "Baru saja";
+  if(minutes<60)return minutes+" menit lalu";
+  if(hours<24)return hours+" jam lalu";
+  if(days<7)return days+" hari lalu";
+
+  return date.toLocaleDateString("id-ID",{
+    day:"numeric",
+    month:"short",
+    year:"numeric"
+  });
+}
+
+function formatDate(value){
+  if(!value)return "-";
+
+  const date=new Date(value);
+  if(isNaN(date.getTime()))return "-";
+
+  return date.toLocaleDateString("id-ID",{
+    day:"numeric",
+    month:"long",
+    year:"numeric"
+  });
+}
+
+/* =====================================
+   FRIEND NOTIFICATIONS
+===================================== */
+
+function getUsername(n){
+  let username=String(n.username||n.sender?.username||"pengguna").trim();
+  username=username.replace(/^@+/,"");
+  return "@"+username;
+}
+
+function isFriendType(type){
+  return ["friend","friend_accepted","friend_rejected"].includes(type);
+}
+
+function getFriendTitle(n){
+  const username=getUsername(n);
+
+  if(n.type==="friend_accepted"){
+    return username+" menerima pertemanan.";
+  }
+
+  if(n.type==="friend_rejected"){
+    return username+" menolak pertemanan.";
+  }
+
+  return username+" mengirim permintaan pertemanan.";
+}
+
+/* =====================================
+   COUNTERS
+===================================== */
+
+function updateCounters(){
+  const unread=notifications.filter(n=>!n.read).length;
+
+  document.getElementById("unreadBadge").textContent=unread+" BARU";
+
+  document.getElementById("readAllBtn").style.display=
+    unread?"block":"none";
+}
+
+/* =====================================
+   DETAILS
+===================================== */
+
+function renderMediaDetails(n,type){
+  const label=type==="donghua"?"Donghua":"Anime";
+  const tagClass=type==="donghua"?"donghua":"";
+
+  return `<div class="notif-details">
+    <span class="detail-tag ${tagClass}">${escapeHTML(n.animeTitle||label)}</span>
+    ${n.season?`<span class="detail-tag">Season ${escapeHTML(n.season)}</span>`:""}
+    ${n.episode?`<span class="detail-tag episode">Episode ${escapeHTML(n.episode)}</span>`:""}
+  </div>`;
+}
+
+function renderDetails(n){
+  if(n.type==="anime"||n.type==="donghua"){
+    return renderMediaDetails(n,n.type);
+  }
+
+  if(n.type==="premium"){
+    const days=Number(n.planDays)||0;
+
+    const statusText={
+      active:"● Aktif",
+      expired:"Berakhir",
+      renewed:"Diperpanjang"
+    };
+
+    return `<div class="notif-details">
+      <span class="detail-tag premium">Premium ${days} Hari</span>
+      <span class="detail-tag active">${escapeHTML(statusText[n.status]||"Premium")}</span>
+      ${n.expiresAt?`<span class="detail-tag">Sampai ${formatDate(n.expiresAt)}</span>`:""}
+    </div>`;
+  }
+
+  if(n.type==="security"&&n.deviceName){
+    return `<div class="notif-details">
+      <span class="detail-tag">${escapeHTML(n.deviceName)}</span>
+    </div>`;
+  }
+
+  if(n.type==="custom"){
+    const tags=[];
+
+    if(n.label){
+      tags.push(`<span class="detail-tag custom">${escapeHTML(n.label)}</span>`);
+    }
+
+    if(n.actionLabel){
+      tags.push(`<span class="detail-tag">${escapeHTML(n.actionLabel)}</span>`);
+    }
+
+    return tags.length?`<div class="notif-details">${tags.join("")}</div>`:"";
+  }
+
+  return "";
+}
+
+/* =====================================
+   FRIEND AVATAR
+===================================== */
+
+function renderFriendAvatar(n){
+  const avatar=n.avatar||n.sender?.avatar||"";
+  const username=getUsername(n);
+
+  const initial=escapeHTML(
+    username.replace("@","").charAt(0).toUpperCase()||"U"
+  );
+
+  if(avatar){
+    return `<div class="notif-icon friend-avatar">
+      <img src="${escapeHTML(avatar)}"
+        alt="Foto profil ${escapeHTML(username)}"
+        loading="lazy"
+        onerror="this.remove();this.parentElement.textContent='${initial}'">
+    </div>`;
+  }
+
+  return `<div class="notif-icon friend-avatar">${initial}</div>`;
+}
+
+function renderIncomingStatus(n){
+  if(n.status==="accepted"){
+    return `<span class="friend-status accepted">Permintaan diterima</span>`;
+  }
+
+  if(n.status==="rejected"){
+    return `<span class="friend-status rejected">Permintaan ditolak</span>`;
+  }
+
+  return "";
+}
+
+/* =====================================
+   RENDER
+===================================== */
+
+function render(){
+  updateCounters();
+
+  list.innerHTML="";
+  empty.style.display=notifications.length?"none":"flex";
+
+  notifications.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+  notifications.forEach(n=>{
+    const item=document.createElement("article");
+
+    item.className="notification"+
+      (!n.read?" unread":"")+
+      (selectedIds.has(n.id)?" selected":"");
+
+    item.dataset.id=n.id;
+
+    const isFriend=isFriendType(n.type);
+    const isIncoming=n.type==="friend";
+    const iconType=icons[n.type]?n.type:"system";
+
+    let friendAction="";
+
+    if(isIncoming&&n.status==="pending"){
+      friendAction=`<div class="friend-actions">
+        <button class="action-btn accept-btn" data-action="accept">Terima</button>
+        <button class="action-btn reject-btn" data-action="reject">Tolak</button>
+      </div>`;
+    }else if(isIncoming){
+      friendAction=renderIncomingStatus(n);
+    }else if(n.type==="friend_accepted"){
+      friendAction=`<span class="friend-status accepted">Permintaan diterima</span>`;
+    }else if(n.type==="friend_rejected"){
+      friendAction=`<span class="friend-status rejected">Permintaan ditolak</span>`;
+    }
+
+    const avatar=isFriend
+      ?renderFriendAvatar(n)
+      :`<div class="notif-icon ${iconType}">${icons[iconType]}</div>`;
+
+    item.innerHTML=`
+      <div class="select-check">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="m5 12 5 5L20 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      ${avatar}
+
+      <div class="notif-content">
+        <div class="notif-top">
+          <strong class="notif-title"></strong>
+          <span class="notif-time"></span>
+        </div>
+
+        ${!isFriend?'<p class="notif-message"></p>':""}
+
+        ${renderDetails(n)}
+
+        ${!n.read?'<div class="notif-bottom"><span class="unread-dot"></span></div>':""}
+
+        ${friendAction}
+
+        ${n.actionUrl&&n.actionLabel?`
+          <div class="friend-actions">
+            <button class="action-btn accept-btn" data-action="open-custom">
+              ${escapeHTML(n.actionLabel)}
+            </button>
+          </div>
+        `:""}
+      </div>
+    `;
+
+    item.querySelector(".notif-title").textContent=
+      isFriend?getFriendTitle(n):(n.title||"Notifikasi");
+
+    item.querySelector(".notif-time").textContent=
+      formatTime(n.createdAt);
+
+    if(!isFriend){
+      item.querySelector(".notif-message").textContent=n.message||"";
+    }
+
+    list.appendChild(item);
+  });
+
+  list.classList.toggle("selection-mode",selectionMode);
+  toolbar.classList.toggle("show",selectionMode);
+
+  updateSelectionUI();
+}
+
+/* =====================================
+   SELECTION
+===================================== */
+
+function enterSelection(id){
+  selectionMode=true;
+  selectedIds.add(id);
+  render();
+}
+
+function exitSelection(){
+  selectionMode=false;
+  selectedIds.clear();
+  render();
+}
+
+function toggleSelection(id){
+  if(selectedIds.has(id)){
+    selectedIds.delete(id);
+  }else{
+    selectedIds.add(id);
+  }
+
+  if(selectedIds.size===0){
+    selectionMode=false;
+  }
+
+  render();
+}
+
+function updateSelectionUI(){
+  document.getElementById("selectedCount").textContent=
+    selectedIds.size+" dipilih";
+
+  const allSelected=notifications.length>0&&
+    notifications.every(n=>selectedIds.has(n.id));
+
+  document.getElementById("selectAllText").textContent=
+    allSelected?"Batalkan Pilihan":"Pilih Semua";
+
+  document.getElementById("deleteBtn").disabled=
+    selectedIds.size===0;
+}
+
+function cancelLongPress(){
+  clearTimeout(longPressTimer);
+  longPressTimer=null;
+}
+
+list.addEventListener("pointerdown",e=>{
+  if(e.target.closest("button"))return;
+
+  const item=e.target.closest(".notification");
+  if(!item||selectionMode)return;
+
+  longPressTriggered=false;
+
+  const id=item.dataset.id;
+
+  longPressTimer=setTimeout(()=>{
+    longPressTriggered=true;
+    enterSelection(id);
+  },500);
+});
+
+list.addEventListener("pointerup",cancelLongPress);
+list.addEventListener("pointerleave",cancelLongPress);
+list.addEventListener("pointercancel",cancelLongPress);
+
+list.addEventListener("contextmenu",e=>{
+  if(e.target.closest(".notification")){
+    e.preventDefault();
+  }
+});
+
+list.addEventListener("click",e=>{
+  const item=e.target.closest(".notification");
+  if(!item)return;
+
+  const id=item.dataset.id;
+  const notification=notifications.find(n=>n.id===id);
+
+  if(!notification)return;
+
+  const action=e.target.closest("[data-action]");
+
+  if(action){
+    e.stopPropagation();
+
+    if(action.dataset.action==="open-custom"){
+      openCustomAction(notification);
+      return;
+    }
+
+    handleFriendAction(id,action.dataset.action);
+    return;
+  }
+
+  if(longPressTriggered){
+    longPressTriggered=false;
+    return;
+  }
+
+  if(selectionMode){
+    toggleSelection(id);
+    return;
+  }
+
+  notification.read=true;
+
+  saveNotifications();
+  render();
+});
+
+function openCustomAction(notification){
+  if(!notification.actionUrl)return;
+
+  try{
+    const url=new URL(notification.actionUrl,location.origin);
+
+    if(!["http:","https:"].includes(url.protocol)){
+      showToast("Tautan tidak valid");
+      return;
+    }
+
+    window.open(url.href,"_blank","noopener,noreferrer");
+  }catch(e){
+    showToast("Tautan tidak valid");
+  }
+}
+
+/* =====================================
+   SELECT ALL
+===================================== */
+
+document.getElementById("selectAllBtn").addEventListener("click",()=>{
+  const allSelected=notifications.length>0&&
+    notifications.every(n=>selectedIds.has(n.id));
+
+  if(allSelected){
+    selectedIds.clear();
+  }else{
+    notifications.forEach(n=>selectedIds.add(n.id));
+  }
+
+  if(selectedIds.size===0){
+    selectionMode=false;
+  }
+
+  render();
+});
+
+/* =====================================
+   DELETE
+===================================== */
+
+document.getElementById("deleteBtn").addEventListener("click",()=>{
+  if(!selectedIds.size)return;
+
+  document.getElementById("deleteDescription").textContent=
+    "Kamu akan menghapus "+selectedIds.size+
+    " notifikasi yang dipilih. Tindakan ini tidak dapat dibatalkan.";
+
+  modal.classList.add("show");
+});
+
+function closeModal(){
+  modal.classList.remove("show");
+}
+
+document.getElementById("modalCancel").addEventListener("click",closeModal);
+
+document.getElementById("modalConfirm").addEventListener("click",()=>{
+  if(!selectedIds.size){
+    closeModal();
+    return;
+  }
+
+  const count=selectedIds.size;
+
+  notifications=notifications.filter(n=>!selectedIds.has(n.id));
+
+  selectedIds.clear();
+  selectionMode=false;
+
+  saveNotifications();
+  closeModal();
+  render();
+
+  showToast(count+" notifikasi berhasil dihapus");
+});
+
+modal.addEventListener("click",e=>{
+  if(e.target===modal)closeModal();
+});
+
+document.getElementById("cancelBtn").addEventListener("click",exitSelection);
+
+/* =====================================
+   MARK ALL READ
+===================================== */
+
+document.getElementById("readAllBtn").addEventListener("click",()=>{
+  notifications.forEach(n=>n.read=true);
+
+  saveNotifications();
+  render();
+
+  showToast("Semua notifikasi sudah dibaca");
+});
+
+/* =====================================
+   FRIEND REQUEST
+===================================== */
+
+async function handleFriendAction(id,action){
+  const n=notifications.find(item=>item.id===id);
+
+  if(!n||n.type!=="friend"||n.status!=="pending")return;
+
+  if(!["accept","reject"].includes(action))return;
+
+  const endpoint=action==="accept"
+    ?"/api/friends/requests/accept"
+    :"/api/friends/requests/reject";
+
+  try{
+    const response=await fetch(endpoint,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      credentials:"include",
+      body:JSON.stringify({requestId:n.requestId})
+    });
+
+    if(!response.ok){
+      throw new Error("Permintaan gagal diproses");
+    }
+
+    const result=await response.json();
+
+    if(result.success!==true){
+      throw new Error(result.message||"Permintaan gagal diproses");
+    }
+
+    n.status=action==="accept"?"accepted":"rejected";
+    n.read=true;
+
+    saveNotifications();
+    render();
+
+    showToast(action==="accept"
+      ?"Permintaan pertemanan diterima"
+      :"Permintaan pertemanan ditolak");
+
+  }catch(error){
+    console.error(error);
+    showToast("Permintaan gagal diproses");
+  }
+}
+
+/* =====================================
+   OUTGOING FRIEND RESULT
+===================================== */
+
+function addOutgoingFriendResult(data,type){
+  if(!data||!data.username){
+    throw new Error("Username pengguna wajib diisi.");
+  }
+
+  if(!["friend_accepted","friend_rejected"].includes(type)){
+    throw new Error("Jenis notifikasi tidak valid.");
+  }
+
+  const n={
+    id:createId(),
+    type,
+    username:String(data.username).replace(/^@+/,""),
+    avatar:data.avatar||null,
+    requestId:data.requestId||null,
+    createdAt:Date.now(),
+    read:false
+  };
+
+  notifications.unshift(n);
+  saveNotifications();
+  render();
+
+  return n.id;
+}
+
+/* =====================================
+   CUSTOM NOTIFICATION
+===================================== */
+
+function addCustomNotification(data){
+  if(!data||!data.title||!data.message){
+    throw new Error("Judul dan pesan custom wajib diisi.");
+  }
+
+  const n={
+    id:data.id||createId(),
+    type:"custom",
+    title:String(data.title),
+    message:String(data.message),
+    label:data.label?String(data.label):"Custom",
+    actionLabel:data.actionLabel?String(data.actionLabel):null,
+    actionUrl:data.actionUrl?String(data.actionUrl):null,
+    createdAt:data.createdAt?new Date(data.createdAt).getTime():Date.now(),
+    read:false
+  };
+
+  notifications.unshift(n);
+  saveNotifications();
+  render();
+
+  return n.id;
+}
+
+/* =====================================
+   ADMIN SEND CUSTOM NOTIFICATION
+===================================== */
+
+async function sendCustomNotification(data){
+  if(!data||!data.title||!data.message){
+    throw new Error("Judul dan pesan wajib diisi.");
+  }
+
+  const target=data.target||"public";
+
+  if(!["public","user"].includes(target)){
+    throw new Error("Target pengiriman tidak valid.");
+  }
+
+  let userIds=[];
+
+  if(target==="user"){
+    userIds=Array.isArray(data.userIds)
+      ?data.userIds.map(id=>String(id).trim()).filter(Boolean)
+      :[];
+
+    if(!userIds.length){
+      throw new Error("Masukkan minimal satu User ID.");
+    }
+  }
+
+  const payload={
+    title:String(data.title),
+    message:String(data.message),
+    target,
+    userIds,
+    label:data.label||"Custom",
+    actionLabel:data.actionLabel||null,
+    actionUrl:data.actionUrl||null
+  };
+
+  const response=await fetch("/api/admin/notifications/send",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    credentials:"include",
+    body:JSON.stringify(payload)
+  });
+
+  let result={};
+
+  try{
+    result=await response.json();
+  }catch(e){}
+
+  if(!response.ok||result.success!==true){
+    throw new Error(result.message||"Gagal mengirim notifikasi custom.");
+  }
+
+  return result;
+}
+
+/* =====================================
+   TOAST
+===================================== */
+
+function showToast(message){
+  const toast=document.getElementById("toast");
+
+  toast.textContent=message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+    toast.classList.remove("show");
+  },2300);
+}
+
+/* =====================================
+   PUBLIC API
+===================================== */
+
+window.ANILIX_NOTIFICATIONS={
+
+  incoming(data){
+    return this.add({
+      ...data,
+      type:"friend"
+    });
+  },
+
+  accepted(data){
+    return addOutgoingFriendResult(data,"friend_accepted");
+  },
+
+  rejected(data){
+    return addOutgoingFriendResult(data,"friend_rejected");
+  },
+
+  securityLogin(data={}){
+    return this.add({
+      type:"security",
+      event:"new_device_login",
+      title:"Login dari Perangkat Baru",
+      message:data.message||"Ada login ke akun ANILIX kamu dari perangkat yang belum pernah digunakan.",
+      deviceName:data.deviceName||"Perangkat baru"
+    });
+  },
+
+  custom(data){
+    return addCustomNotification(data);
+  },
+
+  sendCustom(data){
+    return sendCustomNotification(data);
+  },
+
+  add(data){
+    if(!data||!data.type){
+      throw new Error("Jenis notifikasi wajib diisi.");
+    }
+
+    const allowed=[
+      "friend",
+      "system",
+      "anime",
+      "donghua",
+      "security",
+      "premium",
+      "custom"
+    ];
+
+    if(!allowed.includes(data.type)){
+      throw new Error("Jenis notifikasi tidak valid.");
+    }
+
+    const n={
+      id:createId(),
+      type:data.type,
+      createdAt:Date.now(),
+      read:false
+    };
+
+    if(data.type==="friend"){
+      n.username=String(data.username||"pengguna").replace(/^@+/,"");
+      n.avatar=data.avatar||null;
+      n.status="pending";
+      n.requestId=data.requestId||null;
+    }
+
+    if(data.type==="anime"||data.type==="donghua"){
+      if(!data.title||!data.message){
+        throw new Error("Judul dan pesan wajib diisi.");
+      }
+
+      n.title=String(data.title);
+      n.message=String(data.message);
+      n.animeTitle=String(data.animeTitle||"");
+      n.season=data.season??null;
+      n.episode=data.episode??null;
+    }
+
+    if(data.type==="premium"||data.type==="system"){
+      if(!data.title||!data.message){
+        throw new Error("Judul dan pesan wajib diisi.");
+      }
+
+      n.title=String(data.title);
+      n.message=String(data.message);
+    }
+
+    if(data.type==="security"){
+      if(data.event!=="new_device_login"){
+        throw new Error("Jenis notifikasi keamanan tidak valid.");
+      }
+
+      n.event="new_device_login";
+      n.title=String(data.title||"Login dari Perangkat Baru");
+      n.message=String(data.message||"Ada login ke akun ANILIX kamu dari perangkat baru.");
+      n.deviceName=data.deviceName||"Perangkat baru";
+    }
+
+    if(data.type==="custom"){
+      n.title=String(data.title||"");
+      n.message=String(data.message||"");
+      n.label=data.label||"Custom";
+      n.actionLabel=data.actionLabel||null;
+      n.actionUrl=data.actionUrl||null;
+
+      if(!n.title||!n.message){
+        throw new Error("Judul dan pesan custom wajib diisi.");
+      }
+    }
+
+    if(data.type==="premium"){
+      n.planDays=Number(data.planDays)||0;
+      n.expiresAt=data.expiresAt||null;
+      n.status=data.status||"active";
+    }
+
+    notifications.unshift(n);
+    saveNotifications();
+    render();
+
+    return n.id;
+  },
+
+  markRead(id){
+    const n=notifications.find(item=>item.id===id);
+
+    if(!n)return false;
+
+    n.read=true;
+    saveNotifications();
+    render();
+
+    return true;
+  },
+
+  markAllRead(){
+    notifications.forEach(n=>n.read=true);
+
+    saveNotifications();
+    render();
+
+    return true;
+  },
+
+  getAll(){
+    return notifications.map(n=>({...n}));
+  },
+
+  clear(){
+    notifications=[];
+    selectedIds.clear();
+    selectionMode=false;
+
+    localStorage.removeItem(STORAGE_KEY);
+
+    render();
+  },
+
+  refresh(){
+    // Tidak memuat data contoh atau data lokal lama.
+    render();
+  }
+};
+
+/* =====================================
+   INITIAL RENDER
+===================================== */
+
+render();
+</script>
 
 <script src="../js/page-transition.js" defer></script>
 <script src="../js/skeleton-loading.js" defer></script>
 <script src="../js/poster-loading.js" defer></script>
+
 </body>
 </html>
