@@ -94,20 +94,29 @@ const regenerate = req => new Promise((resolve, reject) => req.session.regenerat
 
 let seedPromise;
 async function seedConfiguredTesters() {
+  // Never create developer accounts implicitly. Enable only when explicitly configured.
+  if (process.env.TESTER_SEED_ENABLED !== 'true') return;
+
   for (let i = 1; i <= 10; i++) {
     const password = process.env['TESTER_' + i + '_PASSWORD'];
     const hash = process.env['TESTER_' + i + '_PASSWORD_HASH'];
+    if (!password && !hash) continue;
+
     const id = Number(process.env['TESTER_' + i + '_ID'] || i);
     const username = String(process.env['TESTER_' + i + '_USERNAME'] || 'TESTER' + i).trim();
     const level = Math.max(0, Number(process.env['TESTER_' + i + '_LEVELS'] || 1));
     const expSetting = String(process.env['TESTER_' + i + '_EXP'] || 'AUTO').toUpperCase();
     const total = expSetting === 'AUTO' ? level * EXP_PER_LEVEL : Math.max(0, Number(expSetting) || 0);
-    const passwordHash = hash || (password ? bcrypt.hashSync(password, 12) : null);
+    if (!Number.isSafeInteger(id) || id < 1 || !username) {
+      throw new Error('Konfigurasi akun tester ' + i + ' tidak valid.');
+    }
+    const passwordHash = hash || bcrypt.hashSync(password, 12);
+
+    // Insert-only: never promote, rename, reset, or overwrite an existing account.
     await pool.query(
       `INSERT INTO public.users(id,username,display_name,password_hash,role,total_exp,level)
        OVERRIDING SYSTEM VALUE VALUES($1,$2,$2,$3,'developer',$4,$5)
-       ON CONFLICT(id) DO UPDATE SET username=EXCLUDED.username,display_name=EXCLUDED.display_name,
-       password_hash=COALESCE(EXCLUDED.password_hash,public.users.password_hash),role='developer',updated_at=NOW()`,
+       ON CONFLICT DO NOTHING`,
       [id, username, passwordHash, total, calcLevel(total)]
     );
   }
