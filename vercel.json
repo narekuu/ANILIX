@@ -3,6 +3,7 @@
   "functions": {
     "index.js": {
       "maxDuration": 30,
+      "regions": ["hnd1"],
       "includeFiles": "json/**"
     }
   }
