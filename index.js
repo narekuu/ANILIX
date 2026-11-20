@@ -1,4 +1,5 @@
 'use strict';
 
-// Vercel recognizes this root Express entrypoint and runs it as one serverless function.
+// Explicit Express import lets Vercel identify this root entrypoint.
+require('express');
 module.exports = require('./api/_app');
