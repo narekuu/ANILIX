@@ -18,7 +18,7 @@ The project database must contain:
 - `public.watch_history`
 - `private.user_sessions`
 
-The four `public` tables have RLS enabled and intentionally have no public policies. The Vercel API connects server-side using the PostgreSQL connection string. The session table is in the unexposed `private` schema, with access revoked from `PUBLIC`, `anon`, and `authenticated`.
+The four `public` tables have RLS enabled and intentionally have no public policies. The Vercel API connects server-side using the PostgreSQL connection string. The session table is in the unexposed `private` schema, with RLS enabled and access revoked from `PUBLIC`, `anon`, and `authenticated`. No client-side RLS policies are needed because the trusted server connects directly to PostgreSQL.
 
 Never put a Supabase database password, service-role key, or SANKA provider key in frontend JavaScript or Git.
 
@@ -29,7 +29,7 @@ See `.env.example` for the variable names and formats. Set actual values in **Ve
 - `SESSION_SECRET`: random secret of at least 32 characters.
 - `GOOGLE_CLIENT_ID`: the same OAuth Web Client ID used by Google Identity Services in the frontend.
 - `SANKA_API_BASE_URL` and optional `SANKA_API_KEY`.
-- Optional `TESTER_1_*` through `TESTER_10_*` values for developer test accounts.
+- `TESTER_SEED_ENABLED=false` by default; only enable developer test-account seeding intentionally.
 
 Do not paste credentials into chat, commit them, or put them in any `NEXT_PUBLIC_*` variable. After adding or changing environment variables, redeploy the Vercel project.
 
@@ -61,7 +61,7 @@ The legacy `server.js` continues to use SQLite for local development:
 2. Run `npm install`.
 3. Run `npm start` and open `http://localhost:3000`.
 
-The cloud API branch requires `DATABASE_URL` and `SESSION_SECRET` at runtime.
+The cloud API branch requires `DATABASE_URL` and `SESSION_SECRET` at runtime. Its Vercel Function is configured for `hnd1` (Tokyo), near the Supabase Tokyo region.
 
 ## Deployment status
 **Not yet production-ready.** The PostgreSQL Express app, root Vercel entrypoint, static asset mirror, Vercel function configuration, and Supabase private session table are in place. A deployment smoke test, end-to-end authentication test, existing SQLite data migration (if needed), and frontend compatibility checks are still required before using this as the live ANILIX service.
