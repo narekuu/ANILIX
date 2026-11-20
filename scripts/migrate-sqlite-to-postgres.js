@@ -31,6 +31,12 @@ async function main() {
     }
 
     await client.query('BEGIN');
+    await client.query('LOCK TABLE public.users, public.exp_history, public.favorites, public.watch_history IN ACCESS EXCLUSIVE MODE');
+    const lockedTarget = await client.query(
+      'SELECT EXISTS(SELECT 1 FROM public.users) OR EXISTS(SELECT 1 FROM public.exp_history) OR EXISTS(SELECT 1 FROM public.favorites) OR EXISTS(SELECT 1 FROM public.watch_history) AS has_data'
+    );
+    if (lockedTarget.rows[0].has_data) throw new Error('Supabase ANILIX tables are not empty. Migration stopped to avoid overwriting cloud data.');
+
     for (const row of data.users) {
       await client.query(
         `INSERT INTO public.users(id,username,display_name,email,password_hash,google_sub,role,total_exp,level,nixgem,premium_expires_at,avatar,created_at,updated_at)
