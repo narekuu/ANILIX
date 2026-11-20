@@ -3,12 +3,12 @@
 This branch is the cloud-backend migration work in progress. The existing `main` branch is not modified.
 
 ## Architecture
-- **Vercel:** serves the existing static frontend and the catch-all Express API at `api/[...path].js`.
+- **Vercel:** detects the root Express app exported from `index.js`; frontend files are served from the Vercel `public/` directory through its CDN.
 - **Supabase PostgreSQL:** stores users, EXP history, favorites, watch history, and private server sessions.
 - **GitHub:** source control and deployment trigger.
 - **No VPS is required** for this deployment path.
 
-The existing `server.js` remains the local SQLite development server. Vercel uses `api/[...path].js`, which talks to PostgreSQL. Do not use `npm start` as a production deployment command on Vercel.
+The existing `server.js` remains the local SQLite development server. Vercel uses the root `index.js` entrypoint, which exports the PostgreSQL-backed Express app from `api/_app.js`. The Vercel copy of the frontend is mirrored under `public/`: `public/index.html`, `public/css/`, `public/js/`, and `public/json/`. The files under `public/` are served at the site root, so the copied home page uses `/profile.html`, `/anime.html`, and similar root-level paths. Do not use `npm start` as a production deployment command on Vercel.
 
 ## Supabase schema
 The project database must contain:
@@ -64,4 +64,4 @@ The legacy `server.js` continues to use SQLite for local development:
 The cloud API branch requires `DATABASE_URL` and `SESSION_SECRET` at runtime.
 
 ## Deployment status
-**Not yet production-ready.** The PostgreSQL API handler and Vercel function configuration are in place, and the Supabase private session table has been created. A deployment smoke test, end-to-end authentication test, existing SQLite data migration (if needed), and frontend compatibility checks are still required before using this as the live ANILIX service.
+**Not yet production-ready.** The PostgreSQL Express app, root Vercel entrypoint, static asset mirror, Vercel function configuration, and Supabase private session table are in place. A deployment smoke test, end-to-end authentication test, existing SQLite data migration (if needed), and frontend compatibility checks are still required before using this as the live ANILIX service.
