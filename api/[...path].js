@@ -107,8 +107,7 @@ async function seedConfiguredTesters() {
       `INSERT INTO public.users(id,username,display_name,password_hash,role,total_exp,level)
        OVERRIDING SYSTEM VALUE VALUES($1,$2,$2,$3,'developer',$4,$5)
        ON CONFLICT(id) DO UPDATE SET username=EXCLUDED.username,display_name=EXCLUDED.display_name,
-       password_hash=COALESCE(EXCLUDED.password_hash,public.users.password_hash),role='developer',total_exp=EXCLUDED.total_exp,
-       level=EXCLUDED.level,updated_at=NOW()`,
+       password_hash=COALESCE(EXCLUDED.password_hash,public.users.password_hash),role='developer',updated_at=NOW()`,
       [id, username, passwordHash, total, calcLevel(total)]
     );
   }
