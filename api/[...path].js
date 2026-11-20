@@ -38,7 +38,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
   name: process.env.SESSION_COOKIE_NAME || 'anilix_session',
-  store: new PgSession({ pool, schemaName: 'public', tableName: 'user_sessions', createTableIfMissing: true, pruneSessionInterval: 900 }),
+  store: new PgSession({ pool, schemaName: 'public', tableName: 'user_sessions', createTableIfMissing: false, schemaName: 'private', pruneSessionInterval: 900 }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
@@ -97,22 +97,22 @@ async function seedConfiguredTesters() {
   for (let i = 1; i <= 10; i++) {
     const password = process.env['TESTER_' + i + '_PASSWORD'];
     const hash = process.env['TESTER_' + i + '_PASSWORD_HASH'];
-    if (!password && !hash) continue;
     const id = Number(process.env['TESTER_' + i + '_ID'] || i);
     const username = String(process.env['TESTER_' + i + '_USERNAME'] || 'TESTER' + i).trim();
     const level = Math.max(0, Number(process.env['TESTER_' + i + '_LEVELS'] || 1));
     const expSetting = String(process.env['TESTER_' + i + '_EXP'] || 'AUTO').toUpperCase();
     const total = expSetting === 'AUTO' ? level * EXP_PER_LEVEL : Math.max(0, Number(expSetting) || 0);
-    const passwordHash = hash || bcrypt.hashSync(password, 12);
+    const passwordHash = hash || (password ? bcrypt.hashSync(password, 12) : null);
     await pool.query(
       \`INSERT INTO public.users(id,username,display_name,password_hash,role,total_exp,level)
        OVERRIDING SYSTEM VALUE VALUES($1,$2,$2,$3,'developer',$4,$5)
        ON CONFLICT(id) DO UPDATE SET username=EXCLUDED.username,display_name=EXCLUDED.display_name,
-       password_hash=EXCLUDED.password_hash,role='developer',total_exp=EXCLUDED.total_exp,
+       password_hash=COALESCE(EXCLUDED.password_hash,public.users.password_hash),role='developer',total_exp=EXCLUDED.total_exp,
        level=EXCLUDED.level,updated_at=NOW()\`,
       [id, username, passwordHash, total, calcLevel(total)]
     );
   }
+  await pool.query(\`SELECT setval(pg_get_serial_sequence('public.users','id'), GREATEST(COALESCE((SELECT MAX(id) FROM public.users),1),1), true)\`);
 }
 app.use(async (_req, _res, next) => {
   try {
