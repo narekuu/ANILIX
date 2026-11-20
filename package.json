@@ -4,8 +4,13 @@
   "private": true,
   "description": "ANILIX application server",
   "main": "server.js",
-  "scripts": {"start": "node server.js", "dev": "node --watch server.js"},
-  "engines": {"node": ">=20"},
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "connect-sqlite3": "^0.9.15",
@@ -15,6 +20,8 @@
     "express-session": "^1.18.1",
     "google-auth-library": "^9.15.1",
     "helmet": "^8.0.0",
-    "better-sqlite3": "^11.8.1"
+    "better-sqlite3": "^11.8.1",
+    "connect-pg-simple": "^10.0.0",
+    "pg": "^8.16.3"
   }
 }
