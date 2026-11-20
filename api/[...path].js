@@ -104,15 +104,15 @@ async function seedConfiguredTesters() {
     const total = expSetting === 'AUTO' ? level * EXP_PER_LEVEL : Math.max(0, Number(expSetting) || 0);
     const passwordHash = hash || (password ? bcrypt.hashSync(password, 12) : null);
     await pool.query(
-      \`INSERT INTO public.users(id,username,display_name,password_hash,role,total_exp,level)
+      `INSERT INTO public.users(id,username,display_name,password_hash,role,total_exp,level)
        OVERRIDING SYSTEM VALUE VALUES($1,$2,$2,$3,'developer',$4,$5)
        ON CONFLICT(id) DO UPDATE SET username=EXCLUDED.username,display_name=EXCLUDED.display_name,
        password_hash=COALESCE(EXCLUDED.password_hash,public.users.password_hash),role='developer',total_exp=EXCLUDED.total_exp,
-       level=EXCLUDED.level,updated_at=NOW()\`,
+       level=EXCLUDED.level,updated_at=NOW()`,
       [id, username, passwordHash, total, calcLevel(total)]
     );
   }
-  await pool.query(\`SELECT setval(pg_get_serial_sequence('public.users','id'), GREATEST(COALESCE((SELECT MAX(id) FROM public.users),1),1), true)\`);
+  await pool.query(`SELECT setval(pg_get_serial_sequence('public.users','id'), GREATEST(COALESCE((SELECT MAX(id) FROM public.users),1),1), true)`);
 }
 app.use(async (_req, _res, next) => {
   try {
@@ -235,8 +235,8 @@ app.get('/api/user/favorites',auth,async(req,res,next)=>{
 });
 app.post('/api/user/favorites',auth,async(req,res,next)=>{
  try{const x=req.body||{};if(!x.id||!x.title||!x.type)return res.status(400).json({success:false,message:'ID, title, dan type wajib.'});
- await pool.query(\`INSERT INTO public.favorites(user_id,content_id,content_type,title,poster,payload) VALUES($1,$2,$3,$4,$5,$6)
- ON CONFLICT(user_id,content_id,content_type) DO UPDATE SET title=EXCLUDED.title,poster=EXCLUDED.poster,payload=EXCLUDED.payload\`,
+ await pool.query(`INSERT INTO public.favorites(user_id,content_id,content_type,title,poster,payload) VALUES($1,$2,$3,$4,$5,$6)
+ ON CONFLICT(user_id,content_id,content_type) DO UPDATE SET title=EXCLUDED.title,poster=EXCLUDED.poster,payload=EXCLUDED.payload`,
  [req.user.id,String(x.id),String(x.type),String(x.title),x.poster||x.image||null,JSON.stringify(x)]);
  res.json({success:true});}catch(e){next(e);}
 });
@@ -248,8 +248,8 @@ app.get('/api/user/history',auth,async(req,res,next)=>{
 });
 app.post('/api/user/history',auth,async(req,res,next)=>{
  try{const x=req.body||{};if(!x.id||!x.title||!x.type)return res.status(400).json({success:false,message:'ID, title, dan type wajib.'});
- await pool.query(\`INSERT INTO public.watch_history(user_id,content_id,content_type,title,poster,episode,progress,watched_at) VALUES($1,$2,$3,$4,$5,$6,$7,NOW())
- ON CONFLICT(user_id,content_id,content_type) DO UPDATE SET title=EXCLUDED.title,poster=EXCLUDED.poster,episode=EXCLUDED.episode,progress=EXCLUDED.progress,watched_at=NOW()\`,
+ await pool.query(`INSERT INTO public.watch_history(user_id,content_id,content_type,title,poster,episode,progress,watched_at) VALUES($1,$2,$3,$4,$5,$6,$7,NOW())
+ ON CONFLICT(user_id,content_id,content_type) DO UPDATE SET title=EXCLUDED.title,poster=EXCLUDED.poster,episode=EXCLUDED.episode,progress=EXCLUDED.progress,watched_at=NOW()`,
  [req.user.id,String(x.id),String(x.type),String(x.title),x.poster||null,x.episode||null,Math.max(0,Math.min(100,Number(x.progress)||0))]);
  res.json({success:true});}catch(e){next(e);}
 });
