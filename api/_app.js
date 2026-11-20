@@ -115,7 +115,7 @@ async function seedConfiguredTesters() {
 }
 app.use(async (_req, _res, next) => {
   try {
-    if (!seedPromise) seedPromise = seedConfiguredTesters();
+    if (!seedPromise) seedPromise = seedConfiguredTesters().catch(error => { seedPromise = null; throw error; });
     await seedPromise;
     next();
   } catch (e) { next(e); }
