@@ -11,10 +11,8 @@ const helmet = require('helmet');
 const { rateLimit } = require('express-rate-limit');
 const { OAuth2Client } = require('google-auth-library');
 
-for (const key of ['DATABASE_URL', 'SESSION_SECRET']) {
-  if (!process.env[key]) throw new Error(key + ' wajib dikonfigurasi di Vercel.');
-}
-if (process.env.SESSION_SECRET.length < 32) throw new Error('SESSION_SECRET minimal 32 karakter.');
+const missingEnvironment = ['DATABASE_URL', 'SESSION_SECRET'].filter(key => !process.env[key]);
+const invalidSessionSecret = !!process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -36,6 +34,16 @@ app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+  if (missingEnvironment.length || invalidSessionSecret) {
+    console.error('[ANILIX CONFIG] Backend environment is incomplete.');
+    return res.status(503).json({
+      success: false,
+      message: 'Backend ANILIX belum dikonfigurasi dengan lengkap.'
+    });
+  }
+  next();
+});
 app.use(session({
   name: process.env.SESSION_COOKIE_NAME || 'anilix_session',
   store: new PgSession({ pool, schemaName: 'public', tableName: 'user_sessions', createTableIfMissing: false, schemaName: 'private', pruneSessionInterval: 900 }),
