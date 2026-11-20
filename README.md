@@ -37,3 +37,12 @@ Ini adalah build pengembangan. Sebelum dipasang publik, gunakan HTTPS, `SESSION_
 - Aset global berada di `/css/` dan `/js/`; semua halaman publik memuat page transition, skeleton controller, dan poster loading dari root.
 - `public/js/api.js` menyediakan `window.SankaAPI` melalui proxy same-origin `/api/catalog`. Isi `SANKA_API_BASE_URL` dan, bila diperlukan, `SANKA_API_KEY` di `.env`. Tanpa base URL, katalog menampilkan pesan belum dikonfigurasi dan tidak memakai data palsu.
 - Rute detail dan episode default menggunakan `/anime/:id` dan `/episode/:id` pada provider; sesuaikan path di `public/js/api.js` bila kontrak provider yang dipakai berbeda.
+
+
+## Deployment target (migration/postgres)
+
+Target architecture: Vercel for the static preview and serverless API, Supabase PostgreSQL for persistent application data and sessions. No VPS is required for this deployment path.
+
+Required Vercel environment variables are listed in `.env.example`. Enter real values only in Vercel Project Settings → Environment Variables; never commit secrets. Use the Supabase PostgreSQL connection string with SSL enabled. The Supabase service-role key and database password must never be placed in browser code.
+
+**Deployment status: not ready yet.** The existing `server.js` is still the local SQLite development server. The production serverless handler and PostgreSQL route migration must be completed and tested before deploying this branch. Do not deploy this branch as a working ANILIX backend yet.
