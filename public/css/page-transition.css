@@ -1,0 +1,50 @@
+/* =========================================
+   ANILIX PAGE TRANSITION
+========================================= */
+
+:root {
+  --transition-duration: 380ms;
+  --transition-easing: cubic-bezier(.22,.61,.36,1);
+}
+
+html {
+  background: #090711;
+}
+
+body {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+  transition:
+    opacity var(--transition-duration) var(--transition-easing),
+    filter var(--transition-duration) var(--transition-easing),
+    transform var(--transition-duration) var(--transition-easing);
+}
+
+/* Saat halaman akan ditinggalkan */
+html.is-leaving body {
+  opacity: 0;
+  filter: blur(7px);
+  transform: translateY(9px);
+  pointer-events: none;
+}
+
+/* Saat halaman baru dibuka */
+html.is-entering body {
+  opacity: 0;
+  filter: blur(7px);
+  transform: translateY(9px);
+}
+
+html.is-entering.is-ready body {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* Hormati pengaturan pengurangan animasi */
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none !important;
+  }
+}
