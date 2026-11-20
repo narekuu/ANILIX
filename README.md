@@ -1,48 +1,67 @@
-# ANILIX — backend-integrated development build
+# ANILIX — Vercel + Supabase migration branch
 
-## Menjalankan
-1. Salin `.env.example` menjadi `.env`.
-2. Isi password untuk 10 akun tester dan `SESSION_SECRET` (acak, panjang, minimal 32 karakter).
-3. Isi `GOOGLE_CLIENT_ID` dengan Client ID OAuth yang sama dengan konfigurasi Google Identity Services pada halaman login.
-4. Jalankan `npm install`, lalu `npm start`.
-5. Buka `http://localhost:3000`. Database SQLite dibuat otomatis di `database/anilix.db`.
+This branch is the cloud-backend migration work in progress. The existing `main` branch is not modified.
 
-## Tester dan EXP
-- ID 1–10 dipaksa memiliki role `developer` sesuai keputusan proyek.
-- `TESTER_n_LEVELS` adalah level target saat seed. Jika `TESTER_n_EXP=AUTO`, total EXP dihitung sebagai `level × LEVEL_EXP_REQUIRED`.
-- Dengan kebutuhan 2.150 EXP per level, level 400.000 = **860.000.000 total EXP**. Level dan EXP berikutnya dihitung dari total EXP agar konsisten.
-- Akun tester disinkronkan dari `.env` saat server mulai. Jangan bagikan `.env` atau memasukkan password ke Git.
+## Architecture
+- **Vercel:** serves the existing static frontend and the catch-all Express API at `api/[...path].js`.
+- **Supabase PostgreSQL:** stores users, EXP history, favorites, watch history, and private server sessions.
+- **GitHub:** source control and deployment trigger.
+- **No VPS is required** for this deployment path.
 
-## Endpoint utama
-- `POST /api/auth/login` — login tester
-- `POST /api/auth/google` — verifikasi Google ID token di server
-- `GET /api/auth/me` dan `GET /api/me` — profil sesi
-- `POST /api/auth/logout` — logout
-- `GET /api/progression/me` — level/EXP akun
-- `GET/POST/DELETE /api/user/favorites` — favorit tersimpan di SQLite
-- `GET/POST/DELETE /api/user/history` — riwayat tersimpan di SQLite
-- `GET /api/premium/packages` — paket Premium dari server
-- `POST /api/premium/checkout` — sengaja nonaktif (503) sampai payment gateway dan webhook benar-benar dikonfigurasi
+The existing `server.js` remains the local SQLite development server. Vercel uses `api/[...path].js`, which talks to PostgreSQL. Do not use `npm start` as a production deployment command on Vercel.
 
-## Batasan yang belum boleh dianggap aktif
-- Pembayaran Premium belum aktif; halaman tidak boleh memberi Premium/NixGem sebelum pembayaran terverifikasi.
-- EXP tontonan belum diberikan otomatis. Konfigurasi anti-abuse ada, tetapi integrasi player dan validasi server-side durasi/progress belum tersedia pada arsip ini.
-- Arsip ini belum menyertakan `public/js/api.js` yang direferensikan halaman katalog, maupun file data provider yang dibutuhkan katalog. Integrasi sumber anime/Donghua perlu dilengkapi dengan endpoint/provider yang memang digunakan proyek.
-- Halaman detail/watch dan pengaturan belum ada di arsip ini; tautan ke halaman tersebut masih perlu diselesaikan saat halaman terkait dibuat.
+## Supabase schema
+The project database must contain:
+- `public.users`
+- `public.exp_history`
+- `public.favorites`
+- `public.watch_history`
+- `private.user_sessions`
 
-Ini adalah build pengembangan. Sebelum dipasang publik, gunakan HTTPS, `SESSION_SECURE=true`, secret kuat, domain OAuth yang benar, backup SQLite, dan audit keamanan tambahan.
+The four `public` tables have RLS enabled and intentionally have no public policies. The Vercel API connects server-side using the PostgreSQL connection string. The session table is in the unexposed `private` schema, with access revoked from `PUBLIC`, `anon`, and `authenticated`.
 
-## Sinkronisasi halaman dan katalog
-- Home berada di `/index.html`; halaman internal berada di `/public/`. Tautan Home dari folder `public` harus menuju `/`.
-- Aset global berada di `/css/` dan `/js/`; semua halaman publik memuat page transition, skeleton controller, dan poster loading dari root.
-- `public/js/api.js` menyediakan `window.SankaAPI` melalui proxy same-origin `/api/catalog`. Isi `SANKA_API_BASE_URL` dan, bila diperlukan, `SANKA_API_KEY` di `.env`. Tanpa base URL, katalog menampilkan pesan belum dikonfigurasi dan tidak memakai data palsu.
-- Rute detail dan episode default menggunakan `/anime/:id` dan `/episode/:id` pada provider; sesuaikan path di `public/js/api.js` bila kontrak provider yang dipakai berbeda.
+Never put a Supabase database password, service-role key, or SANKA provider key in frontend JavaScript or Git.
 
+## Vercel environment variables
+See `.env.example` for the variable names and formats. Set actual values in **Vercel → Project → Settings → Environment Variables**:
+- `DATABASE_URL`: Supabase PostgreSQL connection string; use the Supabase pooler for serverless deployments.
+- `DATABASE_SSL=true`
+- `SESSION_SECRET`: random secret of at least 32 characters.
+- `GOOGLE_CLIENT_ID`: the same OAuth Web Client ID used by Google Identity Services in the frontend.
+- `SANKA_API_BASE_URL` and optional `SANKA_API_KEY`.
+- Optional `TESTER_1_*` through `TESTER_10_*` values for developer test accounts.
 
-## Deployment target (migration/postgres)
+Do not paste credentials into chat, commit them, or put them in any `NEXT_PUBLIC_*` variable. After adding or changing environment variables, redeploy the Vercel project.
 
-Target architecture: Vercel for the static preview and serverless API, Supabase PostgreSQL for persistent application data and sessions. No VPS is required for this deployment path.
+## API routes migrated to PostgreSQL
+- `GET /api/system/status`
+- `GET /api/config/roles`, `/api/config/levels`, `/api/config/exp`
+- `POST /api/auth/login`, `POST /api/auth/google`, legacy `POST /api/auth/google-user`
+- `GET /api/auth/me`, `GET /api/me`, `POST /api/auth/logout`
+- `GET /api/nixgem/balance`
+- `GET /api/premium/packages`, `POST /api/premium/checkout` (checkout remains intentionally disabled with 503)
+- `GET /api/progression/me`, `POST /api/admin/users/:id/progression`
+- `GET/POST/DELETE /api/user/favorites`
+- `GET/POST/DELETE /api/user/history`
+- `GET /api/catalog` (server-side SANKA proxy)
 
-Required Vercel environment variables are listed in `.env.example`. Enter real values only in Vercel Project Settings → Environment Variables; never commit secrets. Use the Supabase PostgreSQL connection string with SSL enabled. The Supabase service-role key and database password must never be placed in browser code.
+The tester seed runs once per warm serverless instance and does not reset EXP on existing tester accounts. Test accounts without a configured password cannot log in.
 
-**Deployment status: not ready yet.** The existing `server.js` is still the local SQLite development server. The production serverless handler and PostgreSQL route migration must be completed and tested before deploying this branch. Do not deploy this branch as a working ANILIX backend yet.
+## Important limitations before production
+- **Existing SQLite user data has not been copied into Supabase.** Do not assume accounts, favorites, or history from a local SQLite database are already present in the cloud.
+- **Automatic watch-time EXP is not implemented.** The JSON config describes anti-abuse requirements, but the backend still needs a server-validated playback heartbeat/reward design. Clients cannot submit arbitrary EXP.
+- **Premium checkout is not active.** No payment is accepted and no Premium/NixGem should be granted before verified payment webhooks exist.
+- **Google OAuth domains and redirect/origin settings must be updated for the final Vercel domain.**
+- **SANKA catalog requires valid server environment variables** and should be tested against the provider's actual API contract.
+- The existing static frontend has not yet received an end-to-end browser test on Vercel.
+
+## Local development
+The legacy `server.js` continues to use SQLite for local development:
+1. Copy `.env.example` to `.env` and set a strong local `SESSION_SECRET`.
+2. Run `npm install`.
+3. Run `npm start` and open `http://localhost:3000`.
+
+The cloud API branch requires `DATABASE_URL` and `SESSION_SECRET` at runtime.
+
+## Deployment status
+**Not yet production-ready.** The PostgreSQL API handler and Vercel function configuration are in place, and the Supabase private session table has been created. A deployment smoke test, end-to-end authentication test, existing SQLite data migration (if needed), and frontend compatibility checks are still required before using this as the live ANILIX service.
