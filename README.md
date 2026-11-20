@@ -45,7 +45,7 @@ Do not paste credentials into chat, commit them, or put them in any `NEXT_PUBLIC
 - `GET/POST/DELETE /api/user/history`
 - `GET /api/catalog` (server-side SANKA proxy)
 
-The tester seed runs once per warm serverless instance and does not reset EXP on existing tester accounts. Test accounts without a configured password cannot log in.
+Developer test-account seeding is disabled by default. To enable it intentionally, set `TESTER_SEED_ENABLED=true` and provide a password or password hash for each tester account. Seeding is insert-only: it never promotes or overwrites an existing account. Do not enable this for production users.
 
 ## Important limitations before production
 - **Existing SQLite user data is not copied automatically.** An optional migration script is available: before the first request reaches the deployed API (so the tester seed has not populated Supabase), set `DATABASE_URL` in a local `.env`, make sure the original `database/anilix.db` is present, then run `npm run migrate:sqlite`. It copies users (including password hashes), EXP history, favorites, and watch history in one database transaction. It refuses to run if the Supabase target tables already contain data. Back up the SQLite file first. Do not upload the database file to GitHub or paste credentials into chat.
