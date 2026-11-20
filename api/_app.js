@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 });
 app.use(session({
   name: process.env.SESSION_COOKIE_NAME || 'anilix_session',
-  store: new PgSession({ pool, schemaName: 'public', tableName: 'user_sessions', createTableIfMissing: false, schemaName: 'private', pruneSessionInterval: 900 }),
+  store: new PgSession({ pool, tableName: 'user_sessions', schemaName: 'private', createTableIfMissing: false, pruneSessionInterval: 900 }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
