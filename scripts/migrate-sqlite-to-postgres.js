@@ -65,7 +65,7 @@ async function main() {
       );
     }
     for (const table of tables) {
-      const sequenceSql = "SELECT setval(pg_get_serial_sequence('public." + table + "','id'), GREATEST(COALESCE((SELECT MAX(id) FROM public." + table + "),1),1), true)";
+      const sequenceSql = "SELECT setval(pg_get_serial_sequence('public." + table + "','id'), GREATEST(COALESCE((SELECT MAX(id) FROM public." + table + "),1),1), EXISTS(SELECT 1 FROM public." + table + "))";
       await client.query(sequenceSql);
     }
     await client.query('COMMIT');
