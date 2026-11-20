@@ -142,6 +142,11 @@ app.get('/api/system/status', async (_req, res) => {
   try { await pool.query('SELECT 1'); res.json({ success: true, app: 'ANILIX', status: 'online', database: 'postgresql' }); }
   catch { res.status(503).json({ success: false, app: 'ANILIX', status: 'degraded', database: 'unavailable' }); }
 });
+app.get('/api/jadwal.json', (_req, res) => res.status(503).json({
+  success: false,
+  code: 'SCHEDULE_PROVIDER_NOT_CONFIGURED',
+  message: 'Sumber data jadwal tayang belum dikonfigurasi.'
+}));
 app.get('/api/config/roles', (_req,res)=>res.json(rolesConfig));
 app.get('/api/config/levels', (_req,res)=>res.json(levelsConfig));
 app.get('/api/config/exp', (_req,res)=>res.json(expConfig));
