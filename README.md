@@ -48,7 +48,7 @@ Do not paste credentials into chat, commit them, or put them in any `NEXT_PUBLIC
 The tester seed runs once per warm serverless instance and does not reset EXP on existing tester accounts. Test accounts without a configured password cannot log in.
 
 ## Important limitations before production
-- **Existing SQLite user data has not been copied into Supabase.** Do not assume accounts, favorites, or history from a local SQLite database are already present in the cloud.
+- **Existing SQLite user data is not copied automatically.** An optional migration script is available: set `DATABASE_URL` in a local `.env`, make sure the original `database/anilix.db` is present, then run `npm run migrate:sqlite`. It copies users (including password hashes), EXP history, favorites, and watch history in one database transaction. Back up the SQLite file first. Do not upload the database file to GitHub or paste credentials into chat.
 - **Automatic watch-time EXP is not implemented.** The JSON config describes anti-abuse requirements, but the backend still needs a server-validated playback heartbeat/reward design. Clients cannot submit arbitrary EXP.
 - **Premium checkout is not active.** No payment is accepted and no Premium/NixGem should be granted before verified payment webhooks exist.
 - **Google OAuth domains and redirect/origin settings must be updated for the final Vercel domain.**
