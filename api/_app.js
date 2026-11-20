@@ -123,7 +123,7 @@ async function seedConfiguredTesters() {
     // Insert-only: never promote, rename, reset, or overwrite an existing account.
     await pool.query(
       `INSERT INTO public.users(id,username,display_name,password_hash,role,total_exp,level)
-       OVERRIDING SYSTEM VALUE VALUES($1,$2,$2,$3,'developer',$4,$5)
+       VALUES($1,$2,$2,$3,'developer',$4,$5)
        ON CONFLICT DO NOTHING`,
       [id, username, passwordHash, total, calcLevel(total)]
     );
