@@ -289,5 +289,10 @@ app.get('/api/catalog',async(req,res)=>{
   const body=await upstream.text();res.status(upstream.status).type(upstream.headers.get('content-type')||'application/json').send(body);
  }catch(e){console.error('[ANILIX SANKA]',e.message);res.status(502).json({success:false,message:'Tidak dapat menghubungi provider katalog.'});}
 });
+const publicDirectory = path.join(ROOT, 'public');
+app.use(express.static(publicDirectory, { extensions: ['html'] }));
+// Keep legacy /public/... links working while the deployed copy uses root-relative paths.
+app.use('/public', express.static(publicDirectory, { extensions: ['html'] }));
+
 app.use((err,_req,res,_next)=>{console.error('[ANILIX API]',err);res.status(500).json({success:false,message:'Terjadi kesalahan pada server.'});});
 module.exports=app;
