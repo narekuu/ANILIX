@@ -23,6 +23,13 @@ async function main() {
     const data = {};
     for (const table of tables) data[table] = sqlite.prepare('SELECT * FROM ' + table + ' ORDER BY id').all();
 
+    const target = await client.query(
+      'SELECT EXISTS(SELECT 1 FROM public.users) OR EXISTS(SELECT 1 FROM public.exp_history) OR EXISTS(SELECT 1 FROM public.favorites) OR EXISTS(SELECT 1 FROM public.watch_history) AS has_data'
+    );
+    if (target.rows[0].has_data) {
+      throw new Error('Supabase ANILIX tables are not empty. Migration stopped to avoid overwriting cloud data.');
+    }
+
     await client.query('BEGIN');
     for (const row of data.users) {
       await client.query(
