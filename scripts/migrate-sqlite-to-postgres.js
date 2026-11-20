@@ -34,7 +34,7 @@ async function main() {
     for (const row of data.users) {
       await client.query(
         `INSERT INTO public.users(id,username,display_name,email,password_hash,google_sub,role,total_exp,level,nixgem,premium_expires_at,avatar,created_at,updated_at)
-         OVERRIDING SYSTEM VALUE VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
          ON CONFLICT(id) DO UPDATE SET username=EXCLUDED.username,display_name=EXCLUDED.display_name,
          email=EXCLUDED.email,password_hash=EXCLUDED.password_hash,google_sub=EXCLUDED.google_sub,
          role=EXCLUDED.role,total_exp=EXCLUDED.total_exp,level=EXCLUDED.level,nixgem=EXCLUDED.nixgem,
@@ -45,7 +45,7 @@ async function main() {
     }
     for (const row of data.exp_history) {
       await client.query(
-        `INSERT INTO public.exp_history(id,user_id,amount,reason,created_at) OVERRIDING SYSTEM VALUE
+        `INSERT INTO public.exp_history(id,user_id,amount,reason,created_at)
          VALUES($1,$2,$3,$4,$5) ON CONFLICT(id) DO UPDATE SET user_id=EXCLUDED.user_id,
          amount=EXCLUDED.amount,reason=EXCLUDED.reason,created_at=EXCLUDED.created_at`,
         [row.id,row.user_id,row.amount,row.reason,row.created_at]
@@ -54,7 +54,7 @@ async function main() {
     for (const row of data.favorites) {
       await client.query(
         `INSERT INTO public.favorites(id,user_id,content_id,content_type,title,poster,payload,created_at)
-         OVERRIDING SYSTEM VALUE VALUES($1,$2,$3,$4,$5,$6,$7,$8)
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8)
          ON CONFLICT(id) DO UPDATE SET user_id=EXCLUDED.user_id,content_id=EXCLUDED.content_id,
          content_type=EXCLUDED.content_type,title=EXCLUDED.title,poster=EXCLUDED.poster,
          payload=EXCLUDED.payload,created_at=EXCLUDED.created_at`,
@@ -64,7 +64,7 @@ async function main() {
     for (const row of data.watch_history) {
       await client.query(
         `INSERT INTO public.watch_history(id,user_id,content_id,content_type,title,poster,episode,progress,watched_at)
-         OVERRIDING SYSTEM VALUE VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
+         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)
          ON CONFLICT(id) DO UPDATE SET user_id=EXCLUDED.user_id,content_id=EXCLUDED.content_id,
          content_type=EXCLUDED.content_type,title=EXCLUDED.title,poster=EXCLUDED.poster,
          episode=EXCLUDED.episode,progress=EXCLUDED.progress,watched_at=EXCLUDED.watched_at`,
