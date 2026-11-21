@@ -206,6 +206,29 @@ app.get(['/api/auth/me','/api/me'],async(req,res,next)=>{
   try {const row=await currentUser(req); if(!row)return res.status(401).json({success:false,message:'Belum login.'}); res.json({success:true,user:userView(row)});}
   catch(e){next(e);}
 });
+app.patch('/api/user/profile',auth,async(req,res,next)=>{
+ try {
+  const displayName=String(req.body?.display_name ?? '').trim();
+  if(!displayName || displayName.length>20){
+   return res.status(400).json({success:false,message:'Nama tampilan wajib diisi dan maksimal 20 karakter.'});
+  }
+  let avatar=req.user.avatar || null;
+  if(Object.prototype.hasOwnProperty.call(req.body || {},'avatar')){
+   const supplied=req.body.avatar;
+   if(supplied===null || supplied==='') avatar=null;
+   else if(typeof supplied!=='string' || supplied.length>600000 ||
+     !/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(supplied)){
+    return res.status(400).json({success:false,message:'Format foto profil tidak valid atau ukurannya terlalu besar.'});
+   } else avatar=supplied;
+  }
+  const updated=await pool.query(
+   'UPDATE public.users SET display_name=$1,avatar=$2,updated_at=NOW() WHERE id=$3 RETURNING *',
+   [displayName,avatar,req.user.id]
+  );
+  if(!updated.rows[0]) return res.status(404).json({success:false,message:'Akun tidak ditemukan.'});
+  res.json({success:true,user:userView(updated.rows[0])});
+ }catch(e){next(e);}
+});
 app.post('/api/auth/logout',auth,(req,res)=>{
   req.session.destroy(e=>{res.clearCookie(process.env.SESSION_COOKIE_NAME||'anilix_session',{httpOnly:true,secure:true,sameSite:'lax'}); if(e)return res.status(500).json({success:false,message:'Gagal logout.'}); res.json({success:true});});
 });
