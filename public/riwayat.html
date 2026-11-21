@@ -551,6 +551,7 @@ button{font:inherit;cursor:pointer}
 }
 </style>
 <link rel="stylesheet" href="../css/page-transition.css">
+<link rel="stylesheet" href="../css/skeleton-loading.css">
 <link rel="stylesheet" href="/components/navigation/navigation.css">
 </head>
 
@@ -590,7 +591,11 @@ button{font:inherit;cursor:pointer}
         </button>
     </div>
 
-    <div class="history-list" id="historyList"></div>
+    <div class="history-list" id="historyList" aria-busy="true">
+        <div class="anilix-skeleton-card anilix-skeleton-row" aria-hidden="true"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+        <div class="anilix-skeleton-card anilix-skeleton-row" aria-hidden="true"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+        <div class="anilix-skeleton-card anilix-skeleton-row" aria-hidden="true"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+    </div>
 
     <div class="empty" id="emptyState">
         <div class="empty-icon">
@@ -743,6 +748,7 @@ function updateSelectUI(){
 /* RENDER HISTORY */
 
 function renderHistory(){
+    historyList.setAttribute("aria-busy","false");
     historyList.innerHTML = "";
 
     historyTotal.textContent = historyData.length + " Anime";

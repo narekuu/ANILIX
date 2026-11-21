@@ -271,15 +271,26 @@ svg{
 @media(prefers-reduced-motion:reduce){
  *,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* Profile first paint skeleton: preserve the actual layout while account data arrives. */
+.profile-top[aria-busy="true"] .banner,
+.profile-top[aria-busy="true"] .avatar,
+.profile-top[aria-busy="true"] .progress-card,
+.profile-top[aria-busy="true"] .stat strong{color:transparent!important;background-color:#292137!important;position:relative;overflow:hidden}
+.profile-top[aria-busy="true"] .banner::after,
+.profile-top[aria-busy="true"] .avatar::after,
+.profile-top[aria-busy="true"] .progress-card::after,
+.profile-top[aria-busy="true"] .stat strong::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.07) 48%,transparent 70%);transform:translateX(-100%);animation:anilix-skeleton-shimmer 1.35s ease-in-out infinite;pointer-events:none}
 </style>
 <link rel="stylesheet" href="../css/page-transition.css">
+<link rel="stylesheet" href="../css/skeleton-loading.css">
 <link rel="stylesheet" href="/components/navigation/navigation.css">
 </head>
 
 <body>
 <main class="app">
 
-<section class="profile-top">
+<section class="profile-top" aria-busy="true">
  <div class="banner" id="profileBanner"></div>
 
  <a href="/pengaturan.html" data-no-transition class="settings-button" aria-label="Pengaturan">
@@ -954,6 +965,7 @@ function renderTab(){
 /* PROFILE VIEW */
 async function loadProfile(){
  const user=await getProfile();
+ document.querySelector(".profile-top")?.setAttribute("aria-busy","false");
 
  const name=user.name || user.displayName || user.username || "";
  const id=user.id ?? user.userId ?? "";
