@@ -233,14 +233,14 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
    return {
     id:Number(row.id),username:row.username,name:row.display_name,
     displayName:row.display_name,role:row.role,
-    verified:row.role!=='member',avatar:row.avatar,banner:row.banner||null,
+    verified:row.role!=='member',avatar:row.avatar,banner:row.banner||null,created_at:row.created_at||null,
     total_exp:total,level
    };
   });
   res.json({success:true,users});
  }catch(e){next(e);}
 });
-app.get('/api/users/:id',auth,async(req,res,next)=>{
+app.get('/api/users/:id',async(req,res,next)=>{
  try{
   const id=Number(req.params.id);
   if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID pengguna tidak valid.'});
@@ -250,9 +250,13 @@ app.get('/api/users/:id',auth,async(req,res,next)=>{
   );
   const row=result.rows[0];
   if(!row)return res.status(404).json({success:false,message:'Pengguna tidak ditemukan.'});
-  const user=userView(row);
-  delete user.email;
-  res.json({success:true,user});
+  const total=Number(row.total_exp||0);
+  const level=calcLevel(total);
+  res.json({success:true,user:{
+   id:Number(row.id),username:row.username,name:row.display_name,displayName:row.display_name,
+   role:row.role,verified:row.role!=='member',avatar:row.avatar,banner:row.banner||null,
+   created_at:row.created_at||null,total_exp:total,level
+  }});
  }catch(e){next(e);}
 });
 app.patch('/api/user/profile',auth,async(req,res,next)=>{
