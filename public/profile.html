@@ -1139,7 +1139,7 @@ async function initProfile(){
  const skeletonStartedAt = performance.now();
  await migrateLegacyMedia();
  await loadProfile();
- const skeletonRemaining = Math.max(0, 1100 - (performance.now() - skeletonStartedAt));
+ const skeletonRemaining = Math.max(0, 2500 - (performance.now() - skeletonStartedAt));
  if (skeletonRemaining) await new Promise(resolve => setTimeout(resolve, skeletonRemaining));
  document.querySelector(".profile-top")?.setAttribute("aria-busy","false");
  renderTab();
