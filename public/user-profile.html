@@ -776,6 +776,8 @@ const CURRENT_USER_ID = String(
 
 /* TARGET USER DATA */
 
+let remoteTargetUser=null;
+
 function getTargetUser(){
 
  const users=readStorage("anilix_users",[]);
@@ -797,6 +799,7 @@ function getTargetUser(){
  return {
   ...PROFILE_CONFIG,
   ...user,
+  ...(remoteTargetUser||{}),
   id:TARGET_ID
  };
 
@@ -1004,37 +1007,18 @@ function updateRole(role){
 /* TARGET MEDIA */
 
 async function loadTargetMedia(user){
-
  try{
-
-  const [avatar,banner]=await Promise.all([
-   getMedia("avatar_"+TARGET_ID),
-   getMedia("banner_"+TARGET_ID)
-  ]);
-
-  if(avatar){
-   setAvatarImage(avatar);
-  }else{
-   setAvatarImage(
-    user.photoURL||user.photo||user.avatar||null
-   );
+  const response=await fetch("/api/users/"+encodeURIComponent(TARGET_ID),{
+   credentials:"include",cache:"no-store",headers:{Accept:"application/json"}
+  });
+  if(response.ok){
+   const result=await response.json();
+   if(result.success&&result.user)remoteTargetUser=result.user;
   }
-
-  if(banner){
-   setBannerImage(banner);
-  }else{
-   setBannerImage(user.banner||null);
-  }
-
- }catch(error){
-
-  console.warn("Media profil tidak dapat dimuat:",error);
-
-  setAvatarImage(user.photoURL||user.photo||user.avatar||null);
-  setBannerImage(user.banner||null);
-
- }
-
+ }catch(error){console.warn("Profil pengguna server:",error);}
+ const target=getTargetUser();
+ setAvatarImage(target.avatar||target.photoURL||target.photo||null);
+ setBannerImage(target.banner||null);
 }
 
 /* ACTIVITY DATA */
