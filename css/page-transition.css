@@ -1,16 +1,8 @@
-/* ANILIX page handoff: visible entrance and exit, with no full-screen loading veil. */
-html{background:#090711}
-body{opacity:1;transform:translateY(0);transition:opacity 760ms cubic-bezier(.22,.61,.36,1),transform 760ms cubic-bezier(.22,.61,.36,1)}
-html.is-entering body{opacity:0;transform:translateY(9px)}
-html.is-entering.is-ready body{opacity:1;transform:translateY(0)}
-html.is-leaving body{opacity:.78;transform:translateY(-3px)}
-@view-transition{navigation:auto}
-::view-transition-old(root){animation:anilix-page-out 420ms ease both}
-::view-transition-new(root){animation:anilix-page-in 760ms cubic-bezier(.22,.61,.36,1) both}
-@keyframes anilix-page-out{to{opacity:.82;transform:translateY(-2px)}}
-@keyframes anilix-page-in{from{opacity:.82;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+/* BLIYO-inspired ANILIX page transition: old view exits, new view enters. */
+body.page-exit{animation:anilixSpaExit 140ms ease both;pointer-events:none}
+body.page-enter{animation:anilixSpaEnter 460ms cubic-bezier(.22,.8,.25,1) both}
+@keyframes anilixSpaExit{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-5px)}}
+@keyframes anilixSpaEnter{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){
- body{transition:none!important}
- html.is-entering body{opacity:1;transform:none}
- ::view-transition-old(root),::view-transition-new(root){animation:none!important}
+ body.page-exit,body.page-enter{animation:none!important}
 }
