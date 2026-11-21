@@ -12,6 +12,7 @@
  ]);
  const GLOBAL_STYLES=new Set(["/css/page-transition.css","/css/skeleton-loading.css","/components/navigation/navigation.css"]);
  let navigating=false;
+ let currentRenderedURL=location.pathname+location.search;
  document.head.querySelectorAll("style").forEach(node=>node.dataset.anilixPageStyle="true");
  document.head.querySelectorAll('link[rel="stylesheet"]').forEach(node=>{
   if(!GLOBAL_STYLES.has(new URL(node.href,location.href).pathname))node.dataset.anilixPageLink="true";
@@ -76,7 +77,7 @@
  async function renderURL(url,{push=true}={}){
   const destination=new URL(url,location.href),targetRoute=routeFor(destination);
   if(!targetRoute)return false;
-  if(destination.pathname===location.pathname&&destination.search===location.search)return true;
+  if(destination.pathname+destination.search===currentRenderedURL)return true;
   if(navigating)return true;
   navigating=true;
   try{
@@ -100,6 +101,7 @@
    document.body.className=parsed.body.className||"";
    document.body.innerHTML=parsed.body.innerHTML;
    document.body.classList.add("page-enter");
+   currentRenderedURL=destination.pathname+destination.search;
    if(push)history.pushState({anilixSPA:true},"",destination.pathname+destination.search+destination.hash);
    updateNavigation(destination.href);
    window.scrollTo(0,0);
