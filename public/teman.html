@@ -1186,7 +1186,7 @@ $("searchForm").addEventListener("submit",async event=>{
    const id=cleanId(user.id||user.userId);
    const name=String(user.name||user.displayName||user.username||"").toLowerCase();
    if(id&&id!==currentId&&(id.toLowerCase().includes(query)||name.includes(query))){
-    merged.set(id,{...(merged.get(id)||{}),...user,id});
+    merged.set(id,{...user,...(merged.get(id)||{}),id});
    }
   });
 
