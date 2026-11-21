@@ -1,104 +1,55 @@
-/* =========================================
-   ANILIX PAGE TRANSITION
-========================================= */
-
+/* ANILIX shared page transition controller */
 (() => {
   "use strict";
-
-  const TRANSITION_TIME = 380;
-
-  const currentURL = new URL(window.location.href);
-
-  // Animasi masuk halaman
-  document.documentElement.classList.add("is-entering");
-
-  window.addEventListener("DOMContentLoaded", () => {
-    requestAnimationFrame(() => {
-      document.documentElement.classList.add("is-ready");
-
-      setTimeout(() => {
-        document.documentElement.classList.remove(
-          "is-entering",
-          "is-ready"
-        );
-      }, TRANSITION_TIME + 50);
-    });
-  });
-
-  // Jangan mengaktifkan animasi jika pengguna mengurangi animasi
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  );
+  const root = document.documentElement;
+  const duration = 420;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   if (reducedMotion.matches) {
-    document.documentElement.classList.remove(
-      "is-entering",
-      "is-ready"
-    );
+    root.classList.remove("is-entering", "is-ready", "is-leaving");
+  } else {
+    root.classList.add("is-entering");
+    window.addEventListener("DOMContentLoaded", () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => root.classList.add("is-ready"));
+        window.setTimeout(() => root.classList.remove("is-entering", "is-ready"), duration + 40);
+      });
+    }, { once: true });
   }
 
-  // Animasi ketika berpindah halaman
   document.addEventListener("click", event => {
-    const link = event.target.closest("a");
-
-    if (!link) return;
-
+    const target = event.target instanceof Element ? event.target : null;
+    const link = target && target.closest("a[href]");
+    if (!link || event.defaultPrevented) return;
     if (
-      event.defaultPrevented ||
       event.button !== 0 ||
-      event.metaKey ||
-      event.ctrlKey ||
-      event.shiftKey ||
-      event.altKey
-    ) return;
-
-    if (reducedMotion.matches) return;
-
-    if (
+      event.metaKey || event.ctrlKey || event.shiftKey || event.altKey ||
+      reducedMotion.matches ||
       link.target === "_blank" ||
       link.hasAttribute("download") ||
-      link.getAttribute("href")?.startsWith("#")
-    ) return;
-
-    const destination = new URL(link.href, window.location.href);
-
-    if (
-      destination.origin !== currentURL.origin ||
-      destination.href === currentURL.href
-    ) return;
-
-    if (
-      destination.pathname === currentURL.pathname &&
-      destination.search === currentURL.search &&
-      destination.hash !== currentURL.hash
-    ) return;
-
-    if (
       link.hasAttribute("data-no-transition")
     ) return;
 
+    const rawHref = link.getAttribute("href");
+    if (!rawHref || /^(#|javascript:|mailto:|tel:)/i.test(rawHref.trim())) return;
+
+    let destination;
+    try { destination = new URL(link.href, window.location.href); }
+    catch { return; }
+
+    if (destination.origin !== window.location.origin) return;
+    if (
+      destination.pathname === window.location.pathname &&
+      destination.search === window.location.search
+    ) return;
+
     event.preventDefault();
-
-    document.documentElement.classList.remove(
-      "is-entering",
-      "is-ready"
-    );
-
-    document.documentElement.classList.add("is-leaving");
-
-    setTimeout(() => {
-      window.location.href = destination.href;
-    }, TRANSITION_TIME);
+    root.classList.remove("is-entering", "is-ready");
+    root.classList.add("is-leaving");
+    window.setTimeout(() => window.location.assign(destination.href), duration);
   });
 
-  // Jika halaman dikembalikan melalui tombol Back/Forward
   window.addEventListener("pageshow", event => {
-    if (event.persisted) {
-      document.documentElement.classList.remove(
-        "is-leaving",
-        "is-entering",
-        "is-ready"
-      );
-    }
+    if (event.persisted) root.classList.remove("is-entering", "is-ready", "is-leaving");
   });
 })();
