@@ -1147,11 +1147,12 @@ $("backButton").onclick=()=>{
  else location.href="/";
 };
 
-/* CARI PENGGUNA */
-$("searchForm").addEventListener("submit",event=>{
+/* CARI PENGGUNA — gabungkan hasil database dengan cache lokal lama */
+$("searchForm").addEventListener("submit",async event=>{
  event.preventDefault();
 
- const query=$("searchId").value.trim().toLowerCase();
+ const rawQuery=$("searchId").value.trim();
+ const query=rawQuery.toLowerCase();
 
  if(!query){
   $("searchResults").innerHTML=empty(
@@ -1161,23 +1162,49 @@ $("searchForm").addEventListener("submit",event=>{
   return;
  }
 
- const matches=getAllUsers().filter(user=>{
-  const id=cleanId(user.id||user.userId);
-  const name=String(
-   user.name||user.displayName||user.username||""
-  ).toLowerCase();
+ $("searchResults").innerHTML=empty("Mencari pengguna...","Mengambil daftar akun ANILIX.");
 
-  if(!id||id===currentId)return false;
+ try{
+  const response=await fetch("/api/users/search?q="+encodeURIComponent(rawQuery),{
+   credentials:"include",
+   cache:"no-store",
+   headers:{"Accept":"application/json"}
+  });
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok){
+   throw new Error(payload.message||"Pencarian akun gagal.");
+  }
 
-  return id.toLowerCase().includes(query)||name.includes(query);
- });
+  const merged=new Map();
+  (Array.isArray(payload.users)?payload.users:[]).forEach(user=>{
+   const id=cleanId(user.id||user.userId);
+   if(id&&id!==currentId)merged.set(id,{...user,id});
+  });
 
- $("searchResults").innerHTML=matches.length
-  ?matches.slice(0,30).map(user=>{
-    const id=cleanId(user.id||user.userId);
-    return userCard(user,id,"search");
-   }).join("")
-  :empty("Pengguna tidak ditemukan","Coba periksa kembali nama atau User ID yang kamu masukkan.");
+  getAllUsers().forEach(user=>{
+   const id=cleanId(user.id||user.userId);
+   const name=String(user.name||user.displayName||user.username||"").toLowerCase();
+   if(id&&id!==currentId&&(id.toLowerCase().includes(query)||name.includes(query))){
+    merged.set(id,{...(merged.get(id)||{}),...user,id});
+   }
+  });
+
+  const matches=[...merged.values()].filter(user=>{
+   const id=cleanId(user.id);
+   const name=String(user.name||user.displayName||user.username||"").toLowerCase();
+   return id.toLowerCase().includes(query)||name.includes(query);
+  });
+
+  $("searchResults").innerHTML=matches.length
+   ?matches.slice(0,30).map(user=>{
+     const id=cleanId(user.id||user.userId);
+     return userCard(user,id,"search");
+    }).join("")
+   :empty("Pengguna tidak ditemukan","Tidak ada akun yang cocok dengan nama atau User ID tersebut.");
+ }catch(error){
+  console.error("Pencarian pengguna gagal:",error);
+  $("searchResults").innerHTML=empty("Pencarian gagal",error.message||"Periksa koneksi lalu coba lagi.");
+ }
 });
 
 /* TERIMA / TOLAK / BATAL */
