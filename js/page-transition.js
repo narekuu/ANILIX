@@ -2,6 +2,9 @@
 (() => {
  "use strict";
  const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+ const markReady=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.add("is-ready")));
+ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",markReady,{once:true});
+ else markReady();
  let navigationStarted=false;
  document.addEventListener("click",event=>{
   const target=event.target instanceof Element?event.target:null;
