@@ -69,7 +69,7 @@ function userView(row) {
   const premiumActive = !!row.premium_expires_at && new Date(row.premium_expires_at).getTime() > Date.now();
   return {
     id: Number(row.id), username: row.username, name: row.display_name, displayName: row.display_name,
-    email: row.email, role: row.role, verified: row.role !== 'member', avatar: row.avatar, banner: row.banner || null,
+    email: row.email, role: row.role, verified: row.role !== 'member', avatar: row.avatar, banner: row.banner || null, created_at: row.created_at || null,
     total_exp: total, exp: total, level, xp: total - level * EXP_PER_LEVEL,
     current_exp: total - level * EXP_PER_LEVEL, exp_in_level: total - level * EXP_PER_LEVEL,
     exp_to_next_level: Math.max(0, (level + 1) * EXP_PER_LEVEL - total),
@@ -214,7 +214,7 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
   if(!q) return res.json({success:true,users:[]});
   const idQuery=q.replace(/^#/,'');
   const result=await pool.query(
-   `SELECT id,username,display_name,role,avatar,banner,total_exp,level
+   `SELECT id,username,display_name,role,avatar,banner,total_exp,level,created_at
     FROM public.users
     WHERE id<>$1 AND (
      CAST(id AS TEXT) ILIKE $2 OR
@@ -245,7 +245,7 @@ app.get('/api/users/:id',auth,async(req,res,next)=>{
   const id=Number(req.params.id);
   if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID pengguna tidak valid.'});
   const result=await pool.query(
-   'SELECT id,username,display_name,role,avatar,banner,total_exp,email,premium_expires_at,nixgem FROM public.users WHERE id=$1 LIMIT 1',
+   'SELECT id,username,display_name,role,avatar,banner,total_exp,email,premium_expires_at,nixgem,created_at FROM public.users WHERE id=$1 LIMIT 1',
    [id]
   );
   const row=result.rows[0];
