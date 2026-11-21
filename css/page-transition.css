@@ -1,50 +1,10 @@
-/* ANILIX shared page transition — fixed overlay keeps floating UI viewport-anchored */
-:root {
-  --anilix-transition-duration: 460ms;
-  --anilix-transition-easing: cubic-bezier(.16, 1, .3, 1);
-}
-html { background: #090711; }
-
-html::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 2147483500;
-  pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
-  background:
-    radial-gradient(ellipse at 50% 42%, rgba(132,83,196,.20), transparent 60%),
-    linear-gradient(145deg, rgba(9,7,17,.76), rgba(13,8,22,.84));
-  -webkit-backdrop-filter: blur(5px) saturate(120%);
-  backdrop-filter: blur(5px) saturate(120%);
-  transition:
-    opacity var(--anilix-transition-duration) var(--anilix-transition-easing),
-    visibility 0s linear var(--anilix-transition-duration);
-  will-change: opacity, backdrop-filter;
-}
-
-html.is-entering::before,
-html.is-leaving::before {
-  opacity: 1;
-  visibility: visible;
-  transition-delay: 0s;
-}
-
-html.is-entering.is-ready::before {
-  opacity: 0;
-  visibility: visible;
-}
-
-/* Slightly soften the transition at the moment of navigation. */
-html.is-leaving {
-  cursor: progress;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html::before {
-    transition: none !important;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
+/* ANILIX navigation: native cross-document transitions, without a blocking veil. */
+html { background:#090711; }
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation:anilix-page-out 150ms ease both; }
+::view-transition-new(root) { animation:anilix-page-in 220ms cubic-bezier(.2,.75,.25,1) both; }
+@keyframes anilix-page-out { to { opacity:.72; transform:translateY(-3px); } }
+@keyframes anilix-page-in { from { opacity:.72; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+@media(prefers-reduced-motion:reduce) {
+ ::view-transition-old(root),::view-transition-new(root) { animation:none!important; }
 }
