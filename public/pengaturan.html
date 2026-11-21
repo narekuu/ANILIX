@@ -562,7 +562,7 @@ button{border:none;cursor:pointer;color:inherit}
             </div>
 
             <div class="username-area">
-                <label class="field-label" for="username">Username</label>
+                <label class="field-label" for="username">Nama Tampilan</label>
                 <input
                     type="text"
                     id="username"
@@ -806,7 +806,8 @@ function toast(message){
 /* BACK */
 
 function goBack(){
-    location.href = "/";
+    if(history.length > 1) history.back();
+    else location.href = "/profile.html";
 }
 
 /* USER */
@@ -901,72 +902,79 @@ function updateUsernameCounter(){
 
 /* SAVE PROFILE */
 
+async function compressAvatar(file){
+    const bitmap = await createImageBitmap(file);
+    const canvas = document.createElement("canvas");
+    const scale = Math.min(1, 512 / Math.max(bitmap.width, bitmap.height));
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext("2d");
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close?.();
+
+    let quality = 0.82;
+    let dataURL = canvas.toDataURL("image/webp", quality);
+    while(dataURL.length > 560000 && quality > 0.42){
+        quality -= 0.1;
+        dataURL = canvas.toDataURL("image/webp", quality);
+    }
+    if(dataURL.length > 560000){
+        throw new Error("Foto terlalu besar setelah dikompres.");
+    }
+    return dataURL;
+}
+
+/* SAVE PROFILE — synced to the authenticated Supabase account */
 async function saveProfile(){
 
-    const username =
-        document.getElementById("username").value.trim();
-
-    if(!username){
-        toast("Username tidak boleh kosong");
+    const displayName = document.getElementById("username").value.trim();
+    if(!displayName){
+        toast("Nama tampilan tidak boleh kosong");
         return;
     }
-
-    if(username.length > MAX_USERNAME_LENGTH){
-        toast("Username maksimal 20 karakter");
+    if(displayName.length > MAX_USERNAME_LENGTH){
+        toast("Nama tampilan maksimal 20 karakter");
         return;
     }
 
     const saveButton = document.querySelector(".save-btn");
-
     saveButton.disabled = true;
     saveButton.textContent = "Menyimpan...";
 
     try{
-
-        await openDatabase();
-
-        const user = getUser();
-
-        user.name = username;
-        user.displayName = username;
-        user.username = username;
-
-        if(pendingAvatar){
-            await saveImage("avatar",pendingAvatar);
-        }
+        const payload = { display_name: displayName };
+        if(pendingAvatar) payload.avatar = await compressAvatar(pendingAvatar);
 
         if(pendingBanner){
-            await saveImage("banner",pendingBanner);
+            await openDatabase();
+            await saveImage("banner", pendingBanner);
         }
 
-        localStorage.removeItem("anilix_avatar");
-        localStorage.removeItem("anilix_banner");
+        const response = await fetch("/api/user/profile", {
+            method: "PATCH",
+            credentials: "include",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json().catch(() => ({}));
+        if(!response.ok || !result.success || !result.user){
+            throw new Error(result.message || "Profil gagal disimpan.");
+        }
 
-        delete user.photo;
-        delete user.avatar;
-        delete user.photoURL;
-        delete user.banner;
-
-        localStorage.setItem("anilix_user",JSON.stringify(user));
-
+        localStorage.setItem("anilix_user", JSON.stringify(result.user));
         pendingAvatar = null;
         pendingBanner = null;
-
-        document.getElementById("profileName").textContent = username;
-
-        toast("Profil berhasil disimpan");
-
+        document.getElementById("profileName").textContent =
+            result.user.name || result.user.displayName || displayName;
+        document.getElementById("avatarPreview").src =
+            result.user.avatar || DEFAULT_AVATAR;
+        toast("Profil berhasil disimpan ke akun ANILIX");
     }catch(error){
-
         console.error(error);
-
-        toast("Gagal menyimpan. Coba gambar yang lebih kecil.");
-
+        toast(error.message || "Gagal menyimpan profil. Coba lagi.");
     }finally{
-
         saveButton.disabled = false;
         saveButton.textContent = "Simpan";
-
     }
 }
 
@@ -1016,7 +1024,7 @@ function loadToggle(id){
 /* DOWNLOAD */
 
 function openDownloads(){
-    location.href = "/";
+    toast("Fitur unduhan belum tersedia");
 }
 
 /* CACHE */
@@ -1059,75 +1067,72 @@ function hideLogout(){
     document.getElementById("logoutModal").classList.remove("show");
 }
 
-function logout(){
-
+async function logout(){
     hideLogout();
-
+    try{
+        const response = await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Accept": "application/json" }
+        });
+        if(!response.ok && response.status !== 401){
+            throw new Error("Logout gagal. Coba lagi.");
+        }
+    }catch(error){
+        console.error(error);
+        toast(error.message || "Tidak dapat menghubungi server.");
+        return;
+    }
     sessionStorage.clear();
-
-    location.href = "login.html";
+    localStorage.removeItem("anilix_user");
+    localStorage.removeItem("anilix_session");
+    location.href = "/login.html";
 }
 
 /* LOAD PROFILE */
 
 async function loadProfile(){
-
-    const user = getUser();
-
-    const username =
-        user.name ||
-        user.displayName ||
-        user.username ||
-        "ANILIX";
-
-    document.getElementById("username").value =
-        username.slice(0,MAX_USERNAME_LENGTH);
-
-    document.getElementById("profileName").textContent =
-        username.slice(0,MAX_USERNAME_LENGTH);
-
-    updateUsernameCounter();
-
     try{
+        const response = await fetch("/api/auth/me", {
+            credentials: "include",
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+        });
+        if(!response.ok){
+            if(response.status === 401) location.replace("/login.html");
+            throw new Error("Tidak dapat memuat profil akun.");
+        }
+
+        const result = await response.json();
+        const user = result.user || {};
+        localStorage.setItem("anilix_user", JSON.stringify(user));
+
+        const displayName = user.name || user.displayName || user.username || "ANILIX";
+        document.getElementById("username").value =
+            displayName.slice(0, MAX_USERNAME_LENGTH);
+        document.getElementById("profileName").textContent =
+            displayName.slice(0, MAX_USERNAME_LENGTH);
+        updateUsernameCounter();
+
+        document.getElementById("avatarPreview").src =
+            user.avatar || DEFAULT_AVATAR;
 
         await openDatabase();
-
-        const avatar = await getImage("avatar");
         const banner = await getImage("banner");
-
-        if(avatar){
-
-            if(avatarURL) URL.revokeObjectURL(avatarURL);
-
-            avatarURL = URL.createObjectURL(avatar);
-
-            document.getElementById("avatarPreview").src = avatarURL;
-
-        }else{
-
-            document.getElementById("avatarPreview").src = DEFAULT_AVATAR;
-
-        }
-
         if(banner){
-
             if(bannerURL) URL.revokeObjectURL(bannerURL);
-
             bannerURL = URL.createObjectURL(banner);
-
             document.getElementById("bannerPreview").style.backgroundImage =
                 `linear-gradient(0deg,rgba(9,7,17,.35),rgba(9,7,17,.05)),url("${bannerURL}")`;
-
         }
-
     }catch(error){
-
         console.error(error);
-
-        document.getElementById("avatarPreview").src = DEFAULT_AVATAR;
-
-        toast("Tidak dapat membuka penyimpanan gambar");
-
+        if(!document.getElementById("avatarPreview").src){
+            document.getElementById("avatarPreview").src = DEFAULT_AVATAR;
+        }
+        if(error.message !== "Tidak dapat memuat profil akun."){
+            toast("Pengaturan profil tidak dapat dimuat");
+        }
     }
 }
 
