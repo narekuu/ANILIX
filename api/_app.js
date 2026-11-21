@@ -240,6 +240,28 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
   res.json({success:true,users});
  }catch(e){next(e);}
 });
+app.get('/api/users/:id/activity',async(req,res,next)=>{
+ try{
+  const id=Number(req.params.id);
+  if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID pengguna tidak valid.'});
+  const exists=await pool.query('SELECT id FROM public.users WHERE id=$1 LIMIT 1',[id]);
+  if(!exists.rowCount)return res.status(404).json({success:false,message:'Pengguna tidak ditemukan.'});
+  const [comments,favorites,history,minutes]=await Promise.all([
+   pool.query(`SELECT c.id AS comment_id,c.content_id AS id,c.content_type AS type,c.title,c.poster,c.body AS description,c.created_at AS time
+    FROM public.comments c WHERE c.user_id=$1 ORDER BY c.created_at DESC,c.id DESC LIMIT 100`,[id]),
+   pool.query(`SELECT content_id AS id,content_type AS type,title,poster,created_at AS time
+    FROM public.favorites WHERE user_id=$1 ORDER BY created_at DESC,id DESC LIMIT 100`,[id]),
+   pool.query(`SELECT content_id AS id,content_type AS type,title,poster,episode,progress,watched_at AS time
+    FROM public.watch_history WHERE user_id=$1 ORDER BY watched_at DESC LIMIT 100`,[id]),
+   pool.query('SELECT COALESCE(SUM(position_seconds),0) AS seconds FROM public.watch_progress WHERE user_id=$1',[id])
+  ]);
+  res.set('Cache-Control','no-store');
+  res.json({success:true,activity:{
+   comments:comments.rows,favorites:favorites.rows,history:history.rows,
+   totalMinutes:Math.floor(Number(minutes.rows[0]?.seconds||0)/60)
+  }});
+ }catch(e){next(e);}
+});
 app.get('/api/users/:id',async(req,res,next)=>{
  try{
   const id=Number(req.params.id);
@@ -363,6 +385,191 @@ app.post('/api/user/history',auth,async(req,res,next)=>{
 });
 app.delete('/api/user/history/:type/:id',auth,async(req,res,next)=>{
  try{const r=await pool.query('DELETE FROM public.watch_history WHERE user_id=$1 AND content_type=$2 AND content_id=$3',[req.user.id,req.params.type,req.params.id]);res.json({success:true,deleted:r.rowCount});}catch(e){next(e);}
+});
+
+
+/* ACCOUNT-WIDE SOCIAL AND PLAYBACK SYNC */
+app.get('/api/friends',auth,async(req,res,next)=>{
+ try{
+  const [friends,incoming,outgoing]=await Promise.all([
+   pool.query(\`SELECT u.id,u.username,u.display_name,u.avatar,u.role
+    FROM public.friendships f JOIN public.users u
+    ON u.id=CASE WHEN f.user_low_id=$1 THEN f.user_high_id ELSE f.user_low_id END
+    WHERE f.user_low_id=$1 OR f.user_high_id=$1 ORDER BY u.display_name\`,[req.user.id]),
+   pool.query(\`SELECT r.id,r.created_at,u.id AS user_id,u.username,u.display_name,u.avatar
+    FROM public.friend_requests r JOIN public.users u ON u.id=r.sender_id
+    WHERE r.recipient_id=$1 AND r.status='pending' ORDER BY r.created_at DESC\`,[req.user.id]),
+   pool.query(\`SELECT r.id,r.created_at,u.id AS user_id,u.username,u.display_name,u.avatar
+    FROM public.friend_requests r JOIN public.users u ON u.id=r.recipient_id
+    WHERE r.sender_id=$1 AND r.status='pending' ORDER BY r.created_at DESC\`,[req.user.id])
+  ]);
+  res.json({success:true,friends:friends.rows,incoming:incoming.rows,outgoing:outgoing.rows});
+ }catch(e){next(e);}
+});
+app.post('/api/friends/requests',auth,async(req,res,next)=>{
+ try{
+  const target=Number(req.body?.user_id);
+  if(!Number.isSafeInteger(target)||target<1||target===Number(req.user.id))return res.status(400).json({success:false,message:'Pengguna tujuan tidak valid.'});
+  const exists=await pool.query('SELECT id FROM public.users WHERE id=$1',[target]);
+  if(!exists.rowCount)return res.status(404).json({success:false,message:'Pengguna tidak ditemukan.'});
+  const low=Math.min(target,Number(req.user.id)),high=Math.max(target,Number(req.user.id));
+  const already=await pool.query('SELECT 1 FROM public.friendships WHERE user_low_id=$1 AND user_high_id=$2',[low,high]);
+  if(already.rowCount)return res.status(409).json({success:false,message:'Kalian sudah berteman.'});
+  const pending=await pool.query("SELECT id,sender_id,recipient_id,status FROM public.friend_requests WHERE (sender_id=$1 AND recipient_id=$2) OR (sender_id=$2 AND recipient_id=$1) ORDER BY created_at DESC LIMIT 1",[req.user.id,target]);
+  if(pending.rows[0]?.status==='pending')return res.status(409).json({success:false,message:'Permintaan pertemanan masih menunggu.'});
+  const result=await pool.query(\`INSERT INTO public.friend_requests(sender_id,recipient_id,status)
+   VALUES($1,$2,'pending') ON CONFLICT(sender_id,recipient_id)
+   DO UPDATE SET status='pending',updated_at=NOW() RETURNING id,status\`,[req.user.id,target]);
+  res.status(201).json({success:true,request:result.rows[0]});
+ }catch(e){next(e);}
+});
+app.post('/api/friends/requests/:id/respond',auth,async(req,res,next)=>{
+ const requestId=Number(req.params.id),action=String(req.body?.action||'');
+ if(!Number.isSafeInteger(requestId)||!['accept','reject','cancel'].includes(action))return res.status(400).json({success:false,message:'Aksi tidak valid.'});
+ const client=await pool.connect();
+ try{
+  await client.query('BEGIN');
+  const found=await client.query('SELECT * FROM public.friend_requests WHERE id=$1 FOR UPDATE',[requestId]);
+  const request=found.rows[0];
+  if(!request||request.status!=='pending'){await client.query('ROLLBACK');return res.status(404).json({success:false,message:'Permintaan tidak ditemukan.'});}
+  if(action==='accept'||action==='reject'){
+   if(Number(request.recipient_id)!==Number(req.user.id)){await client.query('ROLLBACK');return res.status(403).json({success:false,message:'Hanya penerima yang dapat merespons.'});}
+  }else if(Number(request.sender_id)!==Number(req.user.id)){
+   await client.query('ROLLBACK');return res.status(403).json({success:false,message:'Hanya pengirim yang dapat membatalkan.'});
+  }
+  const status=action==='accept'?'accepted':action==='reject'?'rejected':'cancelled';
+  await client.query('UPDATE public.friend_requests SET status=$1,updated_at=NOW() WHERE id=$2',[status,requestId]);
+  if(action==='accept'){
+   const low=Math.min(Number(request.sender_id),Number(request.recipient_id)),high=Math.max(Number(request.sender_id),Number(request.recipient_id));
+   await client.query('INSERT INTO public.friendships(user_low_id,user_high_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[low,high]);
+  }
+  await client.query('COMMIT');res.json({success:true,status});
+ }catch(e){await client.query('ROLLBACK').catch(()=>{});next(e);}finally{client.release();}
+});
+app.delete('/api/friends/:userId',auth,async(req,res,next)=>{
+ try{
+  const target=Number(req.params.userId);
+  if(!Number.isSafeInteger(target)||target<1)return res.status(400).json({success:false,message:'ID tidak valid.'});
+  const low=Math.min(target,Number(req.user.id)),high=Math.max(target,Number(req.user.id));
+  const result=await pool.query('DELETE FROM public.friendships WHERE user_low_id=$1 AND user_high_id=$2',[low,high]);
+  res.json({success:true,deleted:result.rowCount});
+ }catch(e){next(e);}
+});
+
+app.get('/api/chat/:userId',auth,async(req,res,next)=>{
+ try{
+  const target=Number(req.params.userId);
+  if(!Number.isSafeInteger(target)||target<1||target===Number(req.user.id))return res.status(400).json({success:false,message:'Tujuan chat tidak valid.'});
+  const low=Math.min(target,Number(req.user.id)),high=Math.max(target,Number(req.user.id));
+  const friendship=await pool.query('SELECT 1 FROM public.friendships WHERE user_low_id=$1 AND user_high_id=$2',[low,high]);
+  if(!friendship.rowCount)return res.status(403).json({success:false,message:'Chat hanya tersedia untuk teman.'});
+  const messages=await pool.query(\`SELECT id,sender_id,recipient_id,body,created_at,read_at FROM public.chat_messages
+   WHERE (sender_id=$1 AND recipient_id=$2) OR (sender_id=$2 AND recipient_id=$1)
+   ORDER BY created_at ASC,id ASC LIMIT 500\`,[req.user.id,target]);
+  await pool.query('UPDATE public.chat_messages SET read_at=NOW() WHERE sender_id=$1 AND recipient_id=$2 AND read_at IS NULL',[target,req.user.id]);
+  res.json({success:true,messages:messages.rows});
+ }catch(e){next(e);}
+});
+app.post('/api/chat/:userId',auth,async(req,res,next)=>{
+ try{
+  const target=Number(req.params.userId),body=String(req.body?.body||'').trim();
+  if(!Number.isSafeInteger(target)||target<1||target===Number(req.user.id)||body.length<1||body.length>4000)return res.status(400).json({success:false,message:'Pesan atau tujuan tidak valid.'});
+  const low=Math.min(target,Number(req.user.id)),high=Math.max(target,Number(req.user.id));
+  const friendship=await pool.query('SELECT 1 FROM public.friendships WHERE user_low_id=$1 AND user_high_id=$2',[low,high]);
+  if(!friendship.rowCount)return res.status(403).json({success:false,message:'Chat hanya tersedia untuk teman.'});
+  const result=await pool.query('INSERT INTO public.chat_messages(sender_id,recipient_id,body) VALUES($1,$2,$3) RETURNING id,sender_id,recipient_id,body,created_at,read_at',[req.user.id,target,body]);
+  res.status(201).json({success:true,message:result.rows[0]});
+ }catch(e){next(e);}
+});
+app.delete('/api/chat/messages/:id',auth,async(req,res,next)=>{
+ try{
+  const id=Number(req.params.id);
+  if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID pesan tidak valid.'});
+  const result=await pool.query('DELETE FROM public.chat_messages WHERE id=$1 AND sender_id=$2',[id,req.user.id]);
+  res.json({success:true,deleted:result.rowCount});
+ }catch(e){next(e);}
+});
+
+app.get('/api/comments/:type/:contentId',async(req,res,next)=>{
+ try{
+  const type=String(req.params.type).slice(0,40),contentId=String(req.params.contentId).slice(0,200);
+  const result=await pool.query(\`SELECT c.id,c.user_id,c.content_id,c.content_type,c.title,c.poster,c.body,c.created_at,
+   u.username,u.display_name,u.avatar,u.role
+   FROM public.comments c JOIN public.users u ON u.id=c.user_id
+   WHERE c.content_type=$1 AND c.content_id=$2 ORDER BY c.created_at DESC,c.id DESC LIMIT 200\`,[type,contentId]);
+  const ids=result.rows.map(r=>r.id);
+  let replies=[];
+  if(ids.length)replies=(await pool.query(\`SELECT r.id,r.comment_id,r.user_id,r.body,r.created_at,u.username,u.display_name,u.avatar,u.role
+   FROM public.comment_replies r JOIN public.users u ON u.id=r.user_id
+   WHERE r.comment_id=ANY($1::bigint[]) ORDER BY r.created_at,r.id\`,[ids])).rows;
+  res.json({success:true,comments:result.rows,replies});
+ }catch(e){next(e);}
+});
+app.post('/api/comments',auth,async(req,res,next)=>{
+ try{
+  const x=req.body||{},contentId=String(x.content_id||'').trim(),type=String(x.content_type||'anime').trim(),title=String(x.title||'Anime').trim(),body=String(x.body||'').trim();
+  if(!contentId||contentId.length>200||!type||type.length>40||!title||title.length>250||!body||body.length>3000)return res.status(400).json({success:false,message:'Data komentar tidak valid.'});
+  const result=await pool.query('INSERT INTO public.comments(user_id,content_id,content_type,title,poster,body) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',[req.user.id,contentId,type,title,typeof x.poster==='string'?x.poster.slice(0,2000):null,body]);
+  res.status(201).json({success:true,comment:result.rows[0]});
+ }catch(e){next(e);}
+});
+app.post('/api/comments/:id/replies',auth,async(req,res,next)=>{
+ try{
+  const commentId=Number(req.params.id),body=String(req.body?.body||'').trim();
+  if(!Number.isSafeInteger(commentId)||commentId<1||!body||body.length>2000)return res.status(400).json({success:false,message:'Balasan tidak valid.'});
+  const exists=await pool.query('SELECT 1 FROM public.comments WHERE id=$1',[commentId]);
+  if(!exists.rowCount)return res.status(404).json({success:false,message:'Komentar tidak ditemukan.'});
+  const result=await pool.query('INSERT INTO public.comment_replies(comment_id,user_id,body) VALUES($1,$2,$3) RETURNING *',[commentId,req.user.id,body]);
+  res.status(201).json({success:true,reply:result.rows[0]});
+ }catch(e){next(e);}
+});
+app.delete('/api/comments/:id',auth,async(req,res,next)=>{
+ try{
+  const id=Number(req.params.id);
+  if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID komentar tidak valid.'});
+  const result=await pool.query('DELETE FROM public.comments WHERE id=$1 AND user_id=$2',[id,req.user.id]);
+  res.json({success:true,deleted:result.rowCount});
+ }catch(e){next(e);}
+});
+app.delete('/api/comments/replies/:id',auth,async(req,res,next)=>{
+ try{
+  const id=Number(req.params.id);
+  if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID balasan tidak valid.'});
+  const result=await pool.query('DELETE FROM public.comment_replies WHERE id=$1 AND user_id=$2',[id,req.user.id]);
+  res.json({success:true,deleted:result.rowCount});
+ }catch(e){next(e);}
+});
+app.post('/api/reports',auth,async(req,res,next)=>{
+ try{
+  const x=req.body||{},type=String(x.target_type||''),reason=String(x.reason||'').trim(),details=String(x.details||'').trim();
+  if(!['user','comment','message','anime','other'].includes(type)||reason.length<3||reason.length>120||details.length>2000)return res.status(400).json({success:false,message:'Laporan tidak valid.'});
+  const targetUser=x.target_user_id==null?null:Number(x.target_user_id);
+  if(targetUser!==null&&(!Number.isSafeInteger(targetUser)||targetUser<1))return res.status(400).json({success:false,message:'Target pengguna tidak valid.'});
+  const result=await pool.query('INSERT INTO public.user_reports(reporter_id,target_user_id,target_type,target_id,reason,details) VALUES($1,$2,$3,$4,$5,$6) RETURNING id,status,created_at',[req.user.id,targetUser,type,x.target_id==null?null:String(x.target_id).slice(0,200),reason,details||null]);
+  res.status(201).json({success:true,report:result.rows[0]});
+ }catch(e){next(e);}
+});
+
+app.get('/api/user/progress',auth,async(req,res,next)=>{
+ try{
+  const result=await pool.query('SELECT content_id AS id,content_type AS type,title,poster,episode,position_seconds,duration_seconds,progress,updated_at FROM public.watch_progress WHERE user_id=$1 ORDER BY updated_at DESC',[req.user.id]);
+  res.json({success:true,progress:result.rows});
+ }catch(e){next(e);}
+});
+app.put('/api/user/progress',auth,async(req,res,next)=>{
+ try{
+  const x=req.body||{},contentId=String(x.id||'').trim(),type=String(x.type||'anime'),title=String(x.title||'').trim(),episode=String(x.episode||'').trim();
+  const position=Math.max(0,Number(x.position_seconds)||0),duration=Math.max(0,Number(x.duration_seconds)||0);
+  if(!contentId||contentId.length>200||!title||title.length>250||!episode||episode.length>80||!Number.isFinite(position)||!Number.isFinite(duration)||type.length>40)return res.status(400).json({success:false,message:'Progres tontonan tidak valid.'});
+  const progress=duration>0?Math.max(0,Math.min(100,position/duration*100)):0;
+  const result=await pool.query(\`INSERT INTO public.watch_progress(user_id,content_id,content_type,title,poster,episode,position_seconds,duration_seconds,progress,updated_at)
+   VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
+   ON CONFLICT(user_id,content_id,content_type,episode) DO UPDATE SET title=EXCLUDED.title,poster=EXCLUDED.poster,
+   position_seconds=EXCLUDED.position_seconds,duration_seconds=EXCLUDED.duration_seconds,progress=EXCLUDED.progress,updated_at=NOW()
+   RETURNING id,content_id AS id,content_type AS type,title,poster,episode,position_seconds,duration_seconds,progress,updated_at\`,
+   [req.user.id,contentId,type,title,typeof x.poster==='string'?x.poster.slice(0,2000):null,episode,position,duration,progress]);
+  res.json({success:true,progress:result.rows[0]});
+ }catch(e){next(e);}
 });
 
 app.get('/api/catalog',async(req,res)=>{
