@@ -813,7 +813,7 @@ async function loadProfileMedia(){
    getMedia("avatar"),getMedia("banner")
   ]);
 
-  setAvatarImage(avatar || avatarFromUser || null);
+  setAvatarImage(avatarFromUser || avatar || null);
   setBannerImage(banner || bannerFromUser || null);
  }catch(error){
   console.warn("Media profil:",error);
