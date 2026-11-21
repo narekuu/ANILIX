@@ -949,7 +949,7 @@ async function loadSchedule(){
 
   const data = await response.json();
 
-  const skeletonRemaining = Math.max(0, 1100 - (performance.now() - skeletonStartedAt));
+  const skeletonRemaining = Math.max(0, 2500 - (performance.now() - skeletonStartedAt));
   if (skeletonRemaining) await new Promise(resolve => setTimeout(resolve, skeletonRemaining));
   renderSchedule(data);
 
