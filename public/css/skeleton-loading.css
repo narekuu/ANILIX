@@ -1,0 +1,58 @@
+
+/* ANILIX SKELETON UI */
+
+.anilix-skeleton,
+[data-skeleton].is-loading {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: transparent !important;
+    background: #17171d !important;
+    border-color: rgba(255,255,255,.035) !important;
+    pointer-events: none;
+    user-select: none;
+}
+
+.anilix-skeleton::after,
+[data-skeleton].is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+        110deg,
+        transparent 20%,
+        rgba(255,255,255,.025) 35%,
+        rgba(255,255,255,.09) 50%,
+        rgba(255,255,255,.025) 65%,
+        transparent 80%
+    );
+    transform: translateX(-100%);
+    animation: anilixSkeletonShine 1.5s ease-in-out infinite;
+}
+
+.anilix-skeleton *,
+[data-skeleton].is-loading * {
+    visibility: hidden !important;
+}
+
+.anilix-skeleton img,
+[data-skeleton].is-loading img {
+    opacity: 0 !important;
+}
+
+@keyframes anilixSkeletonShine {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .anilix-skeleton::after,
+    [data-skeleton].is-loading::after {
+        animation: none;
+        transform: none;
+        opacity: .35;
+    }
+}

@@ -1,0 +1,2150 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090711">
+<title>ANILIX — Anime Streaming</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+ --bg:#090711;
+ --card:#15111f;
+ --glass:rgba(30,23,45,.66);
+ --border:rgba(190,150,255,.13);
+ --purple:#a875ff;
+ --purple2:#7543d6;
+ --light:#d4baff;
+ --muted:#93899f;
+ --white:#f8f5ff;
+ --transition-duration:380ms;
+ --transition-easing:cubic-bezier(.22,.61,.36,1);
+}
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+
+body{
+ margin:0;
+ background:radial-gradient(ellipse at 50% -15%,#30204d 0%,transparent 45%),var(--bg);
+ color:var(--white);
+ font-family:Inter,Arial,sans-serif;
+}
+
+/* PAGE TRANSITION */
+.app{
+ max-width:1100px;
+ margin:auto;
+ padding:15px 20px 125px;
+ opacity:1;
+ filter:blur(0);
+ transform:translateY(0);
+ transition:
+  opacity var(--transition-duration) var(--transition-easing),
+  filter var(--transition-duration) var(--transition-easing),
+  transform var(--transition-duration) var(--transition-easing);
+}
+
+html.is-entering .app{
+ opacity:0;
+ filter:blur(7px);
+ transform:translateY(9px);
+}
+
+html.is-entering.is-ready .app{
+ opacity:1;
+ filter:blur(0);
+ transform:translateY(0);
+}
+
+html.is-leaving .app{
+ opacity:0;
+ filter:blur(7px);
+ transform:translateY(9px);
+}
+
+html.is-leaving body{pointer-events:none}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+
+svg{
+ width:20px;height:20px;
+ stroke:currentColor;
+ fill:none;
+ stroke-width:1.8;
+ stroke-linecap:round;
+ stroke-linejoin:round;
+}
+
+/* HEADER */
+.header{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ padding:11px 14px;
+ background:var(--glass);
+ border:1px solid var(--border);
+ border-radius:20px;
+ backdrop-filter:blur(22px);
+ -webkit-backdrop-filter:blur(22px);
+ box-shadow:0 8px 35px #0004;
+ margin-bottom:20px;
+}
+
+.profile{
+ display:flex;
+ align-items:center;
+ gap:11px;
+ text-decoration:none;
+ min-width:0;
+}
+
+.avatar{
+ width:49px;height:49px;
+ border-radius:50%;
+ border:2px solid var(--purple);
+ background:linear-gradient(145deg,#9b68e9,#211433);
+ display:grid;
+ place-items:center;
+ overflow:hidden;
+ font-size:21px;
+ font-weight:800;
+ box-shadow:0 0 18px #9d6aff40;
+ flex-shrink:0;
+}
+
+.avatar img{
+ width:100%;height:100%;
+ object-fit:cover;
+ border-radius:50%;
+ display:block;
+}
+
+.user-info{
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+ min-width:0;
+}
+
+.user-top,.user-bottom{
+ display:flex;
+ align-items:center;
+ gap:7px;
+ min-width:0;
+}
+
+.user-top{justify-content:flex-start;flex-wrap:wrap}
+.user-bottom{justify-content:space-between;gap:8px}
+
+.username{
+ font-size:14px;
+ font-weight:800;
+ overflow-wrap:anywhere;
+}
+
+.user-id{
+ font-size:10px;
+ color:#958b9d;
+ font-weight:500;
+ white-space:nowrap;
+}
+
+/* LEVEL */
+.level{
+ --c1:#526b86;
+ --c2:#e9f7ff;
+ --c3:#8aa8c8;
+ --glow:#c5e8ff;
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ padding:5px 10px;
+ border-radius:30px;
+ color:white;
+ font-size:10px;
+ font-weight:800;
+ line-height:1.2;
+ white-space:nowrap;
+ background:linear-gradient(115deg,var(--c1),var(--c2),var(--c3),var(--c1));
+ background-size:250% 100%;
+ animation:levelGradient 3s ease-in-out infinite;
+ border:1px solid #ffffff45;
+ box-shadow:0 0 12px color-mix(in srgb,var(--glow) 30%,transparent);
+}
+
+.level img{
+ width:13px;height:13px;
+ object-fit:contain;
+ image-rendering:pixelated;
+ transform:scale(1.30);
+ flex-shrink:0;
+}
+
+@keyframes levelGradient{
+ 0%{background-position:0% 50%}
+ 50%{background-position:100% 50%}
+ 100%{background-position:0% 50%}
+}
+
+/* ROLE */
+.profile-role{
+ position:relative;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ overflow:hidden;
+ padding:5px 10px;
+ border-radius:999px;
+ color:#fff;
+ font-size:10px;
+ font-weight:800;
+ letter-spacing:.3px;
+ line-height:1.2;
+ border:1px solid rgba(255,255,255,.17);
+ background-size:250% 250%;
+ animation:badgeColorFlow 5s ease-in-out infinite;
+ isolation:isolate;
+ white-space:nowrap;
+ flex-shrink:0;
+}
+
+.profile-role::after{
+ content:"";
+ position:absolute;
+ top:-50%;
+ left:-80%;
+ width:45%;
+ height:200%;
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+ transform:rotate(25deg);
+ animation:badgeShine 3s ease-in-out infinite;
+ pointer-events:none;
+ z-index:-1;
+}
+
+.profile-role.no-animation{
+ animation:none!important;
+ background-position:50% 50%;
+}
+
+.profile-role.no-shine::after{display:none}
+
+@keyframes badgeColorFlow{
+ 0%{background-position:0% 50%}
+ 50%{background-position:100% 50%}
+ 100%{background-position:0% 50%}
+}
+
+@keyframes badgeShine{
+ 0%{left:-80%}
+ 55%,100%{left:140%}
+}
+
+.role-developer{
+ background-image:linear-gradient(120deg,#F5223E,#D92C43,#A91D35,#E83B50,#F5223E);
+}
+
+.role-admin{
+ background-image:linear-gradient(120deg,#20C878,#16A866,#087D4B,#28D18A,#20C878);
+}
+
+.role-moderator{
+ background-image:linear-gradient(120deg,#24A9E8,#168BCB,#12659E,#36B8F0,#24A9E8);
+}
+
+.role-beta{
+ background-image:linear-gradient(120deg,#A855F7,#9140D8,#682BA6,#B56BFF,#A855F7);
+}
+
+.role-premium{
+ background-image:linear-gradient(120deg,#E5AD35,#D49A26,#A9781D,#F0C354,#E5AD35);
+ color:#30200A;
+}
+
+.role-member{
+ background:#343440;
+ color:#D0D0DC;
+ animation:none;
+}
+
+.role-member::after{display:none}
+
+.header-right{
+ display:flex;
+ gap:13px;
+ flex-shrink:0;
+}
+
+.header-right a{
+ display:grid;
+ place-items:center;
+ background:none;
+ border:0;
+ color:#d9c9f2;
+ padding:5px;
+ text-decoration:none;
+}
+
+/* EXP */
+.exp-info{
+ width:100%;
+ max-width:230px;
+ margin-top:7px;
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+}
+
+.exp-label{
+ display:flex;
+ justify-content:space-between;
+ gap:8px;
+ color:#a99bb9;
+ font-size:9px;
+ font-weight:700;
+}
+
+.exp-track{
+ width:100%;
+ height:5px;
+ border-radius:20px;
+ background:rgba(255,255,255,.10);
+ overflow:hidden;
+}
+
+.exp-fill{
+ width:0%;
+ height:100%;
+ border-radius:20px;
+ background:linear-gradient(90deg,#7543d6,#c49aff);
+ box-shadow:0 0 10px #a875ff80;
+ transition:width .5s ease;
+}
+
+/* QUICK ACTIONS */
+.quick-actions{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+ margin-bottom:23px;
+}
+
+.action-btn{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:9px;
+ min-height:47px;
+ border-radius:15px;
+ font-size:12px;
+ font-weight:800;
+ transition:.2s;
+ text-decoration:none;
+}
+
+.premium-btn{
+ background:linear-gradient(120deg,#7041b6,#a36df1);
+ border:1px solid #b58bff55;
+ color:white;
+ box-shadow:0 5px 22px #8549df35;
+}
+
+.friend-btn{
+ background:var(--glass);
+ border:1px solid var(--border);
+ color:#d6baff;
+ backdrop-filter:blur(15px);
+}
+
+.action-btn svg{width:18px;height:18px}
+.action-btn:active{transform:scale(.97)}
+
+/* BANNER */
+.slider{
+ position:relative;
+ width:100%;
+ aspect-ratio:16/9;
+ overflow:hidden;
+ border-radius:23px;
+ border:1px solid var(--border);
+ background:#171020;
+ box-shadow:0 12px 35px #0005;
+}
+
+.slides{
+ display:flex;
+ width:100%;
+ height:100%;
+ transition:transform .65s cubic-bezier(.22,.61,.36,1);
+}
+
+.slide{
+ min-width:100%;
+ height:100%;
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(180deg,#09090c,#17171d,#101015);
+}
+
+.slide img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ position:absolute;
+ inset:0;
+ transition:opacity .35s ease;
+}
+
+.slide img.is-loading{opacity:0}
+.slide img.is-loaded{opacity:1}
+
+.slide.is-image-loading::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:1;
+ background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.055) 42%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.055) 58%,transparent 75%);
+ transform:translateX(-120%);
+ animation:anilixBannerShine 1.7s ease-in-out infinite;
+ pointer-events:none;
+}
+
+@keyframes anilixBannerShine{
+ to{transform:translateX(120%)}
+}
+
+.slide:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:1;
+ background:linear-gradient(0deg,rgba(7,5,12,.96),transparent 78%),linear-gradient(90deg,rgba(10,6,18,.55),transparent);
+}
+
+.slide-content{
+ position:absolute;
+ z-index:2;
+ bottom:9%;
+ left:5%;
+ right:5%;
+}
+
+.slide-tag{
+ display:inline-block;
+ background:#9e6bf0;
+ color:white;
+ padding:6px 11px;
+ border-radius:20px;
+ font-size:9px;
+ font-weight:800;
+ margin-bottom:9px;
+}
+
+.slide-content h1{
+ font-size:clamp(17px,3.5vw,30px);
+ margin:0 0 8px;
+ font-weight:800;
+}
+
+.slide-content p{
+ font-size:11px;
+ color:#d1c7df;
+ margin:0;
+ max-width:500px;
+}
+
+.slider-dots{
+ position:absolute;
+ z-index:4;
+ bottom:12px;
+ left:50%;
+ transform:translateX(-50%);
+ display:flex;
+ gap:7px;
+}
+
+.slider-dots button{
+ width:7px;height:7px;
+ padding:0;
+ border:0;
+ border-radius:20px;
+ background:#ffffff70;
+ transition:.3s;
+}
+
+.slider-dots button.active{
+ width:24px;
+ background:#c39aff;
+ box-shadow:0 0 10px #a875ff;
+}
+
+/* CHAT GLOBAL */
+.chat-global{
+ display:flex;
+ align-items:center;
+ gap:10px;
+ width:100%;
+ min-height:58px;
+ background:var(--glass);
+ border:1px solid var(--border);
+ backdrop-filter:blur(18px);
+ padding:13px 16px;
+ border-radius:18px;
+ margin-top:23px;
+ margin-bottom:39px;
+ box-shadow:0 7px 25px #0003;
+ text-decoration:none;
+}
+
+.chat-icon{color:#ba8aff}
+
+.chat-global strong{
+ font-size:13px;
+ white-space:nowrap;
+}
+
+.chat-message{
+ font-size:11px;
+ color:var(--muted);
+ overflow:hidden;
+ white-space:nowrap;
+ text-overflow:ellipsis;
+}
+
+.chat-message b{color:#c69bff}
+.chat-arrow{margin-left:auto;color:#bb90ff;font-size:21px}
+
+/* SECTION */
+.section{margin-bottom:43px}
+
+.section-head{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ margin-bottom:19px;
+}
+
+.section-head h2{
+ font-size:18px;
+ margin:0;
+ font-weight:800;
+ letter-spacing:-.5px;
+}
+
+.section-head a{
+ color:#bd93ff;
+ font-size:11px;
+ text-decoration:none;
+}
+
+/* CONTINUE */
+.continue-card{
+ flex:0 0 calc((100% - 12px)/2);
+ min-width:0;
+ aspect-ratio:1.35;
+ position:relative;
+ overflow:hidden;
+ border-radius:17px;
+ background:#211633;
+ border:1px solid var(--border);
+ scroll-snap-align:start;
+ text-decoration:none;
+ color:inherit;
+}
+
+.continue-card img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ position:absolute;
+ inset:0;
+ z-index:1;
+ transition:opacity .35s ease;
+}
+
+.continue-info{
+ position:absolute;
+ z-index:3;
+ bottom:12px;
+ left:13px;
+ right:13px;
+}
+
+.continue-info strong{font-size:12px}
+
+.continue-info small{
+ display:block;
+ color:#c1b5d0;
+ font-size:10px;
+ margin-top:4px;
+}
+
+.play{
+ position:absolute;
+ right:12px;
+ bottom:15px;
+ z-index:4;
+ width:35px;
+ height:35px;
+ border-radius:50%;
+ background:#a875ff;
+ color:white;
+ border:0;
+ display:grid;
+ place-items:center;
+}
+
+/* POSTER */
+.poster-grid{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:22px 12px;
+}
+
+.poster-card{
+ min-width:0;
+ text-decoration:none;
+ color:inherit;
+ display:block;
+}
+
+.poster{
+ position:relative;
+ aspect-ratio:.69;
+ overflow:hidden;
+ border-radius:15px;
+ background:#211633;
+ border:1px solid var(--border);
+}
+
+.poster img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ position:absolute;
+ inset:0;
+ z-index:1;
+ transition:opacity .35s ease,filter .35s ease;
+}
+
+.poster:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(0deg,rgba(0,0,0,.7),transparent 55%);
+ pointer-events:none;
+ z-index:2;
+}
+
+.poster-tag{
+ position:absolute;
+ z-index:3;
+ top:0;
+ left:0;
+ background:linear-gradient(120deg,#8b55d8,#b77aff);
+ color:white;
+ font-size:9px;
+ font-weight:800;
+ padding:6px 9px;
+ border-radius:0 0 11px 0;
+}
+
+.score{
+ position:absolute;
+ top:7px;
+ right:7px;
+ z-index:3;
+ font-size:10px;
+ color:#e2c7ff;
+ font-weight:800;
+ text-shadow:0 2px 5px black;
+}
+
+.episode{
+ position:absolute;
+ bottom:10px;
+ left:10px;
+ z-index:3;
+ font-size:10px;
+ font-weight:800;
+}
+
+.poster-name{
+ font-size:11px;
+ font-weight:700;
+ line-height:1.5;
+ margin-top:9px;
+}
+
+/* HORIZONTAL LIST */
+.horizontal-list{
+ display:flex;
+ gap:12px;
+ overflow-x:auto;
+ scrollbar-width:none;
+ padding-bottom:7px;
+ scroll-snap-type:x mandatory;
+}
+
+.horizontal-list::-webkit-scrollbar{display:none}
+
+.horizontal-list .poster-card{
+ flex:0 0 calc((100% - 24px)/3);
+ min-width:0;
+ scroll-snap-align:start;
+}
+
+/* GENRE */
+.genre-section{
+ margin-top:10px;
+ margin-bottom:43px;
+}
+
+.genre-heading{
+ display:flex;
+ align-items:center;
+ gap:7px;
+ margin-bottom:20px;
+ font-size:27px;
+ font-weight:400;
+ letter-spacing:-1px;
+}
+
+.genre-heading strong{font-weight:700}
+
+.genre-container{
+ display:flex;
+ flex-wrap:wrap;
+ gap:11px 10px;
+ align-items:center;
+}
+
+.genre{
+ flex:none;
+ border:1px solid rgba(151,190,255,.34);
+ background:transparent;
+ color:#eeeaf5;
+ border-radius:30px;
+ padding:12px 17px;
+ font-size:14px;
+ font-weight:500;
+ line-height:1.2;
+ transition:.2s;
+ text-decoration:none;
+}
+
+.genre:active{transform:scale(.96)}
+
+.genre.active{
+ border-color:#a875ff;
+ color:#d9bfff;
+ background:rgba(168,117,255,.13);
+ box-shadow:0 0 12px rgba(168,117,255,.12);
+}
+
+.genre-more{
+ display:block;
+ margin:20px auto 0;
+ padding:8px 15px;
+ background:none;
+ border:0;
+ color:#a875ff;
+ font-size:16px;
+ font-weight:800;
+}
+
+/* TRENDING */
+.trending{
+ display:flex;
+ gap:12px;
+ overflow-x:auto;
+ scrollbar-width:none;
+ padding-bottom:7px;
+ scroll-snap-type:x mandatory;
+}
+
+.trending::-webkit-scrollbar{display:none}
+
+.trend-card{
+ flex:0 0 calc((100% - 24px)/3);
+ min-width:0;
+ aspect-ratio:.73;
+ position:relative;
+ overflow:hidden;
+ border-radius:16px;
+ border:1px solid var(--border);
+ background:#211633;
+ padding:10px;
+ display:flex;
+ flex-direction:column;
+ justify-content:space-between;
+ scroll-snap-align:start;
+ text-decoration:none;
+ color:inherit;
+}
+
+.trend-card img{
+ position:absolute;
+ inset:0;
+ width:100%;
+ height:100%;
+ object-fit:cover;
+ z-index:1;
+ transition:opacity .35s ease,filter .35s ease;
+}
+
+.trend-card:after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(0deg,#08060df5,transparent 80%);
+ z-index:2;
+ pointer-events:none;
+}
+
+.trend-top,.trend-bottom{position:relative;z-index:3}
+
+.rank{
+ background:#a875ff;
+ color:white;
+ padding:5px 8px;
+ border-radius:5px;
+ font-size:10px;
+ font-weight:900;
+}
+
+.trend-rating{
+ float:right;
+ font-size:10px;
+ color:#e3c6ff;
+ font-weight:800;
+}
+
+.trend-bottom strong{
+ font-size:11px;
+ line-height:1.4;
+ display:block;
+}
+
+.trend-bottom small{
+ font-size:9px;
+ color:#c4b4d7;
+ display:block;
+ margin-top:5px;
+}
+
+/* POSTER LOADING PLACEHOLDER */
+.poster-placeholder{
+ position:absolute;
+ inset:0;
+ z-index:5;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ overflow:hidden;
+ background:linear-gradient(180deg,#09090c 0%,#17171d 38%,#101015 100%);
+ opacity:1;
+ visibility:visible;
+ transition:opacity .35s ease,visibility .35s ease;
+}
+
+.poster-placeholder svg{
+ width:65%;
+ height:65%;
+ opacity:.10;
+ stroke:none;
+ display:block;
+}
+
+.poster-placeholder::after{
+ content:"";
+ position:absolute;
+ inset:0;
+ background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.055) 42%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.055) 58%,transparent 75%);
+ transform:translateX(-120%);
+ animation:anilixPosterShine 1.7s ease-in-out infinite;
+ pointer-events:none;
+}
+
+@keyframes anilixPosterShine{
+ to{transform:translateX(120%)}
+}
+
+.poster-placeholder.is-error::after{display:none}
+
+.poster img.is-loading,
+.continue-card img.is-loading,
+.trend-card img.is-loading{opacity:0}
+
+.poster img.is-loaded,
+.continue-card img.is-loaded,
+.trend-card img.is-loaded{opacity:1}
+
+/* SKELETON UI */
+body.is-rendering .header,
+body.is-rendering .action-btn,
+body.is-rendering .slider,
+body.is-rendering .chat-global,
+body.is-rendering .section-head,
+body.is-rendering .continue-card,
+body.is-rendering .poster,
+body.is-rendering .genre,
+body.is-rendering .genre-more,
+body.is-rendering .trend-card,
+body.is-rendering .nav-item{
+ position:relative;
+ overflow:hidden;
+}
+
+body.is-rendering .header::before,
+body.is-rendering .action-btn::before,
+body.is-rendering .slider::before,
+body.is-rendering .chat-global::before,
+body.is-rendering .section-head::before,
+body.is-rendering .continue-card::before,
+body.is-rendering .poster::before,
+body.is-rendering .genre::before,
+body.is-rendering .genre-more::before,
+body.is-rendering .trend-card::before,
+body.is-rendering .nav-item::before{
+ content:"";
+ position:absolute;
+ inset:0;
+ z-index:20;
+ pointer-events:none;
+ background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.045) 42%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.045) 58%,transparent 75%);
+ transform:translateX(-120%);
+ animation:anilixSkeletonShine 1.5s ease-in-out infinite;
+}
+
+@keyframes anilixSkeletonShine{
+ to{transform:translateX(120%)}
+}
+
+body.is-rendering .avatar,
+body.is-rendering .username,
+body.is-rendering .user-id,
+body.is-rendering .level,
+body.is-rendering .profile-role,
+body.is-rendering .exp-track{
+ filter:brightness(.55);
+}
+
+body.is-rendering .header{background:rgba(30,23,45,.48)}
+body.is-rendering .section-head{border-radius:8px}
+
+body.is-rendering .poster-name{
+ color:transparent;
+ background:linear-gradient(90deg,#211b2b,#393044,#211b2b);
+ background-size:200% 100%;
+ animation:anilixTextSkeleton 1.5s linear infinite;
+ border-radius:5px;
+ min-height:12px;
+}
+
+@keyframes anilixTextSkeleton{
+ to{background-position:-200% 0}
+}
+
+/* BOTTOM NAV - FLOATING */
+.bottom-nav{
+ position:fixed !important;
+ bottom:18px !important;
+ left:50% !important;
+ top:auto !important;
+ right:auto !important;
+ transform:translateX(-50%) !important;
+ z-index:99999 !important;
+ width:calc(100% - 32px) !important;
+ max-width:520px;
+ height:72px;
+ display:flex;
+ justify-content:space-around;
+ align-items:center;
+ padding:6px 10px;
+ margin:0;
+ background:rgba(28,20,42,.78);
+ border:1px solid rgba(210,180,255,.2);
+ border-radius:25px;
+ backdrop-filter:blur(25px) saturate(160%);
+ -webkit-backdrop-filter:blur(25px) saturate(160%);
+ box-shadow:0 8px 32px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.nav-item{
+ flex:1;
+ height:58px;
+ max-width:95px;
+ background:none;
+ border:0;
+ color:#a69aaf;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ flex-direction:column;
+ gap:5px;
+ font-size:10px;
+ font-weight:600;
+ border-radius:18px;
+ transition:.25s;
+ text-decoration:none;
+}
+
+.nav-item svg{
+ width:23px;
+ height:23px;
+ transition:.25s;
+}
+
+.nav-item.active{
+ color:#fff;
+ background:rgba(168,117,255,.28);
+ box-shadow:inset 0 0 0 1px rgba(190,150,255,.12),0 3px 12px rgba(168,117,255,.12);
+}
+
+.nav-item.active svg{
+ color:#d7baff;
+ filter:drop-shadow(0 0 7px #a875ff99);
+}
+
+.nav-item:active{transform:scale(.92)}
+
+@media(min-width:700px){
+ .app{padding-left:30px;padding-right:30px}
+ .poster-grid{grid-template-columns:repeat(6,1fr)}
+ .horizontal-list .poster-card,
+ .trending .trend-card{
+  flex:0 0 calc((100% - 60px)/6);
+ }
+ .slider{max-height:450px}
+ .slide-content{bottom:8%}
+ .genre{font-size:15px}
+}
+
+@media(max-width:430px){
+ .exp-info{max-width:190px}
+}
+
+@media(prefers-reduced-motion:reduce){
+ .app{transition:none!important}
+ .profile-role,
+ .level,
+ .exp-fill,
+ .slides,
+ .nav-item,
+ .poster-placeholder::after,
+ .slide.is-image-loading::before,
+ body.is-rendering *::before,
+ .poster-name{
+  animation:none!important;
+  transition:none!important;
+ }
+}
+</style>
+
+<script>
+/* PAGE TRANSITION - ANILIX */
+(()=>{
+ "use strict";
+
+ const duration=380;
+ const root=document.documentElement;
+ const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+
+ if(!reducedMotion.matches){
+  root.classList.add("is-entering");
+
+  window.addEventListener("DOMContentLoaded",()=>{
+   requestAnimationFrame(()=>{
+    root.classList.add("is-ready");
+
+    setTimeout(()=>{
+     root.classList.remove("is-entering","is-ready");
+    },duration+60);
+   });
+  });
+
+  document.addEventListener("click",event=>{
+   const link=event.target.closest("a");
+   if(!link)return;
+
+   if(
+    event.defaultPrevented||
+    event.button!==0||
+    event.metaKey||
+    event.ctrlKey||
+    event.shiftKey||
+    event.altKey
+   )return;
+
+   const href=link.getAttribute("href");
+
+   if(
+    !href||
+    href.startsWith("#")||
+    href.startsWith("javascript:")||
+    href.startsWith("mailto:")||
+    href.startsWith("tel:")||
+    link.target==="_blank"||
+    link.hasAttribute("download")||
+    link.hasAttribute("data-no-transition")
+   )return;
+
+   let destination;
+
+   try{
+    destination=new URL(link.href,location.href);
+   }catch(error){
+    return;
+   }
+
+   if(destination.origin!==location.origin)return;
+
+   if(
+    destination.pathname===location.pathname&&
+    destination.search===location.search
+   )return;
+
+   event.preventDefault();
+
+   root.classList.remove("is-entering","is-ready");
+   root.classList.add("is-leaving");
+
+   setTimeout(()=>{
+    location.href=destination.href;
+   },duration);
+  });
+ }
+
+ window.addEventListener("pageshow",event=>{
+  if(event.persisted){
+   root.classList.remove("is-entering","is-ready","is-leaving");
+  }
+ });
+})();
+</script>
+</head>
+
+<body class="is-rendering">
+<main class="app">
+
+<header class="header">
+ <a href="/profile.html" class="profile">
+  <div class="avatar" id="homeAvatar">K</div>
+
+  <div class="user-info">
+   <div class="user-top">
+    <span class="username" id="usernameText">KaellKyouka</span>
+    <span class="user-id" id="userIdText">#1</span>
+   </div>
+
+   <div class="user-bottom">
+    <span class="level" id="levelBadge" title="NETHER STAR">
+     <img id="levelIcon" src="https://project-crafting.github.io/minecraft-auto-updated-textures-api/items/nether_star.png" alt="NETHER STAR">
+     <span id="levelText">Lv 0</span>
+    </span>
+    <span class="profile-role role-member" id="roleBadge">Member</span>
+   </div>
+
+   <div class="exp-info">
+    <div class="exp-label">
+     <span id="homeExpText">0 / 2150 EXP</span>
+     <span id="homeExpPercent">0%</span>
+    </div>
+    <div class="exp-track">
+     <div class="exp-fill" id="homeExpFill"></div>
+    </div>
+   </div>
+  </div>
+ </a>
+
+ <div class="header-right">
+  <a href="/pencarian.html" aria-label="Pencarian">
+   <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+  </a>
+  <a href="/notifikasi.html" aria-label="Notifikasi">
+   <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+  </a>
+ </div>
+</header>
+
+<div class="quick-actions">
+ <a href="/premium.html" class="action-btn premium-btn">
+  <svg viewBox="0 0 24 24"><path d="M12 3 19 6v6c0 5-3 8-7 9-4-1-7-4-7-9V6z"/><path d="m9 12 2 2 4-4"/></svg>
+  Beli Premium
+ </a>
+ <a href="/teman.html" class="action-btn friend-btn">
+  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20v-2a6 6 0 0 1 12 0v2"/><path d="M16 15a5 5 0 0 1 5 5"/></svg>
+  Teman
+ </a>
+</div>
+
+<!-- BANNER -->
+<section class="slider" id="slider">
+ <div class="slides" id="slides">
+  <article class="slide">
+   <a href="/detail.html?anime=Mission%3A%20Yozakura%20Family">
+    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=85" alt="">
+   </a>
+   <div class="slide-content">
+    <span class="slide-tag">ONGOING</span>
+    <h1>Mission: Yozakura Family</h1>
+    <p>Petualangan baru dimulai. Saksikan episode terbaru sekarang.</p>
+   </div>
+  </article>
+
+  <article class="slide">
+   <a href="/anime.html">
+    <img src="https://images.unsplash.com/photo-1614583225154-5fcdda07019e?w=1200&auto=format&fit=crop&q=85" alt="">
+   </a>
+   <div class="slide-content">
+    <span class="slide-tag">FEATURED</span>
+    <h1>Anime Collection</h1>
+    <p>Temukan anime favoritmu dan nikmati pengalaman menonton.</p>
+   </div>
+  </article>
+
+  <article class="slide">
+   <a href="/rekomendasi.html">
+    <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1200&auto=format&fit=crop&q=85" alt="">
+   </a>
+   <div class="slide-content">
+    <span class="slide-tag">POPULAR</span>
+    <h1>Explore Your Anime</h1>
+    <p>Koleksi anime pilihan yang siap menemani waktu santaimu.</p>
+   </div>
+  </article>
+ </div>
+
+ <div class="slider-dots" id="dots">
+  <button class="active" aria-label="Slide 1"></button>
+  <button aria-label="Slide 2"></button>
+  <button aria-label="Slide 3"></button>
+ </div>
+</section>
+
+<!-- CHAT -->
+<a href="/chat.html" class="chat-global">
+ <svg class="chat-icon" viewBox="0 0 24 24"><path d="M4 5h16v12H7l-3 3z"/><path d="M8 9h8M8 13h5"/></svg>
+ <strong>Chat Global</strong>
+ <span class="chat-message"><b>ANILIX</b> · Welcome Semuanya</span>
+ <span class="chat-arrow">➜</span>
+</a>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Lanjutkan Nonton</h2>
+  <a href="/riwayat.html">Riwayat ›</a>
+ </div>
+ <div class="horizontal-list" id="continueList"></div>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Anime Terbaru</h2>
+  <a href="/anime.html">Lihat Semua ›</a>
+ </div>
+ <div class="poster-grid" id="animeLatest"></div>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Donghua Terbaru</h2>
+  <a href="/donghua.html">Lihat Semua ›</a>
+ </div>
+ <div class="horizontal-list" id="donghuaLatest"></div>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Movie Terbaru</h2>
+  <a href="/movie.html">Lihat Semua ›</a>
+ </div>
+ <div class="horizontal-list" id="movieLatest"></div>
+</section>
+
+<section class="genre-section">
+ <h2 class="genre-heading"><strong>Genre</strong> Series</h2>
+ <div class="genre-container" id="genreContainer"></div>
+ <button class="genre-more" id="genreMore">Show More</button>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Rekomendasi</h2>
+  <a href="/rekomendasi.html">Selengkapnya ›</a>
+ </div>
+ <div class="trending" id="recommendations"></div>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Anime Completed</h2>
+  <a href="/anime.html?status=completed">Lihat Semua ›</a>
+ </div>
+ <div class="horizontal-list" id="animeCompleted"></div>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Donghua Completed</h2>
+  <a href="/donghua.html?status=completed">Lihat Semua ›</a>
+ </div>
+ <div class="horizontal-list" id="donghuaCompleted"></div>
+</section>
+
+<section class="section">
+ <div class="section-head">
+  <h2>Movie Completed</h2>
+  <a href="/movie.html?status=completed">Lihat Semua ›</a>
+ </div>
+ <div class="horizontal-list" id="movieCompleted"></div>
+</section>
+
+</main>
+
+<!-- NAVIGATION DIAMBIL DARI JSON -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama"></nav>
+
+<script>
+/* =========================================
+   ANILIX JSON CONFIGURATION
+========================================= */
+
+const ANILIX_CONFIG={
+ roles:"./json/roles.json",
+ levels:"./json/levels.json",
+ exp:"./json/exp.json"
+};
+
+let homeConfig={
+ roles:null,
+ levels:null,
+ exp:null
+};
+
+async function fetchHomeJSON(path){
+ const response=await fetch(path,{cache:"no-store"});
+ if(!response.ok)throw new Error("Gagal memuat "+path);
+ return response.json();
+}
+
+async function loadHomeConfig(){
+ const results=await Promise.allSettled([
+  fetchHomeJSON(ANILIX_CONFIG.roles),
+  fetchHomeJSON(ANILIX_CONFIG.levels),
+  fetchHomeJSON(ANILIX_CONFIG.exp)
+ ]);
+
+ if(results[0].status==="fulfilled")homeConfig.roles=results[0].value;
+ if(results[1].status==="fulfilled")homeConfig.levels=results[1].value;
+ if(results[2].status==="fulfilled")homeConfig.exp=results[2].value;
+
+ results.forEach((result,index)=>{
+  if(result.status==="rejected"){
+   console.error(
+    "Config ANILIX gagal dimuat:",
+    Object.values(ANILIX_CONFIG)[index],
+    result.reason
+   );
+  }
+ });
+
+ return homeConfig;
+}
+
+/* PROFILE DATA */
+function getSavedHomeUser(){
+ try{
+  return JSON.parse(localStorage.getItem("anilix_user"))||{};
+ }catch(error){
+  return {};
+ }
+}
+
+function getHomeName(user){
+ return user.name||
+  user.displayName||
+  user.username||
+  localStorage.getItem("anilix_username")||
+  "KaellKyouka";
+}
+
+/* ROLE SYSTEM */
+function normalizeRole(value){
+ return String(value||"member")
+  .toLowerCase()
+  .trim()
+  .replace(/[\s_-]+/g,"");
+}
+
+function getRoleDefinitions(){
+ const config=homeConfig.roles||{};
+ return config.roles||{};
+}
+
+function getRoleDefinition(roleValue){
+ const config=homeConfig.roles||{};
+ const roles=getRoleDefinitions();
+
+ const normalized=normalizeRole(roleValue);
+ const aliases=config.aliases||{};
+
+ const aliasKey=Object.keys(aliases).find(
+  key=>normalizeRole(key)===normalized
+ );
+
+ const aliasValue=aliasKey?aliases[aliasKey]:roleValue;
+ const target=normalizeRole(aliasValue);
+
+ if(Array.isArray(roles)){
+  return roles.find(role=>
+   normalizeRole(role.id||role.key||role.name)===target
+  )||roles.find(role=>
+   normalizeRole(role.id||role.key||role.name)===
+   normalizeRole(config.default_role||"member")
+  )||null;
+ }
+
+ const roleKey=Object.keys(roles).find(
+  key=>normalizeRole(key)===target
+ );
+
+ const defaultKey=Object.keys(roles).find(
+  key=>normalizeRole(key)===
+  normalizeRole(config.default_role||"member")
+ );
+
+ return roles[roleKey]||
+  roles[defaultKey]||
+  roles.member||
+  null;
+}
+
+function updateHomeRole(roleValue){
+ const badge=document.getElementById("roleBadge");
+ if(!badge)return;
+
+ const role=getRoleDefinition(roleValue);
+
+ const selected=role||{
+  name:"Member",
+  className:"role-member",
+  animated:false
+ };
+
+ const name=selected.name||selected.label||"Member";
+ const className=selected.className||selected.class_name||"role-member";
+
+ badge.textContent=name;
+ badge.className="profile-role";
+
+ String(className)
+  .split(/\s+/)
+  .filter(Boolean)
+  .forEach(className=>badge.classList.add(className));
+
+ if(!selected.className&&!selected.class_name){
+  badge.classList.add("role-member");
+ }
+
+ badge.style.background="";
+ badge.style.backgroundImage="";
+ badge.style.backgroundColor="";
+ badge.style.color="";
+ badge.style.boxShadow="";
+ badge.style.backgroundSize="";
+ badge.style.animation="";
+
+ const colors=Array.isArray(selected.color)
+  ?selected.color
+  :Array.isArray(selected.colors)
+   ?selected.colors
+   :null;
+
+ if(colors&&colors.length){
+  if(colors.length===1){
+   badge.style.background=colors[0];
+  }else{
+   const gradientColors=colors.join(",");
+   badge.style.backgroundImage=
+    `linear-gradient(120deg,${gradientColors})`;
+   badge.style.backgroundSize="250% 250%";
+  }
+ }else if(selected.gradient){
+  badge.style.backgroundImage=selected.gradient;
+  badge.style.backgroundSize="250% 250%";
+ }else if(selected.background){
+  badge.style.background=selected.background;
+ }
+
+ if(selected.text_color){
+  badge.style.color=selected.text_color;
+ }else if(selected.textColor){
+  badge.style.color=selected.textColor;
+ }else if(typeof selected.color==="string"){
+  badge.style.color=selected.color;
+ }
+
+ if(selected.glow){
+  badge.style.boxShadow=`0 0 14px ${selected.glow}`;
+ }
+
+ const animated=selected.animated??selected.animation??true;
+
+ if(animated===false){
+  badge.classList.add("no-animation");
+ }else{
+  badge.classList.remove("no-animation");
+ }
+
+ const effects=homeConfig.roles?.badge_effects||{};
+ const shineEnabled=effects.shine_animation!==false&&animated!==false;
+
+ if(!shineEnabled){
+  badge.classList.add("no-shine");
+ }else{
+  badge.classList.remove("no-shine");
+ }
+
+ if(selected.shine===false){
+  badge.classList.add("no-shine");
+ }
+
+ badge.title=selected.description||name;
+}
+
+/* LEVEL SYSTEM */
+const LEVEL_IMAGE_FALLBACK=
+ "https://project-crafting.github.io/minecraft-auto-updated-textures-api/items/";
+
+function getLevelRanks(){
+ const config=homeConfig.levels||{};
+ return config.ranks||config.levels||[];
+}
+
+function getLevelRank(level){
+ const ranks=getLevelRanks();
+
+ if(Array.isArray(ranks)){
+  return ranks.find(rank=>{
+   const min=Number(rank.min??rank.min_level??0);
+   const max=Number(rank.max??rank.max_level??Infinity);
+   return level>=min&&level<=max;
+  })||null;
+ }
+
+ for(const rank of Object.values(ranks)){
+  const min=Number(rank.min??rank.min_level??0);
+  const max=Number(rank.max??rank.max_level??Infinity);
+
+  if(level>=min&&level<=max)return rank;
+ }
+
+ return null;
+}
+
+function updateMinecraftLevel(level){
+ const userLevel=Math.max(0,Math.floor(Number(level)||0));
+
+ const badge=document.getElementById("levelBadge");
+ const icon=document.getElementById("levelIcon");
+ const text=document.getElementById("levelText");
+
+ if(!badge||!icon||!text)return;
+
+ text.textContent="Lv "+userLevel.toLocaleString("id-ID");
+
+ const rank=getLevelRank(userLevel);
+
+ if(!rank){
+  badge.style.setProperty("--c1","#68717e");
+  badge.style.setProperty("--c2","#c3ccd7");
+  badge.style.setProperty("--c3","#535e6c");
+  badge.style.setProperty("--glow","#aab7c9");
+  icon.style.display="none";
+  badge.title="Belum memiliki rank";
+  return;
+ }
+
+ const colors=rank.colors||rank.color||[
+  "#526b86",
+  "#e9f7ff",
+  "#8aa8c8"
+ ];
+
+ badge.style.setProperty("--c1",colors[0]||"#526b86");
+ badge.style.setProperty("--c2",colors[1]||"#e9f7ff");
+ badge.style.setProperty("--c3",colors[2]||"#8aa8c8");
+ badge.style.setProperty("--glow",rank.glow||"#c5e8ff");
+
+ const baseUrl=
+  homeConfig.levels?.icon_base_url||
+  LEVEL_IMAGE_FALLBACK;
+
+ const iconFile=rank.file||rank.icon||"";
+
+ if(iconFile){
+  icon.style.display="block";
+
+  const iconURL=String(iconFile);
+
+  icon.src=/^(https?:|\/)/i.test(iconURL)
+   ?iconURL
+   :baseUrl+iconURL.replace(/\.png$/i,"")+".png";
+
+  icon.alt=rank.name||"Level Rank";
+ }else{
+  icon.style.display="none";
+ }
+
+ badge.title=rank.name||"Level "+userLevel;
+}
+
+/* EXP DISPLAY */
+function getExpSettings(){
+ return homeConfig.exp||{};
+}
+
+function getRequiredExp(){
+ const levels=homeConfig.levels||{};
+ const exp=getExpSettings();
+
+ return Number(
+  levels.exp_per_level??
+  exp.exp_per_level??
+  exp.required_exp??
+  2150
+ )||2150;
+}
+
+function updateHomeExp(user){
+ const required=getRequiredExp();
+
+ const totalExp=Math.max(0,Number(
+  user.total_exp??
+  user.exp??
+  user.experience??
+  0
+ )||0);
+
+ const currentExp=user.current_exp!==undefined
+  ?Math.max(0,Number(user.current_exp)||0)
+  :totalExp%required;
+
+ const safeCurrent=Math.min(currentExp,required);
+ const percent=Math.min(100,(safeCurrent/required)*100);
+
+ const expText=document.getElementById("homeExpText");
+ const expPercent=document.getElementById("homeExpPercent");
+ const expFill=document.getElementById("homeExpFill");
+
+ if(expText){
+  expText.textContent=
+   safeCurrent.toLocaleString("id-ID")+
+   " / "+
+   required.toLocaleString("id-ID")+
+   " EXP";
+ }
+
+ if(expPercent){
+  expPercent.textContent=Math.floor(percent)+"%";
+ }
+
+ if(expFill){
+  expFill.style.width=percent+"%";
+ }
+}
+
+/* AVATAR PROFILE */
+const HOME_DB_NAME="ANILIX_STORAGE";
+const HOME_DB_STORE="images";
+let homeAvatarURL=null;
+
+function openHomeDB(){
+ return new Promise((resolve,reject)=>{
+  if(!window.indexedDB){
+   reject(new Error("IndexedDB tidak tersedia"));
+   return;
+  }
+
+  const request=indexedDB.open(HOME_DB_NAME,1);
+
+  request.onupgradeneeded=()=>{
+   const db=request.result;
+
+   if(!db.objectStoreNames.contains(HOME_DB_STORE)){
+    db.createObjectStore(HOME_DB_STORE);
+   }
+  };
+
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error);
+ });
+}
+
+async function loadHomeAvatar(){
+ const avatar=document.getElementById("homeAvatar");
+ if(!avatar)return;
+
+ try{
+  const db=await openHomeDB();
+
+  const blob=await new Promise((resolve,reject)=>{
+   const transaction=db.transaction(HOME_DB_STORE,"readonly");
+   const request=transaction.objectStore(HOME_DB_STORE).get("avatar");
+
+   request.onsuccess=()=>resolve(request.result);
+   request.onerror=()=>reject(request.error);
+  });
+
+  db.close();
+
+  if(blob instanceof Blob&&blob.size>0){
+   if(homeAvatarURL){
+    URL.revokeObjectURL(homeAvatarURL);
+   }
+
+   homeAvatarURL=URL.createObjectURL(blob);
+   avatar.innerHTML="";
+
+   const img=document.createElement("img");
+   img.src=homeAvatarURL;
+   img.alt="Foto Profil";
+
+   avatar.appendChild(img);
+  }else{
+   if(homeAvatarURL){
+    URL.revokeObjectURL(homeAvatarURL);
+    homeAvatarURL=null;
+   }
+
+   avatar.textContent=getHomeInitial();
+  }
+ }catch(error){
+  console.error("Gagal memuat foto profile:",error);
+ }
+}
+
+function getHomeInitial(){
+ const user=getSavedHomeUser();
+ const name=getHomeName(user);
+
+ return String(name).trim().charAt(0).toUpperCase()||"K";
+}
+
+/* LOAD PROFILE DATA */
+function loadProfileData(){
+ const savedUser=getSavedHomeUser();
+ const savedName=getHomeName(savedUser);
+
+ const usernameElement=document.getElementById("usernameText");
+
+ if(usernameElement){
+  usernameElement.textContent=savedName;
+ }
+
+ const userIdElement=document.getElementById("userIdText");
+
+ if(userIdElement){
+  const userId=savedUser.id??"";
+  userIdElement.textContent=userId!==""?"#"+userId:"#";
+ }
+
+ updateHomeRole(savedUser.role||"member");
+ updateMinecraftLevel(savedUser.level);
+ updateHomeExp(savedUser);
+
+ const avatar=document.getElementById("homeAvatar");
+
+ if(avatar&&!homeAvatarURL){
+  avatar.textContent=
+   String(savedName).trim().charAt(0).toUpperCase()||"K";
+ }
+
+ loadHomeAvatar();
+}
+
+/* INITIALIZATION */
+let skeletonRemoved=false;
+
+function removeHomeSkeleton(){
+ if(skeletonRemoved)return;
+ skeletonRemoved=true;
+ document.body.classList.remove("is-rendering");
+}
+
+const skeletonFallback=setTimeout(removeHomeSkeleton,2500);
+
+initializeHomeProfile();
+
+async function initializeHomeProfile(){
+ try{
+  await loadHomeConfig();
+  const response=await fetch("/api/auth/me",{credentials:"include",cache:"no-store"});
+  if(response.ok){
+   const payload=await response.json();
+   if(payload.user){
+    localStorage.setItem("anilix_user",JSON.stringify(payload.user));
+    localStorage.setItem("anilix_username",payload.user.username||payload.user.name||"");
+   }
+  }else if(response.status===401){
+   localStorage.removeItem("anilix_user");
+   localStorage.removeItem("anilix_session");
+   location.replace("/login.html");
+   return;
+  }
+  loadProfileData();
+ }catch(error){
+  console.error("Gagal inisialisasi profile ANILIX:",error);
+ }finally{
+  clearTimeout(skeletonFallback);
+
+  requestAnimationFrame(()=>{
+   requestAnimationFrame(()=>{
+    setTimeout(removeHomeSkeleton,350);
+   });
+  });
+ }
+}
+
+window.addEventListener("DOMContentLoaded",()=>{
+ setTimeout(removeHomeSkeleton,1800);
+},{once:true});
+
+window.addEventListener("storage",event=>{
+ if(["anilix_user","anilix_username",null].includes(event.key)){
+  loadProfileData();
+ }
+});
+
+document.addEventListener("visibilitychange",()=>{
+ if(!document.hidden)loadProfileData();
+});
+
+window.addEventListener("pageshow",()=>{
+ loadProfileData();
+});
+
+/* DATA HOMEPAGE */
+const images=[
+ "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400",
+ "https://images.unsplash.com/photo-1614583225154-5fcdda07019e?w=400",
+ "https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?w=400",
+ "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=400"
+];
+
+const continueData=[
+ ["Juuou Mujin Dandivine","ditonton 1 hari lalu"],
+ ["Hotaru no Yomeiri","ditonton 1 hari lalu"],
+ ["Toaru Anbu no Item","ditonton 2 hari lalu"],
+ ["Black Clover","ditonton 2 hari lalu"],
+ ["Hirano to Kagiura","ditonton 3 hari lalu"],
+ ["Kirio Fanclub","ditonton 3 hari lalu"],
+ ["Spare Me, Great Lord!","ditonton 4 hari lalu"],
+ ["Battle Through the Heavens","ditonton 4 hari lalu"],
+ ["Nijusseiki Denki Mokuroku","ditonton 5 hari lalu"],
+ ["Shangri-La Frontier","ditonton 5 hari lalu"]
+];
+
+const animeNames=[
+ "Perfect Addiction","Nijusseiki Denki Mokuroku","Kirio Fanclub",
+ "Isekai no Sata wa Shachiku Shidai","Hirano to Kagiura",
+ "New Anime Story","Anime Collection","Explore Your Anime",
+ "Another Anime","Latest Anime"
+];
+
+const donghuaNames=[
+ "Zi Jin: Yu Miao Fang","To Be Winner","Spare Me, Great Lord!",
+ "Battle Through the Heavens","Soul Land","Perfect World",
+ "The King's Avatar","Throne of Seal","Swallowed Star","Martial Universe"
+];
+
+const movieNames=[
+ "Shangri-La Frontier","Kobayashi-san Chi no Maid Dragon",
+ "Yuru Camp Movie","Your Name","Weathering With You",
+ "A Silent Voice","Suzume","The Garden of Words",
+ "Spirited Away","I Want to Eat Your Pancreas"
+];
+
+const recommendationNames=[
+ "Black Clover","Dark Summoner to Dekiteiru",
+ "Battle Through the Heavens","Solo Leveling","Jujutsu Kaisen",
+ "Demon Slayer","One Piece","Naruto","Frieren","Attack on Titan"
+];
+
+const animeCompletedNames=[
+ "Perfect Addiction","Nijusseiki Denki Mokuroku","Kirio Fanclub",
+ "Hirano to Kagiura","Your Name","Violet Evergarden",
+ "Death Note","Erased","Horimiya","Toradora"
+];
+
+const donghuaCompletedNames=[
+ "Wo Kai Dongwuyuan Naxie Nian","Jie Yao","Aishang Ta de Liyou Extra",
+ "Soul Land","The King's Avatar","Perfect World",
+ "Throne of Seal","The Daily Life of the Immortal King",
+ "Fog Hill of Five Elements","Scissor Seven"
+];
+
+const movieCompletedNames=[
+ "Shangri-La Frontier","Maid Dragon","Yuru Camp Movie",
+ "Your Name","Suzume","A Silent Voice","Weathering With You",
+ "Spirited Away","The Garden of Words","Howl's Moving Castle"
+];
+
+/* POSTER */
+function createPoster(name,index,tag="NEW",episode="EP 12",score="7.80",type="anime"){
+ const title=encodeURIComponent(name);
+
+ return `
+ <a class="poster-card" href="/detail.html?type=${type}&title=${title}">
+  <div class="poster">
+   <img src="${images[index%images.length]}" alt="${name}">
+   <span class="poster-tag">${tag}</span>
+   <span class="score">★ ${score}</span>
+   <span class="episode">${episode}</span>
+  </div>
+  <div class="poster-name">${name}</div>
+ </a>`;
+}
+
+function renderPosters(elementId,names,tag="NEW",episode="EP 12",type="anime"){
+ const element=document.getElementById(elementId);
+ if(!element)return;
+
+ element.innerHTML=names.map((name,i)=>
+  createPoster(name,i,tag,episode,(6.8+(i%4)*.31).toFixed(2),type)
+ ).join("");
+}
+
+/* CONTINUE WATCHING */
+document.getElementById("continueList").innerHTML=
+ continueData.map((item,i)=>`
+ <a class="continue-card" href="/watch.html?title=${encodeURIComponent(item[0])}">
+  <img src="${images[i%images.length]}" alt="${item[0]}">
+  <div class="continue-info">
+   <strong>${item[0]}</strong>
+   <small>${item[1]}</small>
+  </div>
+  <span class="play">▶</span>
+ </a>
+`).join("");
+
+/* POSTER SECTIONS */
+renderPosters("animeLatest",animeNames,"NEW","EP 12","anime");
+renderPosters("donghuaLatest",donghuaNames,"NEW","EP 8","donghua");
+renderPosters("movieLatest",movieNames,"MOVIE","MOVIE","movie");
+renderPosters("animeCompleted",animeCompletedNames,"END","12 Episode","anime");
+renderPosters("donghuaCompleted",donghuaCompletedNames,"END","13 Episode","donghua");
+renderPosters("movieCompleted",movieCompletedNames,"END","MOVIE","movie");
+
+/* GENRE LIST */
+const genres=[
+ "Action","Adult Cast","Adventure","Avant Garde",
+ "Award Winning","Comedy","Demons","Drama",
+ "Ecchi","Fantasy","Film","Game","Girls Love","Gore",
+ "Gourmet","Harem","Historical","Horror","Isekai",
+ "Josei","Magic","Martial Arts","Mecha","Military",
+ "Movie","Music","Mystery","Mythology","Parody",
+ "Psychological","Reincarnation","Romance","Samurai",
+ "School","Sci-Fi","Seinen","Shoujo","Shoujo Ai",
+ "Shounen","Slice Of Life","Space","Sports",
+ "Super Power","Supernatural","Suspense","Thriller",
+ "Time Travel","Tokusatsu","Vampire"
+];
+
+const genreContainer=document.getElementById("genreContainer");
+const genreMore=document.getElementById("genreMore");
+let showAllGenres=false;
+
+function renderGenres(){
+ const visibleGenres=showAllGenres?genres:genres.slice(0,12);
+
+ genreContainer.innerHTML=visibleGenres.map(genre=>`
+  <a class="genre" href="/kategori.html?genre=${encodeURIComponent(genre)}">${genre}</a>
+ `).join("");
+
+ genreMore.textContent=showAllGenres?"Show Less":"Show More";
+}
+
+genreMore.addEventListener("click",()=>{
+ showAllGenres=!showAllGenres;
+ renderGenres();
+});
+
+renderGenres();
+
+/* REKOMENDASI */
+document.getElementById("recommendations").innerHTML=
+ recommendationNames.map((name,i)=>`
+ <a class="trend-card" href="/detail.html?type=anime&title=${encodeURIComponent(name)}">
+  <img src="${images[i%images.length]}" alt="${name}">
+  <div class="trend-top">
+   <span class="rank">#${i+1}</span>
+   <span class="trend-rating">★ ${(8.1+(i%4)*.2).toFixed(2)}</span>
+  </div>
+  <div class="trend-bottom">
+   <strong>${name}</strong>
+   <small>Action · Fantasy</small>
+  </div>
+ </a>
+`).join("");
+
+/* PLACEHOLDER LOGO ANILIX */
+const anilixPlaceholder=`
+<div class="poster-placeholder">
+ <svg viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <polygon fill="#fff" points="123,1008 581,222 735,485 654,614 582,490 288,1008"/>
+  <polygon fill="#fff" points="481,1008 940,249 1110,249 654,1008"/>
+  <polygon fill="#fff" points="802,875 889,738 1046,1008 880,1008"/>
+ </svg>
+</div>`;
+
+/* POSTER IMAGE LOADING SYSTEM */
+function addPosterPlaceholder(card){
+ if(!card||card.dataset.placeholderReady==="true")return;
+
+ const img=card.querySelector("img");
+ if(!img)return;
+
+ card.dataset.placeholderReady="true";
+
+ const wrapper=document.createElement("div");
+ wrapper.innerHTML=anilixPlaceholder.trim();
+
+ const placeholder=wrapper.firstElementChild;
+ card.prepend(placeholder);
+
+ img.classList.add("is-loading");
+
+ function imageLoaded(){
+  img.classList.remove("is-loading");
+  img.classList.add("is-loaded");
+
+  placeholder.style.opacity="0";
+  placeholder.style.visibility="hidden";
+
+  setTimeout(()=>placeholder.remove(),380);
+ }
+
+ function imageFailed(){
+  img.classList.remove("is-loading","is-loaded");
+  img.style.display="none";
+  placeholder.classList.add("is-error");
+ }
+
+ img.addEventListener("load",imageLoaded,{once:true});
+ img.addEventListener("error",imageFailed,{once:true});
+
+ if(img.complete){
+  if(img.naturalWidth>0)imageLoaded();
+  else imageFailed();
+ }
+}
+
+function initializePosterPlaceholders(){
+ document.querySelectorAll(
+  ".poster,.continue-card,.trend-card"
+ ).forEach(addPosterPlaceholder);
+}
+
+initializePosterPlaceholders();
+
+const posterObserver=new MutationObserver(mutations=>{
+ for(const mutation of mutations){
+  for(const node of mutation.addedNodes){
+   if(node.nodeType!==Node.ELEMENT_NODE)continue;
+
+   if(node.matches?.(".poster,.continue-card,.trend-card")){
+    addPosterPlaceholder(node);
+   }
+
+   node.querySelectorAll?.(
+    ".poster,.continue-card,.trend-card"
+   ).forEach(addPosterPlaceholder);
+  }
+ }
+});
+
+posterObserver.observe(document.body,{
+ childList:true,
+ subtree:true
+});
+
+/* BANNER IMAGE LOADING */
+document.querySelectorAll(".slide").forEach(slide=>{
+ const img=slide.querySelector("img");
+ if(!img)return;
+
+ slide.classList.add("is-image-loading");
+ img.classList.add("is-loading");
+
+ function bannerLoaded(){
+  img.classList.remove("is-loading");
+  img.classList.add("is-loaded");
+  slide.classList.remove("is-image-loading");
+ }
+
+ function bannerFailed(){
+  img.classList.remove("is-loading","is-loaded");
+  slide.classList.remove("is-image-loading");
+  img.style.display="none";
+ }
+
+ img.addEventListener("load",bannerLoaded,{once:true});
+ img.addEventListener("error",bannerFailed,{once:true});
+
+ if(img.complete){
+  if(img.naturalWidth>0)bannerLoaded();
+  else bannerFailed();
+ }
+});
+
+/* AUTO SLIDER */
+const slides=document.getElementById("slides");
+const dots=document.querySelectorAll("#dots button");
+const totalSlides=dots.length;
+
+let currentSlide=0;
+let sliderTimer;
+
+function showSlide(index){
+ currentSlide=(index+totalSlides)%totalSlides;
+ slides.style.transform=`translateX(-${currentSlide*100}%)`;
+
+ dots.forEach((dot,i)=>{
+  dot.classList.toggle("active",i===currentSlide);
+ });
+}
+
+function startSlider(){
+ clearInterval(sliderTimer);
+ sliderTimer=setInterval(()=>showSlide(currentSlide+1),5000);
+}
+
+dots.forEach((dot,index)=>{
+ dot.addEventListener("click",()=>{
+  showSlide(index);
+  startSlider();
+ });
+});
+
+const slider=document.getElementById("slider");
+
+slider.addEventListener("mouseenter",()=>clearInterval(sliderTimer));
+slider.addEventListener("mouseleave",startSlider);
+slider.addEventListener("touchstart",()=>clearInterval(sliderTimer),{passive:true});
+slider.addEventListener("touchend",startSlider,{passive:true});
+
+startSlider();
+</script>
+
+<!-- LOAD NAVIGATION JSON -->
+<script src="./js/navigation.js"></script>
+
+</body>
+</html>

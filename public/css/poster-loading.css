@@ -1,0 +1,91 @@
+
+/* ANILIX POSTER IMAGE LOADING */
+
+.anilix-poster-media {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    isolation: isolate;
+    background: #111116;
+    border-radius: inherit;
+}
+
+/* Placeholder sebelum gambar selesai dimuat */
+.anilix-poster-media::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: #17171d;
+    opacity: 1;
+    transition: opacity .35s ease;
+}
+
+/* Shine */
+.anilix-poster-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(
+        110deg,
+        transparent 20%,
+        rgba(255,255,255,.025) 35%,
+        rgba(255,255,255,.10) 50%,
+        rgba(255,255,255,.025) 65%,
+        transparent 80%
+    );
+    transform: translateX(-100%);
+    animation: anilixPosterShine 1.5s ease-in-out infinite;
+    transition: opacity .3s ease;
+}
+
+.anilix-poster-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity .4s ease;
+}
+
+/* Poster berhasil dimuat */
+.anilix-poster-media.is-loaded::before,
+.anilix-poster-media.is-loaded::after {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.anilix-poster-media.is-loaded img {
+    opacity: 1;
+}
+
+/* Poster gagal dimuat */
+.anilix-poster-media.is-error::before {
+    background: #191920;
+}
+
+.anilix-poster-media.is-error::after {
+    display: none;
+}
+
+.anilix-poster-media.is-error img {
+    opacity: 0;
+}
+
+@keyframes anilixPosterShine {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .anilix-poster-media::after {
+        animation: none;
+        transform: none;
+        opacity: .3;
+    }
+}
