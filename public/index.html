@@ -1072,12 +1072,12 @@ body.is-rendering .poster-name{
 
 <header class="header">
  <a href="/profile.html" class="profile">
-  <div class="avatar" id="homeAvatar">K</div>
+  <div class="avatar" id="homeAvatar"></div>
 
   <div class="user-info">
    <div class="user-top">
-    <span class="username" id="usernameText">KaellKyouka</span>
-    <span class="user-id" id="userIdText">#1</span>
+    <span class="username" id="usernameText"></span>
+    <span class="user-id" id="userIdText"></span>
    </div>
 
    <div class="user-bottom">
@@ -1305,8 +1305,7 @@ function getHomeName(user){
  return user.name||
   user.displayName||
   user.username||
-  localStorage.getItem("anilix_username")||
-  "KaellKyouka";
+  "Pengguna";
 }
 
 /* ROLE SYSTEM */
@@ -1758,11 +1757,11 @@ window.addEventListener("storage",event=>{
 });
 
 document.addEventListener("visibilitychange",()=>{
- if(!document.hidden)loadProfileData();
+ if(!document.hidden)initializeHomeProfile();
 });
 
-window.addEventListener("pageshow",()=>{
- loadProfileData();
+window.addEventListener("pageshow",event=>{
+ if(event.persisted)initializeHomeProfile();
 });
 
 /* DATA HOMEPAGE */
