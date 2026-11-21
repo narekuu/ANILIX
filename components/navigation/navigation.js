@@ -15,6 +15,15 @@
     document.documentElement.appendChild(nav);
   }
 
+  // The active destination is already open; do not reload it on repeated taps.
+  nav.addEventListener("click", event => {
+    const target = event.target instanceof Element ? event.target : null;
+    const link = target && target.closest("a.nav-item[aria-current='page']");
+    if (!link) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+
   async function renderNavigation() {
     try {
       const response = await fetch(configURL, { cache: "no-cache" });
