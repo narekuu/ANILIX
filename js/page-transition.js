@@ -34,9 +34,10 @@
    const controller=new AbortController(),timers=new Set(),channels=[];
    const winAdd=window.addEventListener,docAdd=document.addEventListener;
    const setT=window.setTimeout,clearT=window.clearTimeout,setI=window.setInterval,clearI=window.clearInterval;
-   const NativeChannel=window.BroadcastChannel;
+   const NativeChannel=window.BroadcastChannel,oldFetch=window.fetch;
    const signalOptions=options=>options===undefined?{signal:controller.signal}:typeof options==="boolean"?{capture:options,signal:controller.signal}:options.signal?options:{...options,signal:controller.signal};
    window.addEventListener=function(type,listener,options){return winAdd.call(this,type,listener,signalOptions(options))};
+   window.fetch=function(input,options={}){return oldFetch.call(this,input,{...options,signal:options.signal||controller.signal})};
    document.addEventListener=function(type,listener,options){return docAdd.call(this,type,listener,signalOptions(options))};
    window.setTimeout=function(callback,delay,...args){let id;id=setT.call(this,(...values)=>{timers.delete(id);callback(...values)},delay,...args);timers.add(id);return id};
    window.clearTimeout=function(id){timers.delete(id);return clearT.call(this,id)};
@@ -48,7 +49,7 @@
     if(typeof createPosterPlaceholder==="function")window.createPosterPlaceholder=createPosterPlaceholder;
    }finally{
     window.addEventListener=winAdd;document.addEventListener=docAdd;
-    window.setTimeout=setT;window.clearTimeout=clearT;window.setInterval=setI;window.clearInterval=clearI;
+    window.setTimeout=setT;window.clearTimeout=clearT;window.setInterval=setI;window.clearInterval=clearI;window.fetch=oldFetch;
     if(NativeChannel)window.BroadcastChannel=NativeChannel;
    }
    window.__ANILIX_PAGE_CLEANUP__=()=>{
