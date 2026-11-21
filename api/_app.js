@@ -206,6 +206,40 @@ app.get(['/api/auth/me','/api/me'],async(req,res,next)=>{
   try {const row=await currentUser(req); if(!row)return res.status(401).json({success:false,message:'Belum login.'}); res.json({success:true,user:userView(row)});}
   catch(e){next(e);}
 });
+
+/* Search registered users from the shared database (not browser localStorage). */
+app.get('/api/users/search',auth,async(req,res,next)=>{
+ try {
+  const q=String(req.query.q||'').trim().slice(0,80);
+  if(!q) return res.json({success:true,users:[]});
+  const idQuery=q.replace(/^#/,'');
+  const result=await pool.query(
+   `SELECT id,username,display_name,role,avatar,total_exp,level
+    FROM public.users
+    WHERE id<>$1 AND (
+     CAST(id AS TEXT) ILIKE $2 OR
+     username ILIKE $2 OR
+     display_name ILIKE $2
+    )
+    ORDER BY
+     CASE WHEN CAST(id AS TEXT)=$3 THEN 0 ELSE 1 END,
+     display_name ASC
+    LIMIT 30`,
+   [req.user.id,'%'+q+'%',idQuery]
+  );
+  const users=result.rows.map(row=>{
+   const total=Number(row.total_exp||0);
+   const level=calcLevel(total);
+   return {
+    id:Number(row.id),username:row.username,name:row.display_name,
+    displayName:row.display_name,role:row.role,
+    verified:row.role!=='member',avatar:row.avatar,
+    total_exp:total,level
+   };
+  });
+  res.json({success:true,users});
+ }catch(e){next(e);}
+});
 app.patch('/api/user/profile',auth,async(req,res,next)=>{
  try {
   const displayName=String(req.body?.display_name ?? '').trim();
