@@ -903,25 +903,24 @@ function updateUsernameCounter(){
 
 /* SAVE PROFILE */
 
-async function compressAvatar(file){
-    const bitmap = await createImageBitmap(file);
-    const canvas = document.createElement("canvas");
-    const scale = Math.min(1, 512 / Math.max(bitmap.width, bitmap.height));
-    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-    const context = canvas.getContext("2d");
-    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+async function compressImage(file,type){
+    const bitmap=await createImageBitmap(file);
+    const maxSide=type==="banner"?1600:512;
+    const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+    canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    const context=canvas.getContext("2d");
+    context.drawImage(bitmap,0,0,canvas.width,canvas.height);
     bitmap.close?.();
-
-    let quality = 0.82;
-    let dataURL = canvas.toDataURL("image/webp", quality);
-    while(dataURL.length > 560000 && quality > 0.42){
-        quality -= 0.1;
-        dataURL = canvas.toDataURL("image/webp", quality);
+    const limit=type==="banner"?1700000:560000;
+    let quality=0.82;
+    let dataURL=canvas.toDataURL("image/webp",quality);
+    while(dataURL.length>limit&&quality>0.38){
+      quality-=0.08;
+      dataURL=canvas.toDataURL("image/webp",quality);
     }
-    if(dataURL.length > 560000){
-        throw new Error("Foto terlalu besar setelah dikompres.");
-    }
+    if(dataURL.length>limit)throw new Error((type==="banner"?"Banner":"Foto profil")+" terlalu besar setelah dikompres.");
     return dataURL;
 }
 
@@ -944,12 +943,8 @@ async function saveProfile(){
 
     try{
         const payload = { display_name: displayName };
-        if(pendingAvatar) payload.avatar = await compressAvatar(pendingAvatar);
-
-        if(pendingBanner){
-            await openDatabase();
-            await saveImage("banner", pendingBanner);
-        }
+        if(pendingAvatar) payload.avatar = await compressImage(pendingAvatar,"avatar");
+        if(pendingBanner) payload.banner = await compressImage(pendingBanner,"banner");
 
         const response = await fetch("/api/user/profile", {
             method: "PATCH",
@@ -967,8 +962,10 @@ async function saveProfile(){
         pendingBanner = null;
         document.getElementById("profileName").textContent =
             result.user.name || result.user.displayName || displayName;
-        document.getElementById("avatarPreview").src =
-            result.user.avatar || DEFAULT_AVATAR;
+        document.getElementById("avatarPreview").src = result.user.avatar || DEFAULT_AVATAR;
+        document.getElementById("bannerPreview").style.backgroundImage = result.user.banner
+            ? `linear-gradient(0deg,rgba(9,7,17,.35),rgba(9,7,17,.05)),url("${result.user.banner}")`
+            : "";
         toast("Profil berhasil disimpan ke akun ANILIX");
     }catch(error){
         console.error(error);
@@ -1118,14 +1115,9 @@ async function loadProfile(){
         document.getElementById("avatarPreview").src =
             user.avatar || DEFAULT_AVATAR;
 
-        await openDatabase();
-        const banner = await getImage("banner");
-        if(banner){
-            if(bannerURL) URL.revokeObjectURL(bannerURL);
-            bannerURL = URL.createObjectURL(banner);
-            document.getElementById("bannerPreview").style.backgroundImage =
-                `linear-gradient(0deg,rgba(9,7,17,.35),rgba(9,7,17,.05)),url("${bannerURL}")`;
-        }
+        document.getElementById("bannerPreview").style.backgroundImage = user.banner
+            ? `linear-gradient(0deg,rgba(9,7,17,.35),rgba(9,7,17,.05)),url("${user.banner}")`
+            : "";
     }catch(error){
         console.error(error);
         if(!document.getElementById("avatarPreview").src){

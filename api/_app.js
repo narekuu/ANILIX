@@ -32,7 +32,7 @@ const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '3mb' }));
 app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
   if (missingEnvironment.length || invalidSessionSecret) {
@@ -69,7 +69,7 @@ function userView(row) {
   const premiumActive = !!row.premium_expires_at && new Date(row.premium_expires_at).getTime() > Date.now();
   return {
     id: Number(row.id), username: row.username, name: row.display_name, displayName: row.display_name,
-    email: row.email, role: row.role, verified: row.role !== 'member', avatar: row.avatar,
+    email: row.email, role: row.role, verified: row.role !== 'member', avatar: row.avatar, banner: row.banner || null,
     total_exp: total, exp: total, level, xp: total - level * EXP_PER_LEVEL,
     current_exp: total - level * EXP_PER_LEVEL, exp_in_level: total - level * EXP_PER_LEVEL,
     exp_to_next_level: Math.max(0, (level + 1) * EXP_PER_LEVEL - total),
@@ -214,7 +214,7 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
   if(!q) return res.json({success:true,users:[]});
   const idQuery=q.replace(/^#/,'');
   const result=await pool.query(
-   `SELECT id,username,display_name,role,avatar,total_exp,level
+   `SELECT id,username,display_name,role,avatar,banner,total_exp,level
     FROM public.users
     WHERE id<>$1 AND (
      CAST(id AS TEXT) ILIKE $2 OR
@@ -233,11 +233,26 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
    return {
     id:Number(row.id),username:row.username,name:row.display_name,
     displayName:row.display_name,role:row.role,
-    verified:row.role!=='member',avatar:row.avatar,
+    verified:row.role!=='member',avatar:row.avatar,banner:row.banner||null,
     total_exp:total,level
    };
   });
   res.json({success:true,users});
+ }catch(e){next(e);}
+});
+app.get('/api/users/:id',auth,async(req,res,next)=>{
+ try{
+  const id=Number(req.params.id);
+  if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID pengguna tidak valid.'});
+  const result=await pool.query(
+   'SELECT id,username,display_name,role,avatar,banner,total_exp,email,premium_expires_at,nixgem FROM public.users WHERE id=$1 LIMIT 1',
+   [id]
+  );
+  const row=result.rows[0];
+  if(!row)return res.status(404).json({success:false,message:'Pengguna tidak ditemukan.'});
+  const user=userView(row);
+  delete user.email;
+  res.json({success:true,user});
  }catch(e){next(e);}
 });
 app.patch('/api/user/profile',auth,async(req,res,next)=>{
@@ -246,20 +261,31 @@ app.patch('/api/user/profile',auth,async(req,res,next)=>{
   if(!displayName || displayName.length>20){
    return res.status(400).json({success:false,message:'Nama tampilan wajib diisi dan maksimal 20 karakter.'});
   }
-  let avatar=req.user.avatar || null;
-  if(Object.prototype.hasOwnProperty.call(req.body || {},'avatar')){
-   const supplied=req.body.avatar;
-   if(supplied===null || supplied==='') avatar=null;
-   else if(typeof supplied!=='string' || supplied.length>600000 ||
-     !/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(supplied)){
-    return res.status(400).json({success:false,message:'Format foto profil tidak valid atau ukurannya terlalu besar.'});
-   } else avatar=supplied;
+  let avatar=req.user.avatar||null;
+  let banner=req.user.banner||null;
+  const validateMedia=(value,maxLength,label)=>{
+   if(value===null||value==='')return {valid:true,value:null};
+   if(typeof value!=='string'||value.length>maxLength||
+    !/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/.test(value)){
+    return {valid:false,message:'Format '+label+' tidak valid atau ukurannya terlalu besar.'};
+   }
+   return {valid:true,value};
+  };
+  if(Object.prototype.hasOwnProperty.call(req.body||{},'avatar')){
+   const checked=validateMedia(req.body.avatar,600000,'foto profil');
+   if(!checked.valid)return res.status(400).json({success:false,message:checked.message});
+   avatar=checked.value;
+  }
+  if(Object.prototype.hasOwnProperty.call(req.body||{},'banner')){
+   const checked=validateMedia(req.body.banner,1800000,'banner');
+   if(!checked.valid)return res.status(400).json({success:false,message:checked.message});
+   banner=checked.value;
   }
   const updated=await pool.query(
-   'UPDATE public.users SET display_name=$1,avatar=$2,updated_at=NOW() WHERE id=$3 RETURNING *',
-   [displayName,avatar,req.user.id]
+   'UPDATE public.users SET display_name=$1,avatar=$2,banner=$3,updated_at=NOW() WHERE id=$4 RETURNING *',
+   [displayName,avatar,banner,req.user.id]
   );
-  if(!updated.rows[0]) return res.status(404).json({success:false,message:'Akun tidak ditemukan.'});
+  if(!updated.rows[0])return res.status(404).json({success:false,message:'Akun tidak ditemukan.'});
   res.json({success:true,user:userView(updated.rows[0])});
  }catch(e){next(e);}
 });

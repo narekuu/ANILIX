@@ -774,22 +774,8 @@ function updateLevelProgress(xp,requiredXP){
 
 /* PROFILE MEDIA */
 async function loadProfileMedia(){
- const avatarFromUser=currentUser.photoURL ||
-  currentUser.photo || currentUser.avatar || "";
- const bannerFromUser=currentUser.banner || "";
-
- try{
-  const [avatar,banner]=await Promise.all([
-   getMedia("avatar"),getMedia("banner")
-  ]);
-
-  setAvatarImage(avatarFromUser || avatar || null);
-  setBannerImage(banner || bannerFromUser || null);
- }catch(error){
-  console.warn("Media profil:",error);
-  setAvatarImage(avatarFromUser || null);
-  setBannerImage(bannerFromUser || null);
- }
+ setAvatarImage(currentUser.avatar || currentUser.photoURL || currentUser.photo || null);
+ setBannerImage(currentUser.banner || null);
 }
 
 /* ACTIVITY DATA */
