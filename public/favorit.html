@@ -526,6 +526,7 @@ async function removeFavorite(id){
 }
 
 async function loadFavorites(){
+    const skeletonStartedAt = performance.now();
     try{
         const response=await fetch("/api/user/favorites",{credentials:"include",cache:"no-store"});
         if(response.status===401){ location.replace("login.html"); return; }
@@ -533,6 +534,8 @@ async function loadFavorites(){
         const data=await response.json();
         favorites=Array.isArray(data.favorites)?data.favorites:[];
     }catch(error){ console.error("Favorites:",error); favorites=[]; }
+    const skeletonRemaining = Math.max(0, 1100 - (performance.now() - skeletonStartedAt));
+    if (skeletonRemaining) await new Promise(resolve => setTimeout(resolve, skeletonRemaining));
     renderFavorites();
 }
 
