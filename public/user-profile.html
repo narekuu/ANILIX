@@ -1408,13 +1408,17 @@ async function loadProfile(){
   "#"+TARGET_ID;
 
  await loadTargetMedia(user);
+ const profileUser=getTargetUser();
 
- updateMinecraftLevel(user.level);
+ document.getElementById("profileName").textContent=
+  profileUser.name||"Pengguna";
 
- const roleKey=updateRole(user.role);
+ updateMinecraftLevel(profileUser.level);
+
+ const roleKey=updateRole(profileUser.role);
 
  document.getElementById("verifiedBadge").style.display=
-  user.verified && roleKey!=="member"
+  profileUser.verified && roleKey!=="member"
   ?"inline-flex"
   :"none";
 
@@ -1422,7 +1426,7 @@ async function loadProfile(){
  const history=getTabData("history");
 
  document.getElementById("statMonth").textContent=
-  Number(user.months||0).toLocaleString("id-ID");
+  Number(profileUser.months||0).toLocaleString("id-ID");
 
  document.getElementById("statComments").textContent=
   comments.length.toLocaleString("id-ID");
@@ -1431,7 +1435,7 @@ async function loadProfile(){
   history.length.toLocaleString("id-ID");
 
  document.getElementById("statMinutes").textContent=
-  Number(user.totalMinutes||0).toLocaleString("id-ID");
+  Number(profileUser.totalMinutes||0).toLocaleString("id-ID");
 
 }
 
