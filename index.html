@@ -1525,42 +1525,49 @@ async function loadHomeAvatar(){
  const avatar=document.getElementById("homeAvatar");
  if(!avatar)return;
 
+ const savedAvatar=getSavedHomeUser().avatar;
+ if(typeof savedAvatar==="string"&&savedAvatar.startsWith("data:image/")){
+  if(homeAvatarURL){
+   URL.revokeObjectURL(homeAvatarURL);
+   homeAvatarURL=null;
+  }
+  avatar.innerHTML="";
+  const img=document.createElement("img");
+  img.src=savedAvatar;
+  img.alt="Foto Profil";
+  img.onerror=()=>{
+   avatar.innerHTML="";
+   avatar.textContent=getHomeInitial();
+  };
+  avatar.appendChild(img);
+  return;
+ }
+
+ /* Backward compatibility: read legacy locally stored avatar if present. */
  try{
   const db=await openHomeDB();
-
   const blob=await new Promise((resolve,reject)=>{
    const transaction=db.transaction(HOME_DB_STORE,"readonly");
    const request=transaction.objectStore(HOME_DB_STORE).get("avatar");
-
    request.onsuccess=()=>resolve(request.result);
    request.onerror=()=>reject(request.error);
   });
-
   db.close();
 
   if(blob instanceof Blob&&blob.size>0){
-   if(homeAvatarURL){
-    URL.revokeObjectURL(homeAvatarURL);
-   }
-
+   if(homeAvatarURL)URL.revokeObjectURL(homeAvatarURL);
    homeAvatarURL=URL.createObjectURL(blob);
    avatar.innerHTML="";
-
    const img=document.createElement("img");
    img.src=homeAvatarURL;
    img.alt="Foto Profil";
-
    avatar.appendChild(img);
   }else{
-   if(homeAvatarURL){
-    URL.revokeObjectURL(homeAvatarURL);
-    homeAvatarURL=null;
-   }
-
    avatar.textContent=getHomeInitial();
   }
  }catch(error){
   console.error("Gagal memuat foto profile:",error);
+  avatar.textContent=getHomeInitial();
  }
 }
 
