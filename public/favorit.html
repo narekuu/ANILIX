@@ -343,6 +343,7 @@ body::before{
 }
 </style>
 <link rel="stylesheet" href="../css/page-transition.css">
+<link rel="stylesheet" href="../css/skeleton-loading.css">
 <link rel="stylesheet" href="/components/navigation/navigation.css">
 </head>
 
@@ -366,7 +367,14 @@ body::before{
 
     <section id="favoritePanel" class="favorite-panel">
 
-        <div id="favoriteGrid" class="favorite-grid"></div>
+        <div id="favoriteGrid" class="favorite-grid" aria-busy="true">
+            <div class="anilix-skeleton-card" aria-hidden="true"><div class="anilix-skeleton-poster"></div><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div></div>
+            <div class="anilix-skeleton-card" aria-hidden="true"><div class="anilix-skeleton-poster"></div><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div></div>
+            <div class="anilix-skeleton-card" aria-hidden="true"><div class="anilix-skeleton-poster"></div><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div></div>
+            <div class="anilix-skeleton-card" aria-hidden="true"><div class="anilix-skeleton-poster"></div><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div></div>
+            <div class="anilix-skeleton-card" aria-hidden="true"><div class="anilix-skeleton-poster"></div><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div></div>
+            <div class="anilix-skeleton-card" aria-hidden="true"><div class="anilix-skeleton-poster"></div><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div></div>
+        </div>
 
         <div id="empty" class="empty">
             <div class="empty-icon">
@@ -532,6 +540,7 @@ async function loadFavorites(){
 
 function renderFavorites(){
 
+    grid.setAttribute("aria-busy","false");
     grid.innerHTML = "";
     updateCount();
 
