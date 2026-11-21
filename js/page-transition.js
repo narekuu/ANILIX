@@ -63,6 +63,7 @@
    const incomingTheme=parsed.querySelector('meta[name="theme-color"]');
    const currentTheme=document.querySelector('meta[name="theme-color"]');
    if(incomingTheme&&currentTheme)currentTheme.content=incomingTheme.content;
+   window.__ANILIX_PAGE_CLEANUP__?.();
    document.body.className=parsed.body.className||"";
    document.body.innerHTML=parsed.body.innerHTML;
    document.body.classList.add("page-enter");
