@@ -1621,7 +1621,7 @@ function removeHomeSkeleton(){
  document.body.classList.remove("is-rendering");
 }
 
-const skeletonFallback=setTimeout(removeHomeSkeleton,2500);
+const skeletonFallback=setTimeout(removeHomeSkeleton,8000);
 
 initializeHomeProfile();
 
@@ -1649,7 +1649,7 @@ async function initializeHomeProfile(){
 
   requestAnimationFrame(()=>{
    requestAnimationFrame(()=>{
-    const skeletonRemaining = Math.max(0, 1200 - (performance.now() - homeSkeletonStartedAt));
+    const skeletonRemaining = Math.max(0, 2500 - (performance.now() - homeSkeletonStartedAt));
    setTimeout(removeHomeSkeleton, skeletonRemaining);
    });
   });
