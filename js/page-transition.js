@@ -25,7 +25,39 @@
    if(active)link.setAttribute("aria-current","page");else link.removeAttribute("aria-current");
   });
  }
+
  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+ function runPageScript(code){
+  window.__ANILIX_PAGE_CLEANUP__?.();
+  const wrapped=`{
+   const controller=new AbortController(),timers=new Set(),channels=[];
+   const winAdd=window.addEventListener,docAdd=document.addEventListener;
+   const setT=window.setTimeout,clearT=window.clearTimeout,setI=window.setInterval,clearI=window.clearInterval;
+   const NativeChannel=window.BroadcastChannel;
+   const signalOptions=options=>options===undefined?{signal:controller.signal}:typeof options==="boolean"?{capture:options,signal:controller.signal}:options.signal?options:{...options,signal:controller.signal};
+   window.addEventListener=function(type,listener,options){return winAdd.call(this,type,listener,signalOptions(options))};
+   document.addEventListener=function(type,listener,options){return docAdd.call(this,type,listener,signalOptions(options))};
+   window.setTimeout=function(callback,delay,...args){let id;id=setT.call(this,(...values)=>{timers.delete(id);callback(...values)},delay,...args);timers.add(id);return id};
+   window.clearTimeout=function(id){timers.delete(id);return clearT.call(this,id)};
+   window.setInterval=function(callback,delay,...args){const id=setI.call(this,callback,delay,...args);timers.add(id);return id};
+   window.clearInterval=function(id){timers.delete(id);return clearI.call(this,id)};
+   if(NativeChannel)window.BroadcastChannel=class extends NativeChannel{constructor(...args){super(...args);channels.push(this)}};
+   try{
+    ${code}
+    if(typeof createPosterPlaceholder==="function")window.createPosterPlaceholder=createPosterPlaceholder;
+   }finally{
+    window.addEventListener=winAdd;document.addEventListener=docAdd;
+    window.setTimeout=setT;window.clearTimeout=clearT;window.setInterval=setI;window.clearInterval=clearI;
+    if(NativeChannel)window.BroadcastChannel=NativeChannel;
+   }
+   window.__ANILIX_PAGE_CLEANUP__=()=>{
+    controller.abort();timers.forEach(id=>{clearT.call(window,id);clearI.call(window,id)});
+    timers.clear();channels.forEach(channel=>channel.close());
+   };
+  }`;
+  const script=document.createElement("script");script.textContent=wrapped;
+  document.body.appendChild(script);script.remove();
+ }
  function replacePageStyles(parsed,baseURL){
   document.querySelectorAll("[data-anilix-page-style],[data-anilix-page-link]").forEach(node=>node.remove());
   parsed.head.querySelectorAll('link[rel="stylesheet"]').forEach(source=>{
@@ -64,18 +96,14 @@
    const currentTheme=document.querySelector('meta[name="theme-color"]');
    if(incomingTheme&&currentTheme)currentTheme.content=incomingTheme.content;
    window.__ANILIX_PAGE_CLEANUP__?.();
+   window.__ANILIX_PAGE_CLEANUP__?.();
    document.body.className=parsed.body.className||"";
    document.body.innerHTML=parsed.body.innerHTML;
    document.body.classList.add("page-enter");
    if(push)history.pushState({anilixSPA:true},"",destination.pathname+destination.search+destination.hash);
    updateNavigation(destination.href);
    window.scrollTo(0,0);
-   // Block scope prevents const/let redeclaration when returning to a tab.
-   for(const code of scripts){
-    const script=document.createElement("script");
-    script.textContent="{\n"+code+"\nif(typeof createPosterPlaceholder==='function')window.createPosterPlaceholder=createPosterPlaceholder;\n}";
-    document.body.appendChild(script);script.remove();
-   }
+   for(const code of scripts)runPageScript(code);
    window.dispatchEvent(new CustomEvent("anilix:pagechange",{detail:{page:targetRoute,url:destination.href}}));
    return true;
   }catch(error){
