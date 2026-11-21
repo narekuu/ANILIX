@@ -218,14 +218,14 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
     FROM public.users
     WHERE id<>$1 AND (
      CAST(id AS TEXT) ILIKE $2 OR
-     username ILIKE $2 OR
-     display_name ILIKE $2
+     username ILIKE $3 OR
+     display_name ILIKE $3
     )
     ORDER BY
-     CASE WHEN CAST(id AS TEXT)=$3 THEN 0 ELSE 1 END,
+     CASE WHEN CAST(id AS TEXT)=$4 THEN 0 ELSE 1 END,
      display_name ASC
     LIMIT 30`,
-   [req.user.id,'%'+q+'%',idQuery]
+   [req.user.id,'%'+idQuery+'%','%'+q+'%',idQuery]
   );
   const users=result.rows.map(row=>{
    const total=Number(row.total_exp||0);
