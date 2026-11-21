@@ -312,10 +312,9 @@ app.get('/api/catalog',async(req,res)=>{
   const body=await upstream.text();res.status(upstream.status).type(upstream.headers.get('content-type')||'application/json').send(body);
  }catch(e){console.error('[ANILIX SANKA]',e.message);res.status(502).json({success:false,message:'Tidak dapat menghubungi provider katalog.'});}
 });
-// Start visitors on the existing welcome/onboarding flow; it routes to login or home when finished.
-app.get('/', (_req, res) => res.redirect(302, '/loading-welcome.html'));
-
+// Serve the actual Home page at the root URL. The onboarding page remains available at /loading-welcome.html.
 const publicDirectory = path.join(ROOT, 'public');
+app.get('/', (_req, res) => res.sendFile(path.join(publicDirectory, 'index.html')));
 app.use(express.static(publicDirectory, { extensions: ['html'] }));
 // Keep legacy /public/... links working while the deployed copy uses root-relative paths.
 app.use('/public', express.static(publicDirectory, { extensions: ['html'] }));
