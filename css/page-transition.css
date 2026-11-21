@@ -1,50 +1,40 @@
-/* =========================================
-   ANILIX PAGE TRANSITION
-========================================= */
-
+/* ANILIX shared page transition — overlay-only, never transforms body */
 :root {
-  --transition-duration: 380ms;
-  --transition-easing: cubic-bezier(.22,.61,.36,1);
+  --anilix-transition-duration: 420ms;
+  --anilix-transition-easing: cubic-bezier(.22,.61,.36,1);
 }
-
-html {
-  background: #090711;
-}
-
-body {
-  opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
-  transition:
-    opacity var(--transition-duration) var(--transition-easing),
-    filter var(--transition-duration) var(--transition-easing),
-    transform var(--transition-duration) var(--transition-easing);
-}
-
-/* Saat halaman akan ditinggalkan */
-html.is-leaving body {
-  opacity: 0;
-  filter: blur(7px);
-  transform: translateY(9px);
+html { background: #090711; }
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483500;
   pointer-events: none;
-}
-
-/* Saat halaman baru dibuka */
-html.is-entering body {
   opacity: 0;
-  filter: blur(7px);
-  transform: translateY(9px);
+  visibility: hidden;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(92,55,132,.22), transparent 58%),
+    rgba(9,7,17,.78);
+  -webkit-backdrop-filter: blur(9px) saturate(115%);
+  backdrop-filter: blur(9px) saturate(115%);
+  transition:
+    opacity var(--anilix-transition-duration) var(--anilix-transition-easing),
+    visibility 0s linear var(--anilix-transition-duration);
 }
-
-html.is-entering.is-ready body {
+html.is-entering::before,
+html.is-leaving::before {
   opacity: 1;
-  filter: blur(0);
-  transform: translateY(0);
+  visibility: visible;
+  transition-delay: 0s;
 }
-
-/* Hormati pengaturan pengurangan animasi */
+html.is-entering.is-ready::before {
+  opacity: 0;
+  visibility: visible;
+}
 @media (prefers-reduced-motion: reduce) {
-  body {
+  html::before {
     transition: none !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
