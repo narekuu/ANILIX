@@ -965,7 +965,6 @@ function renderTab(){
 /* PROFILE VIEW */
 async function loadProfile(){
  const user=await getProfile();
- document.querySelector(".profile-top")?.setAttribute("aria-busy","false");
 
  const name=user.name || user.displayName || user.username || "";
  const id=user.id ?? user.userId ?? "";
@@ -1137,8 +1136,12 @@ document.querySelectorAll(".nav-item").forEach(link=>{
 
 /* INIT */
 async function initProfile(){
+ const skeletonStartedAt = performance.now();
  await migrateLegacyMedia();
  await loadProfile();
+ const skeletonRemaining = Math.max(0, 1100 - (performance.now() - skeletonStartedAt));
+ if (skeletonRemaining) await new Promise(resolve => setTimeout(resolve, skeletonRemaining));
+ document.querySelector(".profile-top")?.setAttribute("aria-busy","false");
  renderTab();
 }
 

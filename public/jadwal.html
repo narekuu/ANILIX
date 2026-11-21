@@ -928,6 +928,7 @@ window.addEventListener("scroll",()=>{
 ====================================== */
 
 async function loadSchedule(){
+ const skeletonStartedAt = performance.now();
 
  scheduleWrap.innerHTML = `<div class="schedule-skeleton" aria-label="Memuat jadwal" aria-busy="true">
   <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
@@ -948,6 +949,8 @@ async function loadSchedule(){
 
   const data = await response.json();
 
+  const skeletonRemaining = Math.max(0, 1100 - (performance.now() - skeletonStartedAt));
+  if (skeletonRemaining) await new Promise(resolve => setTimeout(resolve, skeletonRemaining));
   renderSchedule(data);
 
  }catch(error){
