@@ -240,6 +240,28 @@ app.get('/api/users/search',auth,async(req,res,next)=>{
   res.json({success:true,users});
  }catch(e){next(e);}
 });
+app.get('/api/users/:id/activity',async(req,res,next)=>{
+ try{
+  const id=Number(req.params.id);
+  if(!Number.isSafeInteger(id)||id<1)return res.status(400).json({success:false,message:'ID pengguna tidak valid.'});
+  const exists=await pool.query('SELECT id FROM public.users WHERE id=$1 LIMIT 1',[id]);
+  if(!exists.rowCount)return res.status(404).json({success:false,message:'Pengguna tidak ditemukan.'});
+  const [comments,favorites,history,minutes]=await Promise.all([
+   pool.query(`SELECT c.id,c.content_id AS id,c.content_type AS type,c.title,c.poster,c.body AS description,c.created_at AS time
+    FROM public.comments c WHERE c.user_id=$1 ORDER BY c.created_at DESC,c.id DESC LIMIT 100`,[id]),
+   pool.query(`SELECT content_id AS id,content_type AS type,title,poster,created_at AS time
+    FROM public.favorites WHERE user_id=$1 ORDER BY created_at DESC,id DESC LIMIT 100`,[id]),
+   pool.query(`SELECT content_id AS id,content_type AS type,title,poster,episode,progress,watched_at AS time
+    FROM public.watch_history WHERE user_id=$1 ORDER BY watched_at DESC LIMIT 100`,[id]),
+   pool.query('SELECT COALESCE(SUM(position_seconds),0) AS seconds FROM public.watch_progress WHERE user_id=$1',[id])
+  ]);
+  res.set('Cache-Control','no-store');
+  res.json({success:true,activity:{
+   comments:comments.rows,favorites:favorites.rows,history:history.rows,
+   totalMinutes:Math.floor(Number(minutes.rows[0]?.seconds||0)/60)
+  }});
+ }catch(e){next(e);}
+});
 app.get('/api/users/:id',async(req,res,next)=>{
  try{
   const id=Number(req.params.id);
