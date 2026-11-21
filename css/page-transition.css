@@ -1,10 +1,8 @@
-/* ANILIX cross-document navigation: deliberate but lightweight. */
+/* ANILIX cross-document navigation: slower, smoother handoff. */
 html{background:#090711}
 @view-transition{navigation:auto}
-::view-transition-old(root){animation:anilix-page-out 260ms ease both}
-::view-transition-new(root){animation:anilix-page-in 380ms cubic-bezier(.22,.61,.36,1) both}
-@keyframes anilix-page-out{to{opacity:.82;transform:translateY(-2px)}}
-@keyframes anilix-page-in{from{opacity:.82;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-@media(prefers-reduced-motion:reduce){
- ::view-transition-old(root),::view-transition-new(root){animation:none!important}
-}
+::view-transition-old(root){animation:anilix-page-out 360ms ease both}
+::view-transition-new(root){animation:anilix-page-in 620ms cubic-bezier(.22,.61,.36,1) both}
+@keyframes anilix-page-out{to{opacity:.88;transform:translateY(-1px)}}
+@keyframes anilix-page-in{from{opacity:.88;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none!important}}
