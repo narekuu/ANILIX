@@ -495,6 +495,7 @@ svg{
 }
 </style>
 <link rel="stylesheet" href="../css/page-transition.css">
+<link rel="stylesheet" href="../css/skeleton-loading.css">
 <link rel="stylesheet" href="/components/navigation/navigation.css">
 </head>
 
@@ -518,9 +519,11 @@ svg{
 </div>
 
 <main class="schedule-wrap" id="scheduleWrap">
- <div class="state-card">
-  <strong>Memuat jadwal...</strong>
-  Mengambil data jadwal tayang.
+ <div class="schedule-skeleton" aria-label="Memuat jadwal" aria-busy="true">
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
  </div>
 </main>
 
@@ -926,12 +929,12 @@ window.addEventListener("scroll",()=>{
 
 async function loadSchedule(){
 
- scheduleWrap.innerHTML = `
-  <div class="state-card">
-   <strong>Memuat jadwal...</strong>
-   Mengambil data jadwal tayang.
-  </div>
- `;
+ scheduleWrap.innerHTML = `<div class="schedule-skeleton" aria-label="Memuat jadwal" aria-busy="true">
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+  <div class="anilix-skeleton-card anilix-skeleton-row"><div class="anilix-skeleton-thumb"></div><div class="anilix-skeleton-copy"><div class="anilix-skeleton-line"></div><div class="anilix-skeleton-line short"></div><div class="anilix-skeleton-line"></div></div></div>
+ </div>`;
 
  try{
 
