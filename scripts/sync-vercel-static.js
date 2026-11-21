@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const publicRoot = path.join(root, 'public');
 
 fs.mkdirSync(publicRoot, { recursive: true });
-for (const directory of ['css', 'js', 'json']) {
+for (const directory of ['css', 'js', 'json', 'components']) {
   const source = path.join(root, directory);
   const destination = path.join(publicRoot, directory);
   if (fs.existsSync(source)) fs.cpSync(source, destination, { recursive: true, force: true });

@@ -252,69 +252,6 @@ svg{
 .rank-progress-fill{height:100%;background:#a875ff;border-radius:20px}
 .rank-progress-text{margin-top:5px;font-size:9px;color:#c4cee0}
 
-/* BOTTOM NAV */
-/* BOTTOM NAV - FLOATING */
-.bottom-nav{
- position:fixed !important;
- bottom:18px !important;
- left:50% !important;
- top:auto !important;
- right:auto !important;
- transform:translateX(-50%) !important;
- z-index:99999 !important;
- width:calc(100% - 32px) !important;
- max-width:520px;
- height:72px;
- display:flex;
- justify-content:space-around;
- align-items:center;
- padding:6px 10px;
- margin:0;
- background:rgba(28,20,42,.78);
- border:1px solid rgba(210,180,255,.2);
- border-radius:25px;
- backdrop-filter:blur(25px) saturate(160%);
- -webkit-backdrop-filter:blur(25px) saturate(160%);
- box-shadow:0 8px 32px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08);
-}
-
-.nav-item{
- flex:1;
- height:58px;
- max-width:95px;
- background:none;
- border:0;
- color:#a69aaf;
- display:flex;
- align-items:center;
- justify-content:center;
- flex-direction:column;
- gap:5px;
- font-size:10px;
- font-weight:600;
- border-radius:18px;
- transition:.25s;
- text-decoration:none;
-}
-
-.nav-item svg{
- width:23px;
- height:23px;
- transition:.25s;
-}
-
-.nav-item.active{
- color:#fff;
- background:rgba(168,117,255,.28);
- box-shadow:inset 0 0 0 1px rgba(190,150,255,.12),0 3px 12px rgba(168,117,255,.12);
-}
-
-.nav-item.active svg{
- color:#d7baff;
- filter:drop-shadow(0 0 7px #a875ff99);
-}
-
-.nav-item:active{transform:scale(.92)}
 @media(min-width:600px){
  .banner{height:200px}
  .avatar-wrap{width:115px;height:115px;margin-top:-80px}
@@ -335,6 +272,7 @@ svg{
 }
 </style>
 <link rel="stylesheet" href="../css/page-transition.css">
+<link rel="stylesheet" href="/components/navigation/navigation.css">
 </head>
 
 <body>
@@ -412,7 +350,7 @@ svg{
  </div>
 </div>
 
-<nav class="bottom-nav" id="bottomNav" aria-label="Navigasi utama"></nav>
+
 
 <script>
 "use strict";
@@ -1197,6 +1135,8 @@ initProfile();
 <script src="../js/page-transition.js" defer></script>
 <script src="../js/skeleton-loading.js" defer></script>
 <script src="../js/poster-loading.js" defer></script>
-<script src="./js/navigation.js"></script>
+
+<script src="/components/navigation/navigation.js" defer></script>
+<script src="/components/navigation/navigation.js" defer></script>
 </body>
 </html>

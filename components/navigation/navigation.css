@@ -1,0 +1,82 @@
+/* ANILIX — single source of truth for the floating bottom navigation */
+#anilixBottomNav {
+  position: fixed !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 2147483000 !important;
+  box-sizing: border-box !important;
+  width: calc(100% - 32px) !important;
+  max-width: 520px !important;
+  height: 72px !important;
+  margin: 0 !important;
+  padding: 6px 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  gap: 4px !important;
+  border: 1px solid rgba(210,180,255,.24) !important;
+  border-radius: 25px !important;
+  background: linear-gradient(110deg, rgba(91,24,49,.94) 0%, rgba(53,45,67,.94) 100%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(160%) !important;
+  backdrop-filter: blur(25px) saturate(160%) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.09) !important;
+  isolation: isolate;
+}
+#anilixBottomNav .nav-item {
+  box-sizing: border-box !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: 95px !important;
+  height: 58px !important;
+  margin: 0 !important;
+  padding: 5px 2px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  border: 0 !important;
+  border-radius: 18px !important;
+  background: transparent !important;
+  color: #a99bb5 !important;
+  font-family: inherit !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1.15 !important;
+  text-decoration: none !important;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease, transform .22s ease !important;
+}
+#anilixBottomNav .nav-item svg {
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: 23px !important;
+  height: 23px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.7 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+#anilixBottomNav .nav-item span { white-space: nowrap; }
+#anilixBottomNav .nav-item.active {
+  color: #fff !important;
+  background: rgba(168,117,255,.28) !important;
+  box-shadow: inset 0 0 0 1px rgba(190,150,255,.16), 0 3px 12px rgba(168,117,255,.16) !important;
+}
+#anilixBottomNav .nav-item.active svg {
+  color: #d7baff !important;
+  filter: drop-shadow(0 0 7px #a875ff99);
+}
+#anilixBottomNav .nav-item:active { transform: scale(.94) !important; }
+@media (max-width: 360px) {
+  #anilixBottomNav { width: calc(100% - 20px) !important; padding-inline: 5px !important; }
+  #anilixBottomNav .nav-item { font-size: 9px !important; }
+  #anilixBottomNav .nav-item svg { width: 21px !important; height: 21px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #anilixBottomNav .nav-item { transition: none !important; }
+}
