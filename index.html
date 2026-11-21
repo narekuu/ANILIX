@@ -1613,6 +1613,7 @@ function loadProfileData(){
 
 /* INITIALIZATION */
 let skeletonRemoved=false;
+const homeSkeletonStartedAt = performance.now();
 
 function removeHomeSkeleton(){
  if(skeletonRemoved)return;
@@ -1648,14 +1649,16 @@ async function initializeHomeProfile(){
 
   requestAnimationFrame(()=>{
    requestAnimationFrame(()=>{
-    setTimeout(removeHomeSkeleton,350);
+    const skeletonRemaining = Math.max(0, 1200 - (performance.now() - homeSkeletonStartedAt));
+   setTimeout(removeHomeSkeleton, skeletonRemaining);
    });
   });
  }
 }
 
 window.addEventListener("DOMContentLoaded",()=>{
- setTimeout(removeHomeSkeleton,1800);
+ const skeletonRemaining = Math.max(0, 1200 - (performance.now() - homeSkeletonStartedAt));
+ setTimeout(removeHomeSkeleton, skeletonRemaining);
 },{once:true});
 
 window.addEventListener("storage",event=>{
