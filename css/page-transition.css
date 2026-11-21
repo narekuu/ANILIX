@@ -1,8 +1,16 @@
-/* ANILIX cross-document navigation: slower, smoother handoff. */
+/* ANILIX page handoff: visible entrance and exit, with no full-screen loading veil. */
 html{background:#090711}
+body{opacity:1;transform:translateY(0);transition:opacity 760ms cubic-bezier(.22,.61,.36,1),transform 760ms cubic-bezier(.22,.61,.36,1)}
+html.is-entering body{opacity:0;transform:translateY(9px)}
+html.is-entering.is-ready body{opacity:1;transform:translateY(0)}
+html.is-leaving body{opacity:.78;transform:translateY(-3px)}
 @view-transition{navigation:auto}
-::view-transition-old(root){animation:anilix-page-out 360ms ease both}
-::view-transition-new(root){animation:anilix-page-in 620ms cubic-bezier(.22,.61,.36,1) both}
-@keyframes anilix-page-out{to{opacity:.88;transform:translateY(-1px)}}
-@keyframes anilix-page-in{from{opacity:.88;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
-@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none!important}}
+::view-transition-old(root){animation:anilix-page-out 420ms ease both}
+::view-transition-new(root){animation:anilix-page-in 760ms cubic-bezier(.22,.61,.36,1) both}
+@keyframes anilix-page-out{to{opacity:.82;transform:translateY(-2px)}}
+@keyframes anilix-page-in{from{opacity:.82;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+ body{transition:none!important}
+ html.is-entering body{opacity:1;transform:none}
+ ::view-transition-old(root),::view-transition-new(root){animation:none!important}
+}
