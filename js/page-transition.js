@@ -26,10 +26,10 @@
   });
  }
  const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- function replacePageStyles(parsed){
+ function replacePageStyles(parsed,baseURL){
   document.querySelectorAll("[data-anilix-page-style],[data-anilix-page-link]").forEach(node=>node.remove());
   parsed.head.querySelectorAll('link[rel="stylesheet"]').forEach(source=>{
-   const url=new URL(source.href,location.href);
+   const url=new URL(source.getAttribute("href"),baseURL);
    if(GLOBAL_STYLES.has(url.pathname))return;
    const link=document.createElement("link");
    link.rel="stylesheet";link.href=url.href;link.dataset.anilixPageLink="true";
@@ -58,7 +58,7 @@
    document.body.classList.remove("page-enter");
    document.body.classList.add("page-exit");
    await wait(140);
-   replacePageStyles(parsed);
+   replacePageStyles(parsed,destination.href);
    document.title=parsed.title||"ANILIX";
    const incomingTheme=parsed.querySelector('meta[name="theme-color"]');
    const currentTheme=document.querySelector('meta[name="theme-color"]');
