@@ -1,12 +1,35 @@
-/* Inline skeletons occupy the content's real footprint; they never cover the page. */
-.anilix-skeleton-card{position:relative;overflow:hidden;border:1px solid rgba(190,150,255,.10);border-radius:15px;background:linear-gradient(145deg,rgba(39,31,53,.92),rgba(22,18,31,.94))}
-.anilix-skeleton-card::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.065) 48%,transparent 70%);animation:anilix-skeleton-shimmer 1.35s ease-in-out infinite}
-.anilix-skeleton-poster{aspect-ratio:.69;border-radius:11px;background:#292137}
-.anilix-skeleton-line{height:9px;margin-top:9px;border-radius:8px;background:#30283c}
+/* ANILIX skeletons — calm glass surfaces, close to the real component silhouette. */
+.anilix-skeleton-card{
+ position:relative;overflow:hidden;
+ border:1px solid rgba(190,150,255,.13);
+ border-radius:15px;
+ background:linear-gradient(135deg,rgba(48,37,66,.82),rgba(29,23,42,.92) 52%,rgba(42,31,58,.82));
+}
+.anilix-skeleton-card::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ transform:translateX(-125%);
+ background:linear-gradient(105deg,transparent 20%,rgba(210,185,255,.025) 38%,rgba(220,202,255,.105) 50%,rgba(210,185,255,.025) 62%,transparent 80%);
+ animation:anilix-skeleton-shimmer 2.15s cubic-bezier(.4,0,.2,1) infinite;
+}
+.anilix-skeleton-poster{
+ aspect-ratio:2/3;border-radius:11px;
+ background:linear-gradient(145deg,#30263e,#211a2d 58%,#352943);
+}
+.anilix-skeleton-line{
+ height:9px;margin-top:9px;border-radius:8px;
+ background:linear-gradient(90deg,#30263e,#3b304b,#30263e);
+}
 .anilix-skeleton-line.short{width:62%}
-.anilix-skeleton-row{display:flex;gap:12px;align-items:center;padding:11px;margin-bottom:12px}
-.anilix-skeleton-thumb{width:68px;height:94px;flex:0 0 68px;border-radius:10px;background:#292137}
+.anilix-skeleton-row{
+ display:flex;gap:12px;align-items:center;padding:11px;margin-bottom:12px;
+}
+.anilix-skeleton-thumb{
+ width:68px;height:94px;flex:0 0 68px;border-radius:10px;
+ background:linear-gradient(145deg,#30263e,#211a2d 58%,#352943);
+}
 .anilix-skeleton-copy{flex:1;min-width:0}
 .anilix-skeleton-copy .anilix-skeleton-line{margin:7px 0}
-@keyframes anilix-skeleton-shimmer{to{transform:translateX(100%)}}
-@media(prefers-reduced-motion:reduce){.anilix-skeleton-card::after{animation:none;opacity:.35}}
+@keyframes anilix-skeleton-shimmer{to{transform:translateX(125%)}}
+@media(prefers-reduced-motion:reduce){
+ .anilix-skeleton-card::after{animation:none;opacity:.45}
+}

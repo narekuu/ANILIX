@@ -1,10 +1,10 @@
-/* ANILIX navigation: native cross-document transitions, without a blocking veil. */
-html { background:#090711; }
-@view-transition { navigation: auto; }
-::view-transition-old(root) { animation:anilix-page-out 150ms ease both; }
-::view-transition-new(root) { animation:anilix-page-in 220ms cubic-bezier(.2,.75,.25,1) both; }
-@keyframes anilix-page-out { to { opacity:.72; transform:translateY(-3px); } }
-@keyframes anilix-page-in { from { opacity:.72; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
-@media(prefers-reduced-motion:reduce) {
- ::view-transition-old(root),::view-transition-new(root) { animation:none!important; }
+/* ANILIX cross-document navigation: deliberate but lightweight. */
+html{background:#090711}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:anilix-page-out 260ms ease both}
+::view-transition-new(root){animation:anilix-page-in 380ms cubic-bezier(.22,.61,.36,1) both}
+@keyframes anilix-page-out{to{opacity:.82;transform:translateY(-2px)}}
+@keyframes anilix-page-in{from{opacity:.82;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){
+ ::view-transition-old(root),::view-transition-new(root){animation:none!important}
 }
